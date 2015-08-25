@@ -1,6 +1,6 @@
 import pygame
 import sys
-import astar
+import grid
 
 class Window:
     
@@ -28,19 +28,11 @@ class Window:
 
     def loop(self):
         clock = pygame.time.Clock()
-        a = astar.AStar()
-        self.grid = a.return_result()
-
-        background = pygame.Surface((self.width, self.height*2//3))
-        background.fill(self.BLACK) # fill white
-        background = background.convert()
+        g = grid.Grid(self.width, self.height*2//3, 10, 10, self.screen)
 
         while 1:
-        	# First, clear the screen to white. Don't put other drawing commands
-            # above this, or they will be erased with this command.
             self.screen.fill(self.WHITE)
-            self.screen.blit(background,(0,0))
-
+            g.draw()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
@@ -54,5 +46,3 @@ class Window:
             # --- Limit to 60 frames per second
             clock.tick(60)
         
-
-    # pygame.Rect's contain images, which are "blitted" onto the screen
