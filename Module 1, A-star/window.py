@@ -8,7 +8,7 @@ class Window:
     	pass
 
 
-    def __init__(self, width=640,height=480):
+    def __init__(self, width=500,height=750):
         pygame.init()
         self.width = width
         self.height = height
@@ -18,7 +18,7 @@ class Window:
         self.WHITE = (255, 255, 255)
         self.GREEN = (0, 255, 0)
         self.RED = (255, 0, 0)
-        self.MARGIN = 5
+        self.MARGIN = 2
         self.WIDTH = 20
         self.HEIGHT = 20
 
@@ -31,29 +31,24 @@ class Window:
         a = astar.AStar()
         self.grid = a.return_result()
 
+        background = pygame.Surface((self.width, self.height*2//3))
+        background.fill(self.BLACK) # fill white
+        background = background.convert()
+
         while 1:
         	# First, clear the screen to white. Don't put other drawing commands
             # above this, or they will be erased with this command.
-            self.screen.fill(self.BLACK)
+            self.screen.fill(self.WHITE)
+            self.screen.blit(background,(0,0))
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
                     sys.exit()
 
-            # Draw stuff
-            for row in range(10):
-                for column in range(10):
-                    color = self.WHITE
-                    if self.grid[row][column] == 1:
-                        color = self.GREEN
-                    pygame.draw.rect(self.screen,
-                                 color,
-                                 [(self.MARGIN + self.WIDTH) * column + self.MARGIN,
-                                 (self.MARGIN + self.HEIGHT) * row + self.MARGIN,
-                                 self.WIDTH,
-                                 self.HEIGHT])
+	
  
-            # --- Go ahead and update the screen with what we've drawn.
+            # pygame.display.update(changed_rectangles) is faster
             pygame.display.flip()
  
             # --- Limit to 60 frames per second
