@@ -4,8 +4,9 @@ import grid
 
 class Window:
     
-    def create_surfaces(self):
-    	pass
+    def create_grid(self, rows, columns):
+    	self.grid = grid.Grid(self.width, self.height*2//3, rows, columns, self.screen)
+    	return self.grid
 
 
     def __init__(self, width=500,height=750):
@@ -14,27 +15,22 @@ class Window:
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
 
-        self.BLACK = (0, 0, 0)
         self.WHITE = (255, 255, 255)
-        self.GREEN = (0, 255, 0)
-        self.RED = (255, 0, 0)
-        self.MARGIN = 2
-        self.WIDTH = 20
-        self.HEIGHT = 20
-
-        self.create_surfaces()
+        #self.create_surfaces()
 
 
 
     def loop(self):
         clock = pygame.time.Clock()
-        g = grid.Grid(self.width, self.height*2//3, 10, 10, self.screen)
 
         while 1:
             self.screen.fill(self.WHITE)
-            g.draw()
+            self.grid.draw()
 
             for event in pygame.event.get():
+            	# press escape or q to quit the program
+                #if event.key in (pygame.K_ESCAPE, pygame.K_q):
+                #    pygame.quit()
                 if event.type == pygame.QUIT: 
                     sys.exit()
 

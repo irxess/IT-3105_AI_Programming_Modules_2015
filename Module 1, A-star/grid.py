@@ -23,14 +23,6 @@ class Grid:
             for column in range(columns):
                 self.grid[row].append('unvisited')
 
-        self.grid[0][0] = 'start'
-        self.grid[2][2] = 'visited'
-        self.grid[5][5] = 'active'
-        self.grid[5][5] = 'active'
-        self.grid[5][6] = 'active'
-        self.grid[5][7] = 'active'
-        self.grid[1][1] = 'blocked'
-        self.grid[3][3] = 'goal'
 
     def draw(self):
         for row in range(self.rows):
