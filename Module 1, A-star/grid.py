@@ -11,6 +11,9 @@ class Grid:
         self.cellheight = self.height // self.rows
         self.cellwidth = self.width // self.columns
 
+        self.start = getStart()
+        self.goal = getGoal()
+
         self.celltype = {}
         for i in ['start', 'goal', 'unvisited', 'visited', 'active', 'blocked']:
             icon = pygame.image.load(i + '.png').convert()
@@ -33,3 +36,11 @@ class Grid:
 
     def update_cell(self, row, column, state):
         self.grid[row][column] = state
+
+    def getStart(self):
+        # return the start node with it's pos. on the grid
+        pass
+
+    def getGoal(self):
+        # return the goal node & it's pos. on the grid
+        pass
