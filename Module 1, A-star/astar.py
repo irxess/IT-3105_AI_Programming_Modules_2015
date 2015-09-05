@@ -1,6 +1,7 @@
-
+ 
 import node
 from collections import deque
+from heapq import * #need: heappush, heappop & heapify, heappushpop maybe
 
 class AStar:
 
@@ -14,123 +15,139 @@ class AStar:
 
     #     return grid
 
+    def __init__(self, grid, method='BFS'):
    
+        ######### ToDo ##########
+        # getGoal(), getStart() & getMethod()
 
-    def __init__(self, method, grid):
-    	this.method = method
-    	self.grid = grid
-    	# ToDo getGoal and getStart
-    	# self.goal = node.Node(grid.goal.x, grid.goal.y)
-    	# self.start = node.Node(grid.start.x, grid.start.y)
-    	self.positions = createPosMatrix(grid)
-   	
-   	# create a node for each tile in the grid
+        self.positions = createPosMatrix(grid)
+        self.start = grid.start
+        self.goal = grid.goal    
+        self.method = method #button event on window
+
+        aStarSearch(self.start, self.goal)
+
+    
+    # create a node for each tile in the grid. Maybe doing that in the grid.py?
     def createPosMatrix(self, grid):
-    	posMatrix = []
-    	for x in xrange(grid.width-1):
-    		posMatrix.append([])
-    		for y in xrange(grid.height-1):
-    			posMatrix[x].append(y)
-    	return posMatrix
-    	
+        posMatrix = []
+        for x in xrange(grid.width-1):
+            posMatrix.append([])
+            for y in xrange(grid.height-1):
+                posMatrix[x].append(y)
+        return posMatrix
+        
     def createNode(self, x, y):
-    	return node.Node(x, y)
+        return node.Node(x, y)
 
 
     #Handling of openList
-    #extract minimum successor for best-first-search
-    # using minheap might be better?
-	def extractMin(self, li):
-		li.sort(key=node.f, reverse=True)
-		return li.pop()
+    #extracts successor with min. f value for best-first-search, lifo for DFS, fifo for BFS
+    def extractMin(self, li):
 
-	#for DFS, popleft. Use a stack
-	# new kids to front of OpenList
-	#for BFS, pop. Use a queue
-	# new succ. to the end of OpenList
-	
-	def cost(self, a, b):
-		return 0 if a.state == a.state else 1
+        if self.method == 'BFS':
+            return li.popleft()
 
-	def computeHeuristic(node):
-		# Manhatan distance
-		node.h = abs(goal.x - node.x) + abs(goal.y - node.y)
-	
-	def attachAndEval(self, child, parent, cost):
-		self.child.parent = self.parent
-		self.child.g = parent.g + cost(parent, child)
-		computeHeuristic(child)
-		child.f = child.g + child.h
+        elif self.method == 'DFS':
+            return li.pop()
 
-	def improvePath(self, p):
-		for k in p.kids:
-			gNew = p.g + cost(p, k)
-			if gNew < k.g:
-				k.parent = p
-				k.g = gNew
-				k.f = k.g + k.h
-				improvePath(k)
+        #else: best_first, returns
+        return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+    
+    def cost(self, a, b):
+        if a.state[0] == b.state[0] and a.state[1] == b.state[1]:
+            return 0 
+        return 1
 
-	def generateSucc(node):
-		succ = []
-		x = node.state[0]
-		y = node.state[1]
-		neig = [[1,0], [0,1], [-1, 0], [0,-1]]
-		for i in range(len(neig)-1):
-			for j in range(2):
-				k = x + neig[i][0]
-				l = y + i[i][1]
-				if  k >= self.grid.width and  l >= self.grid.height:
-					succ.append(createNode(k, l))
-		return succ
+    def computeHeuristic(self, node):
+        # Manhatan distance
+        node.h = abs(goal.x - node.x) + abs(goal.y - node.y)
+    
+    def attachAndEval(self, child, parent, cost):
+        self.child.parent = self.parent
+        self.child.g = parent.g + cost(parent, child)
+        computeHeuristic(child)
+        child.f = child.g + child.h
 
-	# temperary aStarSearch: best_first_serach
-	# ToDo: add queue and stack for bfs & dfs
+    def improvePath(self, p):
+        for k in p.kids:
+            gNew = p.g + cost(p, k)
+            if gNew < k.g:
+                k.parent = p
+                k.g = gNew
+                k.f = k.g + k.h
+                improvePath(k)
 
-	def aStarSearch(start, goal):
-		openList = []
-    	closeList = []
-    	newNode = start # start nod is the initial state
-    	computeHeuristic(newNode)
-    	newNode.f = newNode.g + newNode.h
-    	openlist.append(newNode)
+    def generateSucc(self, node):
+        succ = []
+        x = node.state[0]
+        y = node.state[1]
+        neig = [[1,0], [0,1], [-1, 0], [0,-1]]
+        for i in range(len(neig)-1):
+            for j in range(2):
+                k = x + neig[i][0]
+                l = y + i[i][1]
+                if  k >= self.grid.width and  l >= self.grid.height:
+                    succ.append(createNode(k, l))
+        return succ
 
-    	#Agenda loop
-    	while newNode != goal:
-			if len(openlist) == 0:
-				print ('FAIL')
-				return False
 
-			newNode = extractMin(openlist)
-			closeList.append(newNode)
-	
-			if newNode == goal:
-				bestPath = []
-				#backtrack to get the choosen path to the goal
-				while newNode.parent:
-					bestPath.append(newNode)
-					newNode = newNode.parent
-				bestPath.append(newNode)	
-				# return the reverse bestPath list 
-				return bestPath.reverse()
+    def aStarSearch(self, start, goal):
+        openList = collections.deque([])
+        closed = []
+        newNode = start # start node is the initial state
+        countNodes = 1 # the initial state is the first generated search node.
+        computeHeuristic(newNode)
+        newNode.f = newNode.g + newNode.h
+        openList.append(newNode)
+        limit = 1000
+        solution = 'The solution is '
 
-			succ = generateSucc(newNode)
-			for s in succ:
-				# check if node s has already been created(in open or in closed)
-				if s in closeList:
-					continue
-				if s in openlist:
-					newCost = newNode.g + cost(newNode, s)
-					if newCost < s.g:
-						attachAndEval(s, newNode)
+        #Agenda loop
+        while newNode != goal:
 
-				# if s has a uniqe state do attachAndEval & propagate path improvment
-				if s not in openlist and s not in closeList:
-					attachAndEval(s, newNode)
-					openlist.append(s)
-				elif newNode.g + cost(newNode, s) < s.g:
-					attachAndEval(s, newNode)
-					if s in closeList:
-						improvePath(newNode)
-				#appends s to current node kids list regardless of s's uniqueness						
-				newNode.kids.append(s)
+            if len(openList) == 0:
+                print (solution = solution + 'FAILED. No more nodes left in agenda to expand. \n')
+                return countNodes
+
+            #Returns if the alg. have created nodes over the limit
+            if countNodes > 1000:
+                print (solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
+                return countNodes
+
+            newNode = extractMin(openList)
+            closed.append(newNode)
+
+            if newNode == goal:
+                countNodes += 1
+                bestPath = []
+                #backtrack to get the choosen path to the goal
+                while newNode.parent:
+                    bestPath.append(newNode)
+                    newNode = newNode.parent
+                bestPath.append(newNode)    
+                print (solution + 'FOUND.', '\n', 'Number of nodes is ', countNodes, '\n', 'Path: ')
+                # return the reverse bestPath list 
+                return bestPath.reverse()
+
+            succ = generateSucc(newNode)
+            for s in succ:
+                # Cheching in a list of nodes? check the node.state?
+                if s in closed:
+                    continue
+                if s in openList:
+                    newCost = newNode.g + cost(newNode, s)
+                    if newCost < s.g:
+                        attachAndEval(s, newNode)
+
+                # if s has a uniqe state do attachAndEval & propagate path improvment
+                if s not in openList and s not in closed:
+                    countNodes += 1
+                    attachAndEval(s, newNode)
+                    openList.append(s)
+                elif newNode.g + cost(newNode, s) < s.g:
+                    attachAndEval(s, newNode)
+                    if s in closed:
+                        improvePath(newNode)
+                #appends s to current node kids list regardless of s's uniqueness                       
+                newNode.kids.append(s)
