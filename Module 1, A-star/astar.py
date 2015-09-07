@@ -1,58 +1,37 @@
  
 import node
 from collections import deque
-from heapq import * #need: heappush, heappop & heapify, heappushpop maybe
 
 class AStar:
 
-    # def return_result(self):
-    #     grid = []
-    #     for row in range(10):
-    #         grid.append([])
-    #         for column in range(10):
-    #             grid[row].append(0)  # Append a cell
-    #     grid[1][5] = 1
 
-    #     return grid
-
-    def __init__(self, grid, method='BFS'):
+    def __init__(self, grid, method):
    
-        ######### ToDo ##########
-        # getGoal(), getStart() & getMethod()
-
         self.positions = createPosMatrix(grid)
+
+######## Grid used ########        
         self.start = grid.start
         self.goal = grid.goal    
         self.method = method #button event on window
 
         aStarSearch(self.start, self.goal)
 
-    
-    # create a node for each tile in the grid. Maybe doing that in the grid.py?
-    def createPosMatrix(self, grid):
-        posMatrix = []
-        for x in xrange(grid.width-1):
-            posMatrix.append([])
-            for y in xrange(grid.height-1):
-                posMatrix[x].append(y)
-        return posMatrix
         
-    def createNode(self, x, y):
-        return node.Node(x, y)
+    def createNode(self, state):
+        return node.Node(state[0], state[1])
 
 
     #Handling of openList
     #extracts successor with min. f value for best-first-search, lifo for DFS, fifo for BFS
     def extractMin(self, li):
-
         if self.method == 'BFS':
             return li.popleft()
 
         elif self.method == 'DFS':
             return li.pop()
 
-        #else: best_first, returns
-        return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+        else: #best_first, returns
+            return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
     
     def cost(self, a, b):
         if a.state[0] == b.state[0] and a.state[1] == b.state[1]:
@@ -61,7 +40,7 @@ class AStar:
 
     def computeHeuristic(self, node):
         # Manhatan distance
-        node.h = abs(goal.x - node.x) + abs(goal.y - node.y)
+        node.h = abs(goal.state[0] - node.state[0]) + abs(goal.state[1] - node.state[1])
     
     def attachAndEval(self, child, parent, cost):
         self.child.parent = self.parent
@@ -78,6 +57,7 @@ class AStar:
                 k.f = k.g + k.h
                 improvePath(k)
 
+######## Grid used ########
     def generateSucc(self, node):
         succ = []
         x = node.state[0]
@@ -95,7 +75,8 @@ class AStar:
     def aStarSearch(self, start, goal):
         openList = collections.deque([])
         closed = []
-        newNode = start # start node is the initial state
+        startNode = createNode(start)
+        newNode = startNode # start node is the initial state
         countNodes = 1 # the initial state is the first generated search node.
         computeHeuristic(newNode)
         newNode.f = newNode.g + newNode.h

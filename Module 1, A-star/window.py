@@ -8,7 +8,6 @@ class Window:
     	self.grid = grid.Grid(self.width, self.height*2//3, rows, columns, self.screen)
     	return self.grid
 
-
     def __init__(self, width=500,height=750):
         pygame.init()
         self.width = width
@@ -17,7 +16,6 @@ class Window:
 
         self.WHITE = (255, 255, 255)
         #self.create_surfaces()
-
 
 
     def loop(self):
@@ -34,7 +32,6 @@ class Window:
                 if event.type == pygame.QUIT: 
                     sys.exit()
 
-	
  
             # pygame.display.update(changed_rectangles) is faster
             pygame.display.flip()

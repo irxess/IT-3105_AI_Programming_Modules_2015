@@ -8,8 +8,10 @@ class Node(object):
 	def __init__(self, x, y):
 		super(Node, self).__init__()
 		self.state = (x, y)
-		self.g = None
-		self.f = None
-		self.h = None
+		self.g = float('inf')
+		self.f = float('inf')
+		self.h = float('inf')
 		self.parent = None #pointer to best parent node
 		self.kids = [] #list of succesors
+
+
