@@ -3,43 +3,24 @@ from heapq import * #need: heappush, heappop & heapify, heappushpop maybe
 import node
 import grid
 
+
 class AStar:
 
-    # def return_result(self):
-    #     grid = []
-    #     for row in range(10):
-    #         grid.append([])
-    #         for column in range(10):
-    #             grid[row].append(0)  # Append a cell
-    #     grid[1][5] = 1
 
-    #     return grid
-
-    def __init__(self, grid, method='BFS'):
+    def __init__(self, grid, method):
    
-        ######### ToDo ##########
-        # getGoal(), getStart() & getMethod()
-
         self.positions = grid
         self.grid = grid
         self.start = grid.getStart()
         self.goal = grid.getGoal()
+
         self.method = method #button event on window
 
         self.solution = self.aStarSearch(self.start, self.goal)
 
-    
-    # create a node for each tile in the grid. Maybe doing that in the grid.py?
-    #def createPosMatrix(self, grid):
-    #    posMatrix = []
-    #    for x in xrange(grid.width-1):
-    #        posMatrix.append([])
-    #        for y in xrange(grid.height-1):
-    #            posMatrix[x].append(y)
-    #    return posMatrix
         
-    #def createNode(self, x, y):
-    #    return node.Node(x, y)
+    def createNode(self, state):
+        return node.Node(position[0], position[1])
 
 
     #Handling of openList
@@ -51,7 +32,7 @@ class AStar:
         elif self.method == 'DFS':
             return li.pop()
 
-        else: #best_first
+        else: #best_first, returns
             return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
     
     def cost(self, a, b):
@@ -62,6 +43,7 @@ class AStar:
     def computeHeuristic(self, node):
         # Manhatan distance
         node.h = abs(self.goal.x - node.x) + abs(self.goal.y - node.y)
+        #node.h = abs(goal.state[0] - node.state[0]) + abs(goal.state[1] - node.state[1])
     
     def attachAndEval(self, child, parent):
         #self.child.parent = self.parent
@@ -79,6 +61,7 @@ class AStar:
                 k.f = k.g + k.h
                 improvePath(k)
 
+######## Grid used ########
     def generateSucc(self, node):
         succ = []
         x = node.position[0]
@@ -99,8 +82,12 @@ class AStar:
     def aStarSearch(self, start, goal):
         openList = deque([])
         closed = []
-        newNode = start # start node is the initial position
-        countNodes = 1 # the initial position is the first generated search node.
+
+        startNode = createNode(start)
+        #newNode = start # start node is the initial position
+        newNode = startNode # start node is the initial state
+        countNodes = 1 # the initial state is the first generated search node.
+        
         self.computeHeuristic(newNode)
         newNode.f = newNode.g + newNode.h
         openList.append(newNode)

@@ -24,4 +24,3 @@ class Node(object):
 
     def getPosition(self):
         return self.position
-
