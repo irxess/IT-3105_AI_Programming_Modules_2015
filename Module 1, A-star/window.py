@@ -1,12 +1,18 @@
 import pygame
 import sys
-import grid
+from grid import Grid
+from astar import AStar
 
 class Window:
     
     def create_grid(self, rows, columns):
-    	self.grid = grid.Grid(self.width, self.height*2//3, rows, columns, self.screen)
+    	self.grid = Grid(self.width, self.height*2//3, rows, columns, self.screen)
     	return self.grid
+
+    def create_astar(self):
+    	self.bfs = AStar(self.grid, 'BFS')
+    	#self.dfs = AStar(self.grid, 'DFS')
+    	#self.astar = AStar(self.grid, 'AStar')
 
 
     def __init__(self, width=500,height=750):

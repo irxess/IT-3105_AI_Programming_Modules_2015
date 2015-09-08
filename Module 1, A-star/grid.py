@@ -1,4 +1,5 @@
 import pygame
+import node
 
 class Grid:
     def __init__(self, width, height, rows, columns, display):
@@ -11,9 +12,6 @@ class Grid:
         self.cellheight = self.height // self.rows
         self.cellwidth = self.width // self.columns
 
-        self.start = getStart()
-        self.goal = getGoal()
-
         self.celltype = {}
         for i in ['start', 'goal', 'unvisited', 'visited', 'active', 'blocked']:
             icon = pygame.image.load(i + '.png').convert()
@@ -24,7 +22,8 @@ class Grid:
         for row in range(rows):
             self.grid.append([])
             for column in range(columns):
-                self.grid[row].append('unvisited')
+                #self.grid[row].append('unvisited')
+                self.grid[row].append( node.Node(row,column) )
 
 
     def draw(self):
@@ -35,12 +34,18 @@ class Grid:
 
 
     def update_cell(self, row, column, state):
-        self.grid[row][column] = state
+        self.grid[row][column].update(state)
+        if state=='start':
+            self.startNode = self.grid[row][column]
+        if state=='goal':
+            self.goalNode = self.grid[row][column]
 
     def getStart(self):
-        # return the start node with it's pos. on the grid
-        pass
+        return self.startNode
 
     def getGoal(self):
-        # return the goal node & it's pos. on the grid
-        pass
+        return self.goalNode
+
+    def getNode(self, x, y):
+        return self.grid[x][y]
+

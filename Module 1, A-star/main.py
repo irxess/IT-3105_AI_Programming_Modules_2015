@@ -29,7 +29,7 @@ def main():
                 y = stdin[3][i + 1] + col_offset
                 grid.update_cell(x, y, 'blocked')
 
-
+    w.create_astar()
     w.loop()
 
 
