@@ -20,7 +20,8 @@ class Node(object):
         self.state = 'unvisited'
 
     def update(self, state):
-        self.state = state
+        if self.state is not 'goal' and self.state is not 'start':
+            self.state = state
 
     def getPosition(self):
         return self.position

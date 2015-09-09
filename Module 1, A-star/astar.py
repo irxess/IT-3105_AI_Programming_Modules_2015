@@ -33,12 +33,12 @@ class AStar:
         return 1
 
     def openNode(self, node):
-    	self.openList.append(node)
-    	node.update('active')
+        self.openList.append(node)
+        node.update('open')
 
     def closeNode(self, node):
-    	self.closed.append(node)
-    	node.update('visited')
+        self.closed.append(node)
+        node.update('closed')
 
     def computeHeuristic(self, node):
         # Manhatan distance
@@ -78,7 +78,8 @@ class AStar:
 
     def iterateAStar(self):
         #Agenda loop
-        if self.newNode != self.goal:
+        #if self.newNode != self.goal:
+        if self.newNode.state != 'goal':
 
             if len(self.openList) == 0:
                 print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
@@ -92,7 +93,8 @@ class AStar:
             self.newNode = self.extractMin(self.openList)
             self.closeNode(self.newNode)
 
-            if self.newNode == self.goal:
+            #if self.newNode == self.goal:
+            if self.newNode.state == 'goal':
                 self.countNodes += 1
                 self.bestPath = []
                 #backtrack to get the choosen path to the goal
@@ -102,15 +104,19 @@ class AStar:
                 self.bestPath.append(self.newNode)    
                 print (self.solution + 'FOUND.', '\n', 'Number of nodes is ', self.countNodes, '\n', 'Path: ')
                 # return the reverse bestPath list 
-                return self.bestPath.reverse()
+                #print( self.bestPath.len() )
+                #return self.bestPath.reverse()
+                return '#:', len(self.bestPath)
 
 # should use node to check?
             neighbors = self.grid.generateNeighbors(self.newNode)
             for s in neighbors:
                 # Cheching in a list of nodes? check the node.position?
-                if s in self.closed:
+                #if s in self.closed:
+                if s.state == 'visited':
                     continue
-                if s in self.openList:
+                #if s in self.openList:
+                if s.state == 'active':
                     self.newCost = self.newNode.g + self.cost(self.newNode, s)
                     if self.newCost < s.g:
                         self.attachAndEval(s, self.newNode)

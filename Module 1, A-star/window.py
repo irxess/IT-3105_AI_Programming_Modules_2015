@@ -10,9 +10,9 @@ class Window:
         return self.grid
 
     def create_astar(self):
-        self.bfs = AStar(self.grid, 'BFS')
+        #self.bfs = AStar(self.grid, 'BFS')
         #self.dfs = AStar(self.grid, 'DFS')
-        #self.astar = AStar(self.grid, 'AStar')
+        self.astar = AStar(self.grid, 'AStar')
 
 
     def __init__(self, width=500,height=750):
@@ -22,7 +22,6 @@ class Window:
         self.screen = pygame.display.set_mode((self.width, self.height))
 
         self.WHITE = (255, 255, 255)
-        #self.create_surfaces()
 
 
     def loop(self):
@@ -31,7 +30,9 @@ class Window:
 
         while 1:
             if result == None:
-                result = self.bfs.iterateAStar()
+                result = self.astar.iterateAStar()
+                if result != None:
+                	print(result)
             self.screen.fill(self.WHITE)
             self.grid.draw()
 

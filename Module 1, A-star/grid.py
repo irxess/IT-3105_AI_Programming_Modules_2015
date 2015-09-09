@@ -13,7 +13,7 @@ class Grid:
         self.cellwidth = self.width // self.columns
 
         self.celltype = {}
-        for i in ['start', 'goal', 'unvisited', 'visited', 'active', 'blocked']:
+        for i in ['start', 'goal', 'unvisited', 'closed', 'open', 'blocked']:
             icon = pygame.image.load(i + '.png').convert()
             icon = pygame.transform.scale(icon, (self.cellwidth, self.cellheight))
             self.celltype[i] = icon
