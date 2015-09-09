@@ -40,13 +40,15 @@ class AStar:
         self.closed.append(node)
         node.update('closed')
 
+    def acceptNodes(self):
+    	for node in self.bestPath:
+    		node.update('start')
+
     def computeHeuristic(self, node):
         # Manhatan distance
         node.h = abs(self.goal.x - node.x) + abs(self.goal.y - node.y)
-        #node.h = abs(goal.state[0] - node.state[0]) + abs(goal.state[1] - node.state[1])
     
     def attachAndEval(self, child, parent):
-        #self.child.parent = self.parent
         child.parent = parent
         child.g = parent.g + self.cost(parent, child)
         self.computeHeuristic(child)
@@ -103,10 +105,9 @@ class AStar:
                     self.newNode = self.newNode.parent
                 self.bestPath.append(self.newNode)    
                 print (self.solution + 'FOUND.', '\n', 'Number of nodes is ', self.countNodes, '\n', 'Path: ')
-                # return the reverse bestPath list 
-                #print( self.bestPath.len() )
-                #return self.bestPath.reverse()
-                return '#:', len(self.bestPath)
+                # return the bestPath list 
+                self.acceptNodes()
+                return len(self.bestPath)
 
 # should use node to check?
             neighbors = self.grid.generateNeighbors(self.newNode)
