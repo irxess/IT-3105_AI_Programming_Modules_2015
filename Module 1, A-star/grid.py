@@ -57,18 +57,18 @@ class Grid:
     def generateNeighbors(self, node):
         neighbors = []
         (x,y) = node.getPosition()
-        neig = [[1,0], [0,1], [-1, 0], [0,-1]]
+        directions = [[1,0], [0,1], [-1, 0], [0,-1]]
         for i in range(len(neig)-1):
-            for j in range(2):
-                k = x + neig[i][0]
-                #l = y + i[i][1]
-                l = y + neig[i][1]
-                #if  k >= self.grid.width and  l >= self.grid.height:
-                if  k < self.rows and  l < self.columns:
-                    #neighbors.append( self.createNode(k, l) )
-                    neighbornode = self.getNode(k,l)
-                    if neighbornode:
-                        if neighbornode.state != 'blocked':
-                            neighbors.append( neighbornode )
+           
+            k = x + neig[i][0]
+            #l = y + neig[i][1]
+            l = y + neig[i][1]
+            #if  k >= self.grid.width and  l >= self.grid.height:
+            if  k < self.rows and  l < self.columns:
+                #neighbors.append( self.createNode(k, l) )
+                neighbornode = self.getNode(k,l)
+                if neighbornode:
+                    if neighbornode.state != 'blocked':
+                        neighbors.append( neighbornode )
         return neighbors
 

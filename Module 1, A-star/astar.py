@@ -25,7 +25,8 @@ class AStar:
             return li.pop()
 
         else: #best_first, returns
-            return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+            l = list(li).sort(key=lambda x: x.f, reverse=True)
+            return l.pop()
     
     def cost(self, a, b):
         if a.position[0] == b.position[0] and a.position[1] == b.position[1]:
