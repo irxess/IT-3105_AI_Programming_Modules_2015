@@ -27,9 +27,11 @@ class Window:
 
     def loop(self):
         clock = pygame.time.Clock()
+        result = None
 
         while 1:
-            self.bfs.iterateAStar()
+            if result == None:
+                result = self.bfs.iterateAStar()
             self.screen.fill(self.WHITE)
             self.grid.draw()
 

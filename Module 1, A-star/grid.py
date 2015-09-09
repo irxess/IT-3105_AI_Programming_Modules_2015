@@ -47,5 +47,28 @@ class Grid:
         return self.goalNode
 
     def getNode(self, x, y):
-        return self.grid[x][y]
+        if x >= 0 and y >= 0:
+            if x < self.rows and y < self.columns:
+                return self.grid[x][y]
+        else:
+            return None
+
+        # find all neighbor nodes
+    def generateNeighbors(self, node):
+        neighbors = []
+        (x,y) = node.getPosition()
+        neig = [[1,0], [0,1], [-1, 0], [0,-1]]
+        for i in range(len(neig)-1):
+            for j in range(2):
+                k = x + neig[i][0]
+                #l = y + i[i][1]
+                l = y + neig[i][1]
+                #if  k >= self.grid.width and  l >= self.grid.height:
+                if  k < self.rows and  l < self.columns:
+                    #neighbors.append( self.createNode(k, l) )
+                    neighbornode = self.getNode(k,l)
+                    if neighbornode:
+                        if neighbornode.state != 'blocked':
+                            neighbors.append( neighbornode )
+        return neighbors
 

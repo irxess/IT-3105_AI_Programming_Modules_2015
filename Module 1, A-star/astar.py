@@ -61,23 +61,6 @@ class AStar:
                 k.f = k.g + k.h
                 improvePath(k)
 
-######## Grid used ########
-    def generateSucc(self, node):
-        succ = []
-        x = node.position[0]
-        y = node.position[1]
-        neig = [[1,0], [0,1], [-1, 0], [0,-1]]
-        for i in range(len(neig)-1):
-            for j in range(2):
-                k = x + neig[i][0]
-                #l = y + i[i][1]
-                l = y + neig[i][1]
-                #if  k >= self.grid.width and  l >= self.grid.height:
-                if  k < self.grid.rows and  l < self.grid.columns:
-                    #succ.append( self.createNode(k, l) )
-                    succ.append( self.grid.getNode(k,l) )
-        return succ
-
 
     def aStarSearch(self, start, goal):
         self.openList = deque([])
@@ -121,8 +104,9 @@ class AStar:
                 # return the reverse bestPath list 
                 return self.bestPath.reverse()
 
-            succ = self.generateSucc(self.newNode)
-            for s in succ:
+# should use node to check?
+            neighbors = self.grid.generateNeighbors(self.newNode)
+            for s in neighbors:
                 # Cheching in a list of nodes? check the node.position?
                 if s in self.closed:
                     continue
