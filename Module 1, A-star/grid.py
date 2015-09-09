@@ -29,7 +29,7 @@ class Grid:
     def draw(self):
         for row in range(self.rows):
             for column in range(self.columns):
-                icon = self.celltype[ self.grid[row][column] ]
+                icon = self.celltype[ self.grid[row][column].state ]
                 self.display.blit( icon, (self.cellwidth*column, self.cellheight*row) )
 
 

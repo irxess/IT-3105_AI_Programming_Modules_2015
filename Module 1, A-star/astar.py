@@ -6,22 +6,14 @@ import grid
 
 class AStar:
 
-
     def __init__(self, grid, method):
    
         self.positions = grid
         self.grid = grid
         self.start = grid.getStart()
         self.goal = grid.getGoal()
-
         self.method = method #button event on window
-
-        self.solution = self.aStarSearch(self.start, self.goal)
-
-        
-    def createNode(self, state):
-        return node.Node(position[0], position[1])
-
+        self.aStarSearch(self.start, self.goal)
 
     #Handling of openList
     #extracts successor with min. f value for best-first-search, lifo for DFS, fifo for BFS
@@ -39,6 +31,14 @@ class AStar:
         if a.position[0] == b.position[0] and a.position[1] == b.position[1]:
             return 0 
         return 1
+
+    def openNode(self, node):
+    	self.openList.append(node)
+    	node.update('active')
+
+    def closeNode(self, node):
+    	self.closed.append(node)
+    	node.update('visited')
 
     def computeHeuristic(self, node):
         # Manhatan distance
@@ -80,65 +80,65 @@ class AStar:
 
 
     def aStarSearch(self, start, goal):
-        openList = deque([])
-        closed = []
+        self.openList = deque([])
+        self.closed = []
 
-        startNode = createNode(start)
-        #newNode = start # start node is the initial position
-        newNode = startNode # start node is the initial state
-        countNodes = 1 # the initial state is the first generated search node.
+        self.startNode = self.grid.getStart()
+        self.newNode = self.startNode # start node is the initial state
+        self.countNodes = 1 # the initial state is the first generated search node.
         
-        self.computeHeuristic(newNode)
-        newNode.f = newNode.g + newNode.h
-        openList.append(newNode)
-        limit = 1000
-        solution = 'The solution is '
+        self.computeHeuristic(self.newNode)
+        self.newNode.f = self.newNode.g + self.newNode.h
+        self.openNode(self.newNode)
+        self.limit = 1000
+        self.solution = 'The solution is '
 
+    def iterateAStar(self):
         #Agenda loop
-        while newNode != goal:
+        if self.newNode != self.goal:
 
-            if len(openList) == 0:
-                print (solution = solution + 'FAILED. No more nodes left in agenda to expand. \n')
-                return countNodes
+            if len(self.openList) == 0:
+                print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
+                return self.countNodes
 
             #Returns if the alg. have created nodes over the limit
-            if countNodes > 1000:
-                print (solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
-                return countNodes
+            if self.countNodes > 1000:
+                print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
+                return self.countNodes
 
-            newNode = self.extractMin(openList)
-            closed.append(newNode)
+            self.newNode = self.extractMin(self.openList)
+            self.closeNode(self.newNode)
 
-            if newNode == goal:
-                countNodes += 1
-                bestPath = []
+            if self.newNode == self.goal:
+                self.countNodes += 1
+                self.bestPath = []
                 #backtrack to get the choosen path to the goal
-                while newNode.parent:
-                    bestPath.append(newNode)
-                    newNode = newNode.parent
-                bestPath.append(newNode)    
-                print (solution + 'FOUND.', '\n', 'Number of nodes is ', countNodes, '\n', 'Path: ')
+                while self.newNode.parent:
+                    self.bestPath.append(self.newNode)
+                    self.newNode = self.newNode.parent
+                self.bestPath.append(self.newNode)    
+                print (self.solution + 'FOUND.', '\n', 'Number of nodes is ', self.countNodes, '\n', 'Path: ')
                 # return the reverse bestPath list 
-                return bestPath.reverse()
+                return self.bestPath.reverse()
 
-            succ = self.generateSucc(newNode)
+            succ = self.generateSucc(self.newNode)
             for s in succ:
                 # Cheching in a list of nodes? check the node.position?
-                if s in closed:
+                if s in self.closed:
                     continue
-                if s in openList:
-                    newCost = newNode.g + self.cost(newNode, s)
-                    if newCost < s.g:
-                        self.attachAndEval(s, newNode)
+                if s in self.openList:
+                    self.newCost = self.newNode.g + self.cost(self.newNode, s)
+                    if self.newCost < s.g:
+                        self.attachAndEval(s, self.newNode)
 
                 # if s has a uniqe position do attachAndEval & propagate path improvment
-                if s not in openList and s not in closed:
-                    countNodes += 1
-                    self.attachAndEval(s, newNode)
-                    openList.append(s)
-                elif newNode.g + self.cost(newNode, s) < s.g:
-                    self.attachAndEval(s, newNode)
+                if s not in self.openList and s not in self.closed:
+                    self.countNodes += 1
+                    self.attachAndEval(s, self.newNode)
+                    self.openNode(s)
+                elif self.newNode.g + self.cost(self.newNode, s) < s.g:
+                    self.attachAndEval(s, self.newNode)
                     if s in closed:
-                        self.improvePath(newNode)
+                        self.improvePath(self.newNode)
                 #appends s to current node kids list regardless of s's uniqueness                       
-                newNode.kids.append(s)
+                self.newNode.kids.append(s)
