@@ -25,15 +25,4 @@ class Node(object):
 
     def getPosition(self):
         return self.position
-n1 = Node(1,2)
-n2 = Node(4,5)
-n3 = Node(4,5)
 
-n1.f = 5
-n2.f = 7
-n3.f = 6
-n_list = [n3, n2, n1]
-n_list.sort(key=lambda x: x.f, reverse=True)
-print (n_list)
-n=n_list.pop()
-print (n.f, n.position)
