@@ -13,18 +13,26 @@ class Window:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.WHITE = (255, 255, 255)
 
-    def set_coordinates( self, max_x, max_y ):
-        self.scale_x = int((self.width  - 20) / max_x)
-        self.scale_y = int((self.height - 20) / max_y)
+    def set_coordinates( self, max_x, max_y, min_x, min_y ):
+        self.x_diff = min_x
+        self.y_diff = min_y
+        self.scale_x = (self.width  - 20) / (max_x - min_x)
+        self.scale_y = (self.height - 20) / (max_y - min_y)
 
     def draw_vertices(self, vertices):
         for v in vertices:
-            start_pos = v.getPosition(self.scale_x, self.scale_y)
+            start_pos = self.getAndFitPosition(v)
             for n in v.neighbors:
-                end_pos = n.getPosition(self.scale_x, self.scale_y)
+                end_pos = self.getAndFitPosition(n)
                 pygame.draw.line(self.screen, (90,90,90), start_pos, end_pos, 1)
             color = v.getColor()
             pygame.draw.circle(self.screen, color, start_pos, 5)
+
+    def getAndFitPosition(self, vertex):
+        (x,y) = vertex.getPosition()
+        x = int((x - self.x_diff) * self.scale_x) + 10
+        y = int((y - self.y_diff) * self.scale_y) + 10
+        return (x,y)
 
 
     def set_vertices( self, v ):

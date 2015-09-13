@@ -14,7 +14,5 @@ class Vertex:
     def getColor(self):
     	return self.color
 
-    def getPosition(self, scale_x, scale_y):
-    	x = int(self.x * scale_x)
-    	y = int(self.y * scale_y)
-    	return (x,y)
+    def getPosition(self):
+    	return (self.x,self.y)
