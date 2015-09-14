@@ -41,21 +41,55 @@ class AStar:
         self.closed.append(node)
         node.update('closed')
 
+    def isOpen(self, node):
+        # if node.state is 'open':
+        #     return True
+        # return False
+        for n in self.openList:
+            if n.getPosition() == node.getPosition() and n.state == node.state:
+                # node.state = 'open'
+                return True
+        return False
+
+
+    def isClosed(self, node):
+        # if node.state is 'closed':
+        #     return True
+        # return False
+
+        for n in self.closed:
+            if n.position == node.position and node.state == n.state:
+                return True
+        return False
+
     def acceptNodes(self):
-    	for node in self.bestPath:
-    		node.update('start')
+        for node in self.bestPath:
+            node.update('start')
 
     def computeHeuristic(self, node):
         # Manhatan distance
         node.h = abs(self.goal.x - node.x) + abs(self.goal.y - node.y)
     
+    # def attachAndEval(self, child, parent):
+    #     child.parent = parent
+    #     child.g = parent.g + self.cost(parent, child)
+    #     self.computeHeuristic(child)
+    #     child.f = child.g + child.h
+
     def attachAndEval(self, child, parent):
+        print('attachAndEval is running')
         child.parent = parent
+        print('before child.g: ', child.g)
         child.g = parent.g + self.cost(parent, child)
+        print('child.g after:', child.g)
+        print('before heuristic', child.h)
         self.computeHeuristic(child)
+        print('after heuristic', child.h)
         child.f = child.g + child.h
+        print('child.f:', child.f)
 
     def improvePath(self, p):
+        print('improvePath')
         for k in p.kids:
             gNew = p.g + cost(p, k)
             if gNew < k.g:
@@ -80,6 +114,7 @@ class AStar:
         self.solution = 'The solution is '
 
     def iterateAStar(self):
+        print('///////////////////////////////////////////')
         #Agenda loop
         #if self.newNode != self.goal:
         if self.newNode.state != 'goal':
@@ -94,10 +129,13 @@ class AStar:
                 return self.countNodes
 
             self.newNode = self.extractMin(self.openList)
+            print('extracted node with min f', self.newNode)
             self.closeNode(self.newNode)
+            print('after close:', self.newNode)
 
             #if self.newNode == self.goal:
             if self.newNode.state == 'goal':
+                print('goal condition', self.newNode)
                 self.countNodes += 1
                 self.bestPath = []
                 #backtrack to get the choosen path to the goal
@@ -112,25 +150,53 @@ class AStar:
 
 # should use node to check?
             neighbors = self.grid.generateNeighbors(self.newNode)
+            print(neighbors)
             for s in neighbors:
-                # Cheching in a list of nodes? check the node.position?
-                #if s in self.closed:
-                if s.state == 'visited':
+                if self.isClosed(s):
+                    print('closed neighbor:', s)
+                    if self.newNode.g + self.cost(self.newNode, s) < s.g:
+                        print('improvePath must run on', self.node)
+                        self.improvePath(self.newNode)
+                    self.newNode.kids.append(s) 
                     continue
-                #if s in self.openList:
-                if s.state == 'active':
-                    self.newCost = self.newNode.g + self.cost(self.newNode, s)
-                    if self.newCost < s.g:
-                        self.attachAndEval(s, self.newNode)
 
-                # if s has a uniqe position do attachAndEval & propagate path improvment
-                if s not in self.openList and s not in self.closed:
+                elif self.isOpen(s):
+                # elif s.state == 'open':
+                    newCost = self.newNode.g + self.cost(self.newNode, s)
+                    if newCost < s.g:
+                        self.attachAndEval(s, newNode)
+                    self.newNode.kids.append(s) 
+
+                # s not in openList and s not in closed
+                # if not self.isOpen(s) and not self.isClosed(s) :
+                else:
+                    print('newNode not already created:', s)
                     self.countNodes += 1
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
-                elif self.newNode.g + self.cost(self.newNode, s) < s.g:
-                    self.attachAndEval(s, self.newNode)
-                    if s in closed:
-                        self.improvePath(self.newNode)
-                #appends s to current node kids list regardless of s's uniqueness                       
-                self.newNode.kids.append(s)
+                    print('node after eval:', s)
+                    self.newNode.kids.append(s) 
+
+
+
+                # # Cheching in a list of nodes? check the node.position?
+                # #if s in self.closed:
+                # if s.state == 'visited':
+                #     continue
+                # #if s in self.openList:
+                # if s.state == 'active':
+                #     self.newCost = self.newNode.g + self.cost(self.newNode, s)
+                #     if self.newCost < s.g:
+                #         self.attachAndEval(s, self.newNode)
+
+                # # if s has a uniqe position do attachAndEval & propagate path improvment
+                # if s not in self.openList and s not in self.closed:
+                #     self.countNodes += 1
+                #     self.attachAndEval(s, self.newNode)
+                #     self.openNode(s)
+                # elif self.newNode.g + self.cost(self.newNode, s) < s.g:
+                #     self.attachAndEval(s, self.newNode)
+                #     if s in closed:
+                #         self.improvePath(self.newNode)
+                # #appends s to current node kids list regardless of s's uniqueness                       
+                # self.newNode.kids.append(s)
