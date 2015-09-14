@@ -1,5 +1,3 @@
-import pygame
-
 class Node(object):
 
     # int x, y #position/state
@@ -18,6 +16,8 @@ class Node(object):
         self.parent = None #pointer to best parent node
         self.kids = [] #list of succesors
         self.state = 'unvisited'
+    def __repr__(self):
+        return 'node(pos=%s, fValue=%s, h=%s, g=%s state=%s)' %(self.position, self.f, self.h, self.g, self.state)
 
     def update(self, state):
         if self.state is not 'goal' and self.state is not 'start':
