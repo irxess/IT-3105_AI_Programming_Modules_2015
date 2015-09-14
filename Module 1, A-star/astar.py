@@ -1,5 +1,5 @@
 from collections import deque
-from heapq import * #need: heappush, heappop & heapify, heappushpop maybe
+from heapq import * 
 import node
 import grid
 
@@ -25,8 +25,7 @@ class AStar:
             return li.pop()
 
         else: #best_first, returns
-            l = list(li).sort(key=lambda x: x.f, reverse=True)
-            return l.pop()
+            return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
     
     def cost(self, a, b):
         if a.position[0] == b.position[0] and a.position[1] == b.position[1]:
