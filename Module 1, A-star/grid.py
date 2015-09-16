@@ -37,6 +37,7 @@ class Grid:
         self.grid[row][column].update(state)
         if state=='start':
             self.startNode = self.grid[row][column]
+            self.startNode.g = 0
         if state=='goal':
             self.goalNode = self.grid[row][column]
 
@@ -65,8 +66,9 @@ class Grid:
             if  k < self.rows and  l < self.columns:
                 #neighbors.append( self.createNode(k, l) )
                 neighbornode = self.getNode(k,l)
-                if neighbornode:
-                    if neighbornode.state != 'blocked':
+                if neighbornode and neighbornode.state != 'blocked':
+                        if neighbornode.g > node.g + 1 :
+                            neighbornode.g = node.g + 1
                         neighbors.append( neighbornode )
         return neighbors
 

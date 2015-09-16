@@ -4,6 +4,7 @@ from grid import Grid
 from astar import AStar
 import pygbutton
 from copy import deepcopy
+import time
 
 class Window:
     
@@ -89,4 +90,5 @@ class Window:
  
             # --- Limit to 60 frames per second
             clock.tick(60)
+            time.sleep(0.3)
         

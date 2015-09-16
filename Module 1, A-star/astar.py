@@ -25,7 +25,9 @@ class AStar:
             return li.pop()
 
         else: #best_first, returns
-            return sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+            n = sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+            li.remove(n)
+            return n
     
     def cost(self, a, b):
         if a.position[0] == b.position[0] and a.position[1] == b.position[1]:
@@ -37,7 +39,7 @@ class AStar:
         node.update('open')
 
     def closeNode(self, node):
-        self.closed.append(node)
+        self.closed.add(node)
         node.update('closed')
 
     def isOpen(self, node):
@@ -46,7 +48,6 @@ class AStar:
         # return False
         for n in self.openList:
             if n.getPosition() == node.getPosition() and n.state == node.state:
-                # node.state = 'open'
                 return True
         return False
 
@@ -79,7 +80,7 @@ class AStar:
         print('attachAndEval is running')
         child.parent = parent
         print('before child.g: ', child.g)
-        child.g = parent.g + self.cost(parent, child)
+        child.g = parent.g + 1
         print('child.g after:', child.g)
         print('before heuristic', child.h)
         self.computeHeuristic(child)
@@ -100,7 +101,7 @@ class AStar:
 
     def aStarSearch(self, start, goal):
         self.openList = deque([])
-        self.closed = []
+        self.closed = set()
 
         self.startNode = self.grid.getStart()
         self.newNode = self.startNode # start node is the initial state
@@ -150,10 +151,12 @@ class AStar:
 # should use node to check?
             neighbors = self.grid.generateNeighbors(self.newNode)
             print(neighbors)
+
             for s in neighbors:
+
                 if self.isClosed(s):
                     print('closed neighbor:', s)
-                    if self.newNode.g + self.cost(self.newNode, s) < s.g:
+                    if self.newNode.g + 1 < s.g:
                         print('improvePath must run on', self.node)
                         self.improvePath(self.newNode)
                     self.newNode.kids.append(s) 
@@ -161,9 +164,9 @@ class AStar:
 
                 elif self.isOpen(s):
                 # elif s.state == 'open':
-                    newCost = self.newNode.g + self.cost(self.newNode, s)
+                    newCost = self.newNode.g + 1
                     if newCost < s.g:
-                        self.attachAndEval(s, newNode)
+                        self.attachAndEval(s, self.newNode)
                     self.newNode.kids.append(s) 
 
                 # s not in openList and s not in closed
@@ -180,10 +183,10 @@ class AStar:
 
                 # # Cheching in a list of nodes? check the node.position?
                 # #if s in self.closed:
-                # if s.state == 'visited':
+                # if s.state == 'closed':
                 #     continue
                 # #if s in self.openList:
-                # if s.state == 'active':
+                # if s.state == 'open':
                 #     self.newCost = self.newNode.g + self.cost(self.newNode, s)
                 #     if self.newCost < s.g:
                 #         self.attachAndEval(s, self.newNode)
