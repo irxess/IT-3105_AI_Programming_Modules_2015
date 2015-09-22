@@ -1,7 +1,8 @@
 import pygame
 import node
+from graph import Graph
 
-class Grid:
+class Grid(Graph):
     def __init__(self, width, height, rows, columns, display):
         self.display = display
         self.width = width
@@ -22,7 +23,6 @@ class Grid:
         for row in range(rows):
             self.grid.append([])
             for column in range(columns):
-                #self.grid[row].append('unvisited')
                 self.grid[row].append( node.Node(row,column) )
 
 
@@ -37,26 +37,22 @@ class Grid:
         self.grid[row][column].update(state)
         if state=='start':
             self.startNode = self.grid[row][column]
-            self.startNode.g = 0
         if state=='goal':
             self.goalNode = self.grid[row][column]
+        super(Grid, self).update_cell(state)
 
-    def getStart(self):
-        return self.startNode
 
-    def getGoal(self):
-        return self.goalNode
-
-    def getNode(self, x, y):
+    def getNode(self, position):
+        (x,y) = position
         if x >= 0 and y >= 0:
             if x < self.rows and y < self.columns:
                 return self.grid[x][y]
         else:
             return None
 
-        # find all neighbor nodes
+
     def generateNeighbors(self, node):
-        neighbors = []
+        listToCheck = []
         (x,y) = node.getPosition()
         directions = [[1,0], [0,1], [-1, 0], [0,-1]]
         for i in range(len(directions)):
@@ -64,11 +60,7 @@ class Grid:
             l = y + directions[i][1]    
 
             if  k < self.rows and  l < self.columns:
-                #neighbors.append( self.createNode(k, l) )
-                neighbornode = self.getNode(k,l)
-                if neighbornode and neighbornode.state != 'blocked':
-                        if neighbornode.g > node.g + 1 :
-                            neighbornode.g = node.g + 1
-                        neighbors.append( neighbornode )
-        return neighbors
+                neighbornode = self.getNode( (k,l) )
+                listToCheck.append( neighbornode )
+        return super(Grid, self).generateNeighbors( node, listToCheck)
 
