@@ -1,10 +1,11 @@
 import pygame
 import sys
 from grid import Grid
-from astar import AStar
 import pygbutton
-from copy import deepcopy
 import time
+#from .Common import astar
+from astar import AStar
+
 
 class Window:
     
@@ -90,5 +91,5 @@ class Window:
  
             # --- Limit to 60 frames per second
             clock.tick(60)
-            time.sleep(0.3)
+            #time.sleep(0.3)
         

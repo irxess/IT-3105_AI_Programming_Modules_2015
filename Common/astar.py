@@ -1,0 +1,131 @@
+from collections import deque
+from heapq import * 
+import node
+import grid
+
+
+class AStar:
+
+    def __init__(self, graph, method):
+        self.graph = graph
+        self.startNode = graph.getStart()
+        self.goalNode = graph.getGoal()
+        self.method = method #BFS, DFS or AStar
+        self.limit = 1000
+
+        self.openList = deque([])
+        self.closed = set()
+
+        self.newNode = self.startNode
+        self.countNodes = 1
+        self.newNode.estimateDistanceFrom(self.goalNode)
+        self.openNode(self.newNode)
+        self.solution = 'The solution is '
+
+
+    def extractMin(self, li):
+        if self.method == 'BFS':
+            return li.popleft()
+
+        elif self.method == 'DFS':
+            return li.pop()
+
+        else:
+            n = sorted(list(li), key=lambda x: x.f, reverse=True).pop()
+            li.remove(n)
+            return n
+ 
+
+    def openNode(self, node):
+        self.openList.append(node)
+        node.update('open')
+
+
+    def closeNode(self, node):
+        self.closed.add(node)
+        node.update('closed')
+
+
+    def isOpen(self, node):
+        for n in self.openList:
+            if n.getPosition() == node.getPosition() and n.getState() == node.getState():
+                return True
+        return False
+
+
+    def isClosed(self, node):
+        for n in self.closed:
+            if n.getPosition() == node.getPosition() and node.getState() == n.getState():
+                return True
+        return False
+
+
+    def updatePath(self):
+        for node in self.bestPath:
+            node.update('path')
+
+
+    def attachAndEval(self, child, parent):
+        child.setParent(parent)
+        child.estimateDistanceFrom(self.goalNode)
+
+
+    def backtrackPath(self):
+        print('goal condition', self.newNode)
+        self.countNodes += 1
+        self.bestPath = []
+
+        while self.newNode.getParent() != None:
+            self.bestPath.append(self.newNode)
+            self.newNode = self.newNode.getParent()
+        self.bestPath.append(self.newNode)   
+
+        print (self.solution + 'FOUND.', '\n', 'Number of nodes is ', self.countNodes, '\n', 'Path: ')
+        self.updatePath()
+        return len(self.bestPath)
+
+
+    def betterPathFound(self, new, old):
+        if new.getG() + 1 < old.getG():
+            return True
+        else:
+            return False
+
+
+    def iterateAStar(self):
+        if self.newNode.state != 'goal':
+
+            if len(self.openList) == 0:
+                print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
+                return self.countNodes
+
+            if self.countNodes > self.limit:
+                print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
+                return self.countNodes
+
+            self.newNode = self.extractMin(self.openList)
+            self.closeNode(self.newNode)
+
+            if self.newNode.getState() == 'goal':
+                return self.backtrackPath()
+
+            neighbors = self.graph.generateNeighbors(self.newNode)
+
+            for s in neighbors:
+
+                if self.isClosed(s):
+                    if self.betterPathFound(self.newNode, s):
+                        self.newNode.updateChildren(s)
+                    self.newNode.addChild(s) 
+                    continue
+
+                elif self.isOpen(s):
+                    if self.betterPathFound(self.newNode, s):
+                        self.attachAndEval(s, self.newNode)
+                    self.newNode.addChild(s) 
+
+                else:
+                    self.countNodes += 1
+                    self.attachAndEval(s, self.newNode)
+                    self.openNode(s)
+                    self.newNode.addChild(s) 
