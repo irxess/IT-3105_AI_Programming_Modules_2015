@@ -1,11 +1,12 @@
 from graph import Graph
+class CNETGraph:
 
     def __init__(self):
         self.startNode = None
-        self.goalNode = None
+        self.goalNode = None #must be a state with domain length equal to 1 for all variables
         activeCNet = None # TODO, give initial state
 
-
+#  Define goalNode == isSolution in Astar-GAC
     def update_cell(self, state):
         if state=='start':
             self.startNode.g = 0
