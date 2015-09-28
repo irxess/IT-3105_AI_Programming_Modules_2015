@@ -3,7 +3,6 @@ import sys
 from grid import Grid
 import pygbutton
 import time
-#from .Common import astar
 from astar import AStar
 
 
@@ -45,8 +44,24 @@ class Window:
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.create_buttons()
+        # self.font = pygame.font.SysFont('Arial', 25)
+        self.font = pygame.font.Font('freesansbold.ttf', 16)
+
 
         self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+
+    def show_text(self):
+        x = 10
+        y = self.height*2//3 + 50
+        text = self.bfs.getStats()
+        self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
+        y += 25
+        text = self.dfs.getStats()
+        self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
+        y += 25
+        text = self.astar.getStats()
+        self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
 
 
     def loop(self):
@@ -63,9 +78,10 @@ class Window:
                 active_result = self.active_search.iterateAStar()
                 if active_result != None:
                     results[active_result_index] = active_result
-                    print(active_result)
+                    # print(active_result)
             self.screen.fill(self.WHITE)
             self.active_grid.draw()
+            self.show_text()
 
             for event in pygame.event.get():
                 if 'click' in self.buttons[0].handleEvent(event):
@@ -91,5 +107,5 @@ class Window:
  
             # --- Limit to 60 frames per second
             clock.tick(60)
-            #time.sleep(0.3)
+            # time.sleep(3)
         

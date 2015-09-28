@@ -18,10 +18,20 @@ class AStar:
 
         self.newNode = self.startNode
         self.countNodes = 1
-        self.newNode.estimateDistanceFrom(self.goalNode)
+        self.newNode.estimateDistance(self.goalNode)
         self.openNode(self.newNode)
         self.solution = 'The solution is '
+        self.pathLength = 1
+        self.failed = False
 
+
+    def getStats(self):
+        if self.failed == True:
+            if self.countNodes > self.limit:
+                return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Search failed, went over limit."
+            else:
+                return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Search failed, no path found."
+        return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Path length: " + str(self.pathLength)
 
     def extractMin(self, li):
         if self.method == 'BFS':
@@ -48,14 +58,14 @@ class AStar:
 
     def isOpen(self, node):
         for n in self.openList:
-            if n.getPosition() == node.getPosition() and n.getState() == node.getState():
+            if n.getID()== node.getID():
                 return True
         return False
 
 
     def isClosed(self, node):
         for n in self.closed:
-            if n.getPosition() == node.getPosition() and node.getState() == n.getState():
+            if n.getID()== node.getID():
                 return True
         return False
 
@@ -67,20 +77,20 @@ class AStar:
 
     def attachAndEval(self, child, parent):
         child.setParent(parent)
-        child.estimateDistanceFrom(self.goalNode)
+        child.estimateDistance(self.goalNode)
 
 
     def backtrackPath(self):
-        print('goal condition', self.newNode)
+        # print('goal condition', self.newNode)
         self.countNodes += 1
         self.bestPath = []
 
         while self.newNode.getParent() != None:
+            self.pathLength += 1
             self.bestPath.append(self.newNode)
             self.newNode = self.newNode.getParent()
         self.bestPath.append(self.newNode)   
 
-        print (self.solution + 'FOUND.', '\n', 'Number of nodes is ', self.countNodes, '\n', 'Path: ')
         self.updatePath()
         return len(self.bestPath)
 
@@ -96,11 +106,13 @@ class AStar:
         if self.newNode.state != 'goal':
 
             if len(self.openList) == 0:
-                print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
+                # print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
+                self.failed = True
                 return self.countNodes
 
             if self.countNodes > self.limit:
-                print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
+                # print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
+                self.failed = True
                 return self.countNodes
 
             self.newNode = self.extractMin(self.openList)
