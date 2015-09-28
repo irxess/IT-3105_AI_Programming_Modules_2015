@@ -53,8 +53,8 @@ class Grid(Graph):
 
     def generateNeighbors(self, node):
         listToCheck = []
-        (x,y) = node.getPosition()
-        directions = [[1,0], [0,1], [-1, 0], [0,-1]]
+        (x,y,s) = node.getID()
+        directions = [[-1, 0], [0,-1], [1,0], [0,1]]
         for i in range(len(directions)):
             k = x + directions[i][0]
             l = y + directions[i][1]    
@@ -62,5 +62,12 @@ class Grid(Graph):
             if  k < self.rows and  l < self.columns:
                 neighbornode = self.getNode( (k,l) )
                 listToCheck.append( neighbornode )
-        return super(Grid, self).generateNeighbors( node, listToCheck)
+
+        neighbors = []
+        for neighbornode in listToCheck:
+            if neighbornode and neighbornode.getState() != 'blocked':
+                if neighbornode.getG() > node.getG() + 1 :
+                    neighbornode.setG( node.getG() + 1 )
+                neighbors.append( neighbornode )
+        return neighbors
 

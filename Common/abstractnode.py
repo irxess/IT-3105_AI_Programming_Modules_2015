@@ -14,16 +14,18 @@ class AbstractNode:
 
 
     def __repr__(self):
-        return 'node(pos=%s, fValue=%s, h=%s, g=%s state=%s)' %(self.getPosition(), self.f, self.h, self.g, self.state)
+        return 'node(id=%s, fValue=%s, h=%s, g=%s state=%s)' %(self.getID(), self.f, self.h, self.g, self.state)
 
 
     def update(self, state):
         if self.state is not 'goal' and self.state is not 'start':
             self.state = state
 
+
     @abstractmethod
-    def getPosition(self):
+    def getID(self):
         pass
+
 
     def getF(self):
         self.f = self.g + self.h
@@ -63,7 +65,6 @@ class AbstractNode:
 
 
     def updateChildren(self, node):
-        # TODO not sure if if-test needed
         if self.g + 1 < node.getG():
             for child in self.children:
                 gNew = self.g + self.cost(child)
@@ -79,6 +80,6 @@ class AbstractNode:
 
 
     @abstractmethod
-    def estimateDistanceFrom(self, goal):
+    def estimateDistance(self):
         self.f = self.g + self.h
 
