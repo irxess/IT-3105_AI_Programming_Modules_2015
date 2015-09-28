@@ -6,25 +6,29 @@ class CNET(object):
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
-    def __init__(self, variables, domain, constarints):
+    def __init__(self):
         super(CNET, self).__init__()
         self.variables = []
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
         self.constarints = dict() # Make constrains?
 
-    def addVariable(self, x):
-        self.variables.append(x)
-        self.domains[x] = x.getDomain
-        self.constraints[x] = {}
+# modifeid addVariable to add a list of values + list of ther domains
+# 
+    def addVariable(self, variables, dom=None):
+        self.variables.extend(variables)
+        if dom:
+            for x in iter(dom):
+                self.domains[x] = dom[x]
+        # self.domains = {zip([x for x in variables], [d for k, d in domains )
+        for x in variables:
+            self.constraints[x] = {}
+
 
     def updateDomain(self, x, domain):
         self.domains[x] = domain
 
     def getAllArcs(self):
         allArcs = []
-        # for x in self.variables:
-        #     allArcs.extend(getArcsOf(v))
-        # return allArcs
         for i in self.constraints:
             for j in self.constraints:
                 if i != j:
@@ -34,14 +38,14 @@ class CNET(object):
     def getArcsOf(self, x):
         return [ (i, x) for i in self.constraints[x] ]
     
-    
     def getConstraint(self, x):
         return self.constraints[x]
+
     def getDomains(self):
         return self.domains
 
 # hvordn blir dette?
-    def addConstraint(self, variables, constraint):
+    def addConstraint(self, variables, expression):
         # if y not in self.constraints[x]:
         #   self.constraints[x][y] = self.
         valid = True
@@ -49,7 +53,7 @@ class CNET(object):
             if x not in self.variables:
                 valid = False
         if valid:
-            return self.makeFunc(variables, constraint)
+            return self.makeFunc(variables, expression)
             # for x in variables:
             #     # Jeg vet ikke om denne er riktig :s
             #     self.constraints[x] = apply(makeConstraint, variables)
@@ -62,5 +66,7 @@ class CNET(object):
         for x in variables: 
             args += "," + x 
             return eval( "(lambda " + args[1:] + ": " + expression + ") " , envir)
+
+        
 
 
