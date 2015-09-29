@@ -15,18 +15,19 @@ class CNET(object):
         self.constarints = dict() # Make constrains?
         self.id = uuid.uuid4()
 
-
 # modified addVariable to add a list of values + list of ther domains
-# 
-    def addVariable(self, variables, dom=None):
+    def constraint(self, variables):
+        self.constraints = 
+    def addVariables(self, variables, dom=None):
         self.variables.extend(variables)
         if dom:
             for x in iter(dom):
                 self.domains[x] = dom[x]
         # self.domains = {zip([x for x in variables], [d for k, d in domains )
         for x in variables:
-            self.constraints[x] = {}
+            self.constraints[x] = []
 
+    
 
 
     def updateDomain(self, x, domain):
@@ -55,18 +56,18 @@ class CNET(object):
     def addConstraint(self, variables, expression):
         # if y not in self.constraints[x]:
         #   self.constraints[x][y] = self.
-        valid = True
-        for x in variables:
-            if x not in self.variables:
-                valid = False
-        if valid:
-            return self.makeFunc(variables, expression)
-            # for x in variables:
-            #     # Jeg vet ikke om denne er riktig :s
-            #     self.constraints[x] = apply(makeConstraint, variables)
-        return valid
-            
-
+        # valid = True
+        # for x in variables:
+        #     if x not in self.variables:
+        #         valid = False
+        # if valid:
+        #     return self.makeFunc(variables, expression)
+        #     # for x in variables:
+        #     #     # Jeg vet ikke om denne er riktig :s
+        #     #     self.constraints[x] = apply(makeConstraint, variables)
+        # return valid
+        constraintFunc = self.makeFunc(variables, expression)
+        
     def makeFunc(self, variables, expression, envir=globals()):
         # expression is a  string of mathematical/logical representation of a constraint
         args = ""
@@ -74,7 +75,7 @@ class CNET(object):
             args += "," + x 
             return eval( "(lambda " + args[1:] + ": " + expression + ") " , envir)
 
-        
+    
 
 
     # return an ID unique for this cnet

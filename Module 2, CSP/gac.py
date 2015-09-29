@@ -36,11 +36,13 @@ class GAC(object):
         return True
 
 
+# compare her med constraint isSatisfied
     def reviseStar(self, i, j):
         revised = False
+        pairs = self.getPairs(i, j)
         for k in self.domains[i]:
             pairs = [(k, m) for m in self.domains[j]]
-            # use constriant function here
+            # endre på condition
             if len( set(self.cnet.constraints[i][j]).intersection(pairs) ) == 0:
                 self.domains[j].pop(k)
                 revised = True
@@ -55,4 +57,11 @@ class GAC(object):
                     self.queue.append((y, yConst))
         self.filterDomain()
         
-    
+
+    def isSatisfied(self, i, j, pair):
+        # if apply(self.cnet.):
+        #     pass
+
+        
+    def getPairs(self, x, y):
+        return itertools.product(domains[x], domains[y])
