@@ -1,5 +1,7 @@
 import window
 import sys
+current_directory = sys.path[0]
+sys.path.append( os.path.abspath('../Common/') )
 from vertex import Vertex
 
 def createConstraint(variables, expression, envir=globals()):
@@ -74,9 +76,6 @@ def main():
     for c in sys.argv[3:]:
         constraints.append( createConstraint(['x','y'], c) )
 
-    print( constraints[0]('x','t') )
-    print( constraints[0]((0,0,0), (0,0,1)) )
-    print( constraints[0]((0,0,0), (0,0,0)) )
     w.initialize_problem( vertices, constraints, colors )
     w.loop()
 

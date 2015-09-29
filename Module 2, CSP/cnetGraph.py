@@ -1,8 +1,10 @@
 from graph import Graph
+
 class CNETGraph:
 
-    def __init__(self):
-        self.startNode = None
+    def __init__(self, startNode):
+        self.startNode = startNode
+        self.startNode.g = 0
         self.goalNode = None #must be a state with domain length equal to 1 for all variables
         activeCNet = None # TODO, give initial state
 
@@ -19,6 +21,7 @@ class CNETGraph:
     @abstractmethod
     def generateNeighbors(self, node):
         pass
+        # use deepcopy
         # find the vertex with fewest variable options left
         # create new cnet's with all guesses
         # return list of created cnet's

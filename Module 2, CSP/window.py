@@ -1,5 +1,8 @@
 import pygame
 import sys
+from AStarGAC import Astar_GAC
+from cnetGraph import CNETGraph
+from cnet import CNET
 
 class Window:
     
@@ -13,9 +16,12 @@ class Window:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.WHITE = (255, 255, 255)
 
+
     def initialize_problem(self, vertices, constraints, colors):
         self.set_vertices(vertices)
-        # spawn other stuff
+        self.currentCNet = CNET()
+        self.graph = CNETGraph( currentCNet )
+        self.astarGAC = Astar_GAC( (vertices, constraints, colors), graph, )
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
@@ -23,6 +29,7 @@ class Window:
         self.y_diff = min_y
         self.scale_x = (self.width  - 20) / (max_x - min_x)
         self.scale_y = (self.height - 20) / (max_y - min_y)
+
 
     def draw_vertices(self, vertices):
         for v in vertices:
@@ -33,6 +40,7 @@ class Window:
             color = v.getColor()
             pygame.draw.circle(self.screen, color, start_pos, 5)
 
+
     def getAndFitPosition(self, vertex):
         (x,y) = vertex.getPosition()
         x = int((x - self.x_diff) * self.scale_x) + 10
@@ -42,6 +50,7 @@ class Window:
 
     def set_vertices( self, v ):
         self.vertices = v
+
 
     def loop(self):
         clock = pygame.time.Clock()

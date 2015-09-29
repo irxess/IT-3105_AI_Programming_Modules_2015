@@ -4,7 +4,7 @@ import uuid
 
 class CNET(object):
     """CNET is a representation of 
-        constraints with components (variabels, domain, constarints)
+        constraints with components (variabels, domain, constraints)
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
@@ -12,12 +12,14 @@ class CNET(object):
         # super(CNET, self).__init__()
         self.variables = []
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
-        self.constarints = dict() # Make constrains?
+        self.constrains = [] # A list with functions
         self.id = uuid.uuid4()
 
 # modified addVariable to add a list of values + list of ther domains
     def constraint(self, variables):
-        self.constraints = 
+        pass
+        # self.constraints = 
+
     def addVariables(self, variables, dom=None):
         self.variables.extend(variables)
         if dom:
@@ -26,8 +28,6 @@ class CNET(object):
         # self.domains = {zip([x for x in variables], [d for k, d in domains )
         for x in variables:
             self.constraints[x] = []
-
-    
 
 
     def updateDomain(self, x, domain):
@@ -67,15 +67,6 @@ class CNET(object):
         #     #     self.constraints[x] = apply(makeConstraint, variables)
         # return valid
         constraintFunc = self.makeFunc(variables, expression)
-        
-    def makeFunc(self, variables, expression, envir=globals()):
-        # expression is a  string of mathematical/logical representation of a constraint
-        args = ""
-        for x in variables: 
-            args += "," + x 
-            return eval( "(lambda " + args[1:] + ": " + expression + ") " , envir)
-
-    
 
 
     # return an ID unique for this cnet
