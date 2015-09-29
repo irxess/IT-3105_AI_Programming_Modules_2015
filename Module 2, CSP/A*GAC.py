@@ -5,10 +5,10 @@ from gac import GAC
 
 class Astar_GAC(object): 
 	"""Astar_GAC integrates Astar and GAC"""
-	def __init__(self, serachProblem, cnetGraph):
-		self.serachProblem = serachProblem
+	def __init__(self, searchProblem, cnetGraph):
+		self.searchProblem = searchProblem
 		# cnet : cnet of searh problem
-		self.cnet = self.convertToCNET(serachProblem)
+		self.cnet = self.convertToCNET(searchProblem)
 		self.GAC = createGAC(self.cnet)
 		self.graph = cnetGraph.CNETGraph()
 		self.AStar = createAstar(self.graph, 'best_first')
@@ -22,7 +22,7 @@ class Astar_GAC(object):
 		return AStar(cnetGraph, method)
 
 ############ TODO : implement the converter : (uncomplete) ################
-# graph : serachProblem
+# graph : searchProblem
 	def convertToCNET(self, graph):
 
 		variables = graph.getVariables()
@@ -41,7 +41,7 @@ class Astar_GAC(object):
 		"""in initState each variable has its full domain. It will be set as root node
 		initilizes cnet"""
 		initState = 0
-		# cNet = self.convertToCNET(self.serachProblem)
+		# cNet = self.convertToCNET(self.searchProblem)
 		# cNet.addVariable(variable, domain)
 		return initState
 ##########################################################

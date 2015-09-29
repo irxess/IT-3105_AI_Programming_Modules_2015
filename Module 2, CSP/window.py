@@ -13,6 +13,11 @@ class Window:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.WHITE = (255, 255, 255)
 
+    def initialize_problem(self, vertices, constraints, colors):
+        self.set_vertices(vertices)
+        # spawn other stuff
+
+
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
         self.x_diff = min_x
         self.y_diff = min_y

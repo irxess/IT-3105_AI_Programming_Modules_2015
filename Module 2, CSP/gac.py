@@ -18,10 +18,12 @@ class GAC(object):
         self.domains = deepcopy(cnet.domains)
         self.queue = [] #queue of requests(focal variable, their constraints), initially all requests
 
+
     def initialize(self):
         for x in self.variables:
             for c in self.cnet.getConstraint(x):
                 self.queue.append((x, c))
+
 
     def filterDomain(self):         
         while len(self.queue):
@@ -33,14 +35,17 @@ class GAC(object):
                     self.queue.append(k[0], i)
         return True
 
+
     def reviseStar(self, i, j):
         revised = False
         for k in self.domains[i]:
             pairs = [(k, m) for m in self.domains[j]]
+            # use constriant function here
             if len( set(self.cnet.constraints[i][j]).intersection(pairs) ) == 0:
                 self.domains[j].pop(k)
                 revised = True
         return revised
+
 
     def rerun(self, assumption):
         for c in self.cnet.getConstraint(assumption):

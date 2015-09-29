@@ -9,7 +9,7 @@ class CNET(object):
         Each variable x is a vertex"""
 
     def __init__(self):
-        super(CNET, self).__init__()
+        # super(CNET, self).__init__()
         self.variables = []
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
         self.constarints = dict() # Make constrains?

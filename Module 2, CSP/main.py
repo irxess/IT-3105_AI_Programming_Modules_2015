@@ -2,24 +2,47 @@ import window
 import sys
 from vertex import Vertex
 
+def createConstraint(variables, expression, envir=globals()):
+    args = ""
+    for x in variables: 
+        args += "," + x 
+    # return an anonymous function
+    function = "(lambda " + args[1:] + ": " + expression + ") "
+    print(function)
+    return eval( function, envir)
+
 def main():
     w = window.Window(700,700)
 
     input_constraint = ""
     # lamba x: return (x.1 == x.2)
     # lambda v1, v2: v1.color != v2.color
+    print(sys.argv[1])
+    number_of_colors = int(sys.argv[1])
+    colorList = [
+         (216,107,255), # purple
+         (255,169,107), # orange
+         (107,255,110), # green
+         (107,228,255), # light blue 
+         (255,107,107), # red 
+         (255,208,107), # light orange
+         (107,255,188), # cyan
+         (107,124,255), # blue
+         (255,107,186), # pink
+         (223,255,107)] # yellow green
 
-    number_of_colors = int(input("Number of colors that are allowed: "))
+    colors = colorList[:number_of_colors]
 
+    inputFile = sys.argv[2]
+    f = open(inputFile, 'r')
 
-    stdin = []
-    for line in sys.stdin:
-        stdin.append(line.rstrip().split(' '))
-        # print(stdin[-1])
-        stdin[-1] = [ float(x) for x in stdin[-1] ]
+    vertexList = []
+    for line in f:
+        vertexList.append(line.rstrip().split(' '))
+        vertexList[-1] = [ float(x) for x in vertexList[-1] ]
 
-    number_of_vertices = int(stdin[0][0])
-    number_of_edges = int(stdin[0][1])
+    number_of_vertices = int(vertexList[0][0])
+    number_of_edges = int(vertexList[0][1])
     vertices = [0]*number_of_vertices
 
     highest_x = float("-inf")
@@ -27,7 +50,7 @@ def main():
     lowest_x = float("inf")
     lowest_y = float("inf")
     for v in range(number_of_vertices):
-        line = stdin[v+1]
+        line = vertexList[v+1]
         vertices[ int(line[0]) ] = Vertex( line[1], line[2])
         if line[1] > highest_x:
             highest_x = line[1]
@@ -39,7 +62,7 @@ def main():
             lowest_y = line[2]
 
     for e in range(number_of_edges):
-        line = stdin[e+1+number_of_vertices]
+        line = vertexList[e+1+number_of_vertices]
         vertex1 = vertices[ int(line[0]) ]
         vertex2 = vertices[ int(line[1]) ]
         vertex2.add_neighbor( vertex1 )
@@ -47,9 +70,14 @@ def main():
 
     w.set_coordinates( highest_x, highest_y, lowest_x, lowest_y )
 
+    constraints = []
+    for c in sys.argv[3:]:
+        constraints.append( createConstraint(['x','y'], c) )
 
-    #w.create_astar()
-    w.set_vertices( vertices )
+    print( constraints[0]('x','t') )
+    print( constraints[0]((0,0,0), (0,0,1)) )
+    print( constraints[0]((0,0,0), (0,0,0)) )
+    w.initialize_problem( vertices, constraints, colors )
     w.loop()
 
 if __name__ == "__main__":
