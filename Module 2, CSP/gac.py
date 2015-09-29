@@ -7,17 +7,19 @@ class GAC(object):
         cnet is given to GAC as a representation of 
         constraints with components (variabels, domain, constarints)
         domain is a dictionary and domain[v] returns a list of values(the domain of key v)
-        Variable v is a vertex"""
+        Variable v is a vertex.
+        Output: queue consists of arc-consistent domains for each variable
+        """
 
     def __init__(self, cnet):
         super(GAC, self).__init__() 
-        self.cnet = cnet # constraint network
+        self.cnet = deepcopy(cnet) # copy of constraint network
+        self.variables = deepcopy(cnet.variables)
+        self.domains = deepcopy(cnet.domains)
         self.queue = [] #queue of requests(focal variable, their constraints), initially all requests
-        self.variables = cnet.variables
-        self.domains = deepcoy(cnet.domains)
 
-    def initilize(self):
-        for x in self.variable:
+    def initialize(self):
+        for x in self.variables:
             for c in self.cnet.getConstraint(x):
                 self.queue.append((x, c))
 
@@ -49,7 +51,3 @@ class GAC(object):
         self.filterDomain()
         
     
-
-
-
-

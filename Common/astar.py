@@ -141,3 +141,4 @@ class AStar:
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.newNode.addChild(s) 
+        return self.newNode
