@@ -5,6 +5,13 @@ from vertex import Vertex
 def main():
     w = window.Window(700,700)
 
+    input_constraint = ""
+    # lamba x: return (x.1 == x.2)
+    # lambda v1, v2: v1.color != v2.color
+
+    number_of_colors = int(input("Number of colors that are allowed: "))
+
+
     stdin = []
     for line in sys.stdin:
         stdin.append(line.rstrip().split(' '))
@@ -39,6 +46,7 @@ def main():
         vertex1.add_neighbor( vertex2 )
 
     w.set_coordinates( highest_x, highest_y, lowest_x, lowest_y )
+
 
     #w.create_astar()
     w.set_vertices( vertices )

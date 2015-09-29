@@ -1,4 +1,6 @@
 import itertools
+from abstractnode import AbstractNode
+import uuid
 
 class CNET(object):
     """CNET is a representation of 
@@ -11,8 +13,9 @@ class CNET(object):
         self.variables = []
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
         self.constarints = dict() # Make constrains?
+        self.id = uuid.uuid4()
 
-# modifeid addVariable to add a list of values + list of ther domains
+# modified addVariable to add a list of values + list of ther domains
     def constraint(self, variables):
         self.constraints = 
     def addVariables(self, variables, dom=None):
@@ -26,8 +29,10 @@ class CNET(object):
 
     
 
+
     def updateDomain(self, x, domain):
         self.domains[x] = domain
+
 
     def getAllArcs(self):
         allArcs = []
@@ -37,6 +42,7 @@ class CNET(object):
                     allArcs.append((i, j))
         return allArcs
     
+
     def getArcsOf(self, x):
         return [ (i, x) for i in self.constraints[x] ]
     
@@ -46,7 +52,7 @@ class CNET(object):
     def getDomains(self):
         return self.domains
 
-# hvordn blir dette?
+# hvordan blir dette?
     def addConstraint(self, variables, expression):
         # if y not in self.constraints[x]:
         #   self.constraints[x][y] = self.
@@ -72,3 +78,18 @@ class CNET(object):
     
 
 
+    # return an ID unique for this cnet
+    def getID(self):
+        return self.id
+
+
+    def cost(self, node):
+        nodeID = node.getID()
+        if self.id == nodeID:
+            return 0
+        return 1
+
+
+    def draw(self):
+        pass
+        # iterate over vertices in the cnet, draw them
