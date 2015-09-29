@@ -74,11 +74,10 @@ class Window:
             pygame.event.pump()
 
             active_result = results[active_result_index]
-            if active_result == None:
+            if active_result == None or active_result.state != 'goal':
                 active_result = self.active_search.iterateAStar()
-                if active_result != None:
-                    results[active_result_index] = active_result
-                    # print(active_result)
+                results[active_result_index] = active_result
+
             self.screen.fill(self.WHITE)
             self.active_grid.draw()
             self.show_text()

@@ -92,7 +92,7 @@ class AStar:
         self.bestPath.append(self.newNode)   
 
         self.updatePath()
-        return len(self.bestPath)
+        return self.goalNode
 
 
     def betterPathFound(self, new, old):
@@ -108,18 +108,20 @@ class AStar:
             if len(self.openList) == 0:
                 # print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
                 self.failed = True
-                return self.countNodes
+                return self.newNode
 
             if self.countNodes > self.limit:
                 # print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
                 self.failed = True
-                return self.countNodes
+                return self.newNode
 
             self.newNode = self.extractMin(self.openList)
             self.closeNode(self.newNode)
 
             if self.newNode.getState() == 'goal':
-                return self.backtrackPath()
+                r = self.newNode
+                self.backtrackPath()
+                return r
 
             neighbors = self.graph.generateNeighbors(self.newNode)
 
