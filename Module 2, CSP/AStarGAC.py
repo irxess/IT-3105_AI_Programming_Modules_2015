@@ -9,12 +9,16 @@ from gac import GAC
 
 class Astar_GAC(object): 
     """Astar_GAC integrates Astar and GAC"""
-    def __init__(self, searchProblem, cnetGraph):
+    def __init__(self, graph, cnetGraph):
         # cnet : cnet of searh problem
-        self.cnet = self.convertToCNET( searchProblem )
+        # self.graph = CNETGraph(serachProblem)#??  
+        self.initilizeState()
         self.GAC = createGAC(self.cnet)
-        self.graph = cnetGraph.CNETGraph()
-        self.AStar = createAstar(self.graph)
+        self.cnet = self.convertToCNET(graph)
+        self.AStar = createAstar(self.graph, 'best_first')
+        self.currentState = self.initilizeState(self.cnet)
+        self.constraintInstances = [] 
+        self.variableInstances = []
         
 
     def createGAC(self, state):
@@ -24,30 +28,28 @@ class Astar_GAC(object):
     def createAstar(self, graph, method):
         return AStar(cnetGraph, method)
 
-
-############ TODO : implement the converter : (uncomplete) ################
-# graph : searchProblem
+# Jeg vet ikke om denne fungerer
     def convertToCNET(self, graph):
         variables = graph.getVariables()
         domains = graph.getDomains()
-        exp = graph.getExpression()
-        cNet = CNET()
-        cNet.addVariable(variables, domains)
-        # Do we add constraints here or in initilizeState???
+        exp = graph.getExperssion()
+        cNet = CNET(variables, domains, exp)
         cNet.addConstraints(variables, exp)
-
         return cNet
 
     
-############ TODO : implement the generateInitState ################
     def initializeState(self, cnet, expression):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        initState = 0
-        # cNet = self.convertToCNET(self.searchProblem)
-        # cNet.addVariable(variable, domain)
-        return initState
-##########################################################
+        varList = self.cnet.variables
+        domDic = self.cnet.domains
+        for d in domDic.items():
+            vi = VI(d[0], d[1])
+            self.variableInstances.append(vi)
+        self.constraintInstances.extend(self.cnet.constraints)
+
+        initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
+                return initState
 
     def search(self):
         # self.cnet: is representation of search problem convertet to a cnet

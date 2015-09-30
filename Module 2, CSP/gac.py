@@ -11,33 +11,41 @@ class GAC(object):
         Output: queue consists of arc-consistent domains for each variable
         """
 
-    def __init__(self, cnet):
+   def __init__(self, cnet):
         super(GAC, self).__init__() 
-        self.cnet = deepcopy(cnet) # copy of constraint network
+        # self.cnet = deepcopy(cnet) # copy of constraint network
         self.variables = deepcopy(cnet.variables)
         self.domains = deepcopy(cnet.domains)
-        self.queue = [] #queue of requests(focal variable, their constraints), initially all requests
-
+        self.queue = [] # queue of requests(focal variable, their constraints), initially all requests
+        self.constraints = deepcopy(cnet.constraints)
 
     def initialize(self):
-        for x in self.variables:
-            for c in self.cnet.getConstraint(x):
+        for c in self.constraints:
+            for x in c.variables:
+                # (x,c): request
                 self.queue.append((x, c))
-
 
     def filterDomain(self):         
         while len(self.queue):
-            (i, j) = self.queue.pop()
-            if self.reviseStar(i, j):
-                if len( self.domains[i] ) == 0:
+            request = self.queue.pop()
+            (x, c) = request
+            if self.reviseStar(x, c.variables):
+                if len( x.domain ) == 0:
                     return False
-                for k in set(self.cnet.getArcsOf(i).difference(i, j)):
-                    self.queue.append(k[0], i)
+                # 
+                for k in self.constarints.difference(c):
+                    if x in k.variables:
+                        for v in k.variables:
+                            if v == x :
+                                continue
+                            self.queue.append(v, k)
+                # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
+                #     self.queue.append(k[0], i)
         return True
 
-
 # compare her med constraint isSatisfied
-    def reviseStar(self, i, j):
+# uncomplete
+    def reviseStar(self, x, y):
         revised = False
         pairs = self.getPairs(i, j)
         for k in self.domains[i]:
@@ -47,8 +55,7 @@ class GAC(object):
                 self.domains[j].pop(k)
                 revised = True
         return revised
-
-
+# uncomplete
     def rerun(self, assumption):
         for c in self.cnet.getConstraint(assumption):
             for y in c.keys():
@@ -56,12 +63,18 @@ class GAC(object):
                     yConst = self.cnet.getConstraint(y)
                     self.queue.append((y, yConst))
         self.filterDomain()
-        
 
+        
     def isSatisfied(self, i, j, pair):
         # if apply(self.cnet.):
         #     pass
-
-        
     def getPairs(self, x, y):
-        return itertools.product(domains[x], domains[y])
+        return itertools.product(x.domain, y.domain)
+
+    
+    # def getConstraints(self, variable):
+    #     constraints = []
+    #     for c in self.constraints:
+    #         if variable in c.variables:
+    #             constraints.append(c)
+    #     return constraints
