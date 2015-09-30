@@ -33,7 +33,7 @@ class GAC(object):
                 if len( x.domain ) == 0:
                     return False
                 # 
-                for k in self.constarints.difference(c):
+                for k in set(self.constarints).difference(c):
                     if x in k.variables:
                         for v in k.variables:
                             if v == x :
@@ -47,11 +47,10 @@ class GAC(object):
 # uncomplete
     def reviseStar(self, x, y):
         revised = False
-        pairs = self.getPairs(i, j)
-        for k in self.domains[i]:
-            pairs = [(k, m) for m in self.domains[j]]
-            # endre på condition
-            if len( set(self.cnet.constraints[i][j]).intersection(pairs) ) == 0:
+        pairs = self.getPairs(x, y)
+
+        # This condition is wrong I will edit this later
+        if len( set(self.constraints).intersection(pairs) ) == 0:
                 self.domains[j].pop(k)
                 revised = True
         return revised
