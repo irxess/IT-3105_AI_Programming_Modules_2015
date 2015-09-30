@@ -1,6 +1,4 @@
-
 class CI(object):
-	def __init__(self, variables, constraints):
-		self.variables = variables
-
-
+    def __init__(self, constraint, variables):
+        self.constraint = constraint
+        self.variables = variables

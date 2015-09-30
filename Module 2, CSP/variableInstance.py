@@ -4,3 +4,4 @@ class VI(object):
         super(VI, self).__init__()
         self.variables = variables
         self.domains = domains
+

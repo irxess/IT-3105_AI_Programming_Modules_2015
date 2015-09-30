@@ -1,6 +1,8 @@
 import itertools
 from abstractnode import AbstractNode
 import uuid
+from constraintInstance import *
+from variableInstance import *
 
 class CNET(AbstractNode):
     """CNET is a representation of 
@@ -8,20 +10,16 @@ class CNET(AbstractNode):
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
+
     def __init__(self, variables, domainList):
         super(CNET, self).__init__()
         self.variables = variables # a list with vertex class instances
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
         for v in variables:
             self.domains[v] = domainList
-        # self.constrains = constraints # A list with functions
+        # self.constraints = self.addConstarints(self.variables, self.expression)
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
-
-# modified addVariable to add a list of values + list of ther domains
-    # def constraint(self, variables):
-    #     pass
-    #     # self.constraints = 
 
 
     def getConstraintList(self):
@@ -35,6 +33,11 @@ class CNET(AbstractNode):
     #             self.domains[v] = domain
     #     # for x in variables:
         #     self.constraints[x] = []
+
+
+    def addVariable(self, domains):
+        for d in domains.items():
+            self.variables.extend(VIs.variables)
 
 
     def updateDomain(self, x, domain):
@@ -54,13 +57,25 @@ class CNET(AbstractNode):
         return [ (i, x) for i in self.constraints[x] ]
     
 
-    # def getConstraints(self):
-    #     return self.constraints
+    def getConstraints(self):
+        return self.constraints
 
 
     def getDomains(self):
-
         return self.domains
+
+
+    # def addConstarints(self, variables, expression):
+    #     constraint = self.makeFunc(variables, expression)
+    #     ci = CI(constraint, variables)
+    #     self.constraints.append(ci)
+        
+    # def makeConstraint(self, variables, expression, envir=globals()):
+    #     # expression is a  string of mathematical/logical representation of a constraint
+    #     args = ""
+    #     for x in variables:
+    #         args += "," + x 
+    #         return eval("(lambda " + args[1:] + ": " + expression + ")", envir)
 
 
     # return an ID unique for this cnet

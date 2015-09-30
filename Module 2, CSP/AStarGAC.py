@@ -13,10 +13,13 @@ class Astar_GAC(object):
         # cnet : cnet of searh problem
         # self.currentState = self.convertToCNET( searchProblem )
         # self.initilizeState()
-        self.currentState = startCNet
+        # self.cnet = self.convertToCNET(graph)
+        # self.currentState = startCNet
+        self.currentState = self.initilizeState(startCNet)
         self.GAC = self.createGAC(self.currentState)
         self.graph = cnetGraph
         self.AStar = self.createAstar(self.graph, 'AStar')
+
         self.constraintInstances = [] 
         self.variableInstances = []
         
@@ -29,19 +32,16 @@ class Astar_GAC(object):
         return AStar(graph, method)
 
 
-############ TODO : implement the converter : (uncomplete) ################
-# # graph : serachProblem
-#     def convertToCNET(self, graph):
-#         variables = graph.getVariables()
-#         domains = graph.getDomains()
-#         exp = graph.getExperssion()
-#         cNet = CNET(variables, domains, exp)
-#         cNet.addConstraints(variables, exp)
-#         return cNet
+    def convertToCNET(self, graph):
+        variables = graph.getVariables()
+        domains = graph.getDomains()
+        exp = graph.getExperssion()
+        cNet = CNET(variables, domains, exp)
+        cNet.addConstraints(variables, exp)
+        return cNet
 
     
-# ############ TODO : implement the generateInitState ################
-    def initializeState(self):
+    def initializeState(self, cnet, expression):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
         varList = self.cnet.variables
@@ -53,7 +53,7 @@ class Astar_GAC(object):
 
         initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
         return initState
-# ##########################################################
+
 
     def search(self):
         # self.cnet: is representation of search problem convertet to a cnet
@@ -109,6 +109,7 @@ class Astar_GAC(object):
             if len( dom[1] ) > 1 or not len( dom[1] ):
                 return False
         return True
+
 
     def computeHeuristic(self, node):
         domains = self.currentState.getDomains()
