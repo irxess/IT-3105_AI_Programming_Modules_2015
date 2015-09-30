@@ -12,70 +12,62 @@ class GAC(object):
         Output: queue consists of arc-consistent domains for each variable
         """
 
-   def __init__(self, cnet):
+   def __init__(self, state):
         super(GAC, self).__init__() 
-        # self.cnet = deepcopy(cnet) # copy of constraint network
-        self.variables = deepcopy(cnet.variables)
-        self.domains = deepcopy(cnet.domains)
-        self.queue = [] # queue of requests(focal variable, their constraints), initially all requests
-        self.constraints = deepcopy(cnet.constraints)
+        self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
+        self.constraints = state.ciList
+        self.variables = state.viList
 
     def initialize(self):
-        for x in self.variables:
-            for c in x.constraints:
+        for c in self.constraints:
+            for x in c.variables:
                 self.queue.append((x, c))
 
     def filterDomain(self):         
         while len(self.queue):
-            request = self.queue.pop()
-            (x, c) = request
-            if self.reviseStar(x, c.variables):
+            (x, c) = self.queue.pop()
+            if self.reviseStar(x, c):
                 if len( x.domain ) == 0:
                     return False
-                # 
-                for k in set(self.constarints).difference(c):
-                    if x in k.variables:
-                        for v in k.variables:
-                            if v == x :
-                                continue
-                            self.queue.append(v, k)
-                # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
-                #     self.queue.append(k[0], i)
-        return True
+            for k in c.variables:
+                if k != x:
+                    self.queue.append(k, getConstraints(k))
+            return True
 
-# compare her med constraint isSatisfied
-# uncomplete
-    def reviseStar(self, x, y):
+    def reviseStar(self, x, c):
         revised = False
-        pairs = self.getPairs(x, y)
-
-        # This condition is wrong I will edit this later
-        if len( set(self.constraints).intersection(pairs) ) == 0:
-                self.domains[j].pop(k)
+        pairs = self.getPairs(x, c.variables)
+        for pair in pairs:
+            if not isSatisfied(pair, c):
+                x.domain.pop(pair[0])
                 revised = True
         return revised
-# uncomplete
+
     def rerun(self, assumption):
-        for c in self.cnet.getConstraint(assumption):
-            for y in c.keys():
-                if y != assumption:
-                    yConst = self.cnet.getConstraint(y)
-                    self.queue.append((y, yConst))
+        for c in getConstraints(assumption):
+            for k in c.variables:
+                if k != assumption:
+                    self.queue.append((k, getConstraints(k)))
         self.filterDomain()
-
         
-    def isSatisfied(self, i, j, pair):
-        # if apply(self.cnet.):
-        pass
-
+    def isSatisfied(self, pair, constraint):
+        return constraint(pair[0], pair[1])
         
     def getPairs(self, x, y):
-        return itertools.product(x.domain, y.domain)
+        return itertools.product(x.domain, [k.domain for k in y] )
 
-    
-    # def getConstraints(self, variable):
-    #     constraints = []
-    #     for c in self.constraints:
-    #         if variable in c.variables:
-    #             constraints.append(c)
-    #     return constraints
+    def getConstraints(self, variable):
+        constraints = []
+        for c in self.constraints:
+            if variable in c.variables:
+                constraints.append(c)
+        return constraints
+
+    # for k in set(self.constarints).difference(c):
+    #     if x in k.variables:
+    #         for v in k.variables:
+    #             if v == x :
+    #                 continue
+    #             self.queue.append(v, k)
+    # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
+    #     self.queue.append(k[0], i)
