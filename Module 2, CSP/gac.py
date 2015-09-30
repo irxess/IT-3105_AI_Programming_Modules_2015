@@ -12,76 +12,70 @@ class GAC(object):
         Output: queue consists of arc-consistent domains for each variable
         """
 
-   def __init__(self, cnet):
+   def __init__(self, state):
         super(GAC, self).__init__() 
-        # self.cnet = deepcopy(cnet) # copy of constraint network
-        self.variables = deepcopy(cnet.variables)
-        self.domains = deepcopy(cnet.domains)
-        self.queue = [] # queue of requests(focal variable, their constraints), initially all requests
-        self.constraints = deepcopy(cnet.constraints)
+        self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
+        self.constraints = state.ciList
+        self.variables = state.viList
 
 
     def initialize(self):
-        for c in x.constraintInstanceList:
+        for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
 
 
     def filterDomain(self):         
         while len(self.queue):
-            request = self.queue.pop()
-            (x, c) = request
-            # check if we can reduce a domain
-            if self.reviseStar(x, c.variables):
+            (x, c) = self.queue.pop()
+            if self.reviseStar(x, c):
                 if len( x.domain ) == 0:
                     return False
-                # check the other variable in the constraint
-                for k in set(self.constarints).difference(c):
-                    if x in k.variables:
-                        for v in k.variables:
-                            if v == x :
-                                continue
-                            self.queue.append(v, k)
-                # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
-                #     self.queue.append(k[0], i)
-        return True
+            # check the other variable in the constraint
+            for k in c.variables:
+                if k != x:
+                    self.queue.append(k, getConstraints(k))
+            return True
 
-# compare her med constraint isSatisfied
-# uncomplete
+
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
-        pairs = self.getPairs(x, c)
-
-        # This condition is wrong I will edit this later
-        # check all pairs found for isSatisfied
-        if len( set(self.constraints).intersection(pairs) ) == 0:
-                self.domains[j].pop(k)
-                # reduced the list
+        pairs = self.getPairs(x, c.variables)
+        for pair in pairs:
+            if not isSatisfied(pair, c):
+                x.domain.pop(pair[0])
                 revised = True
         return revised
-# uncomplete
-    def rerun(self, assumption):
-        for c in self.cnet.getConstraint(assumption):
-            for y in c.keys():
-                if y != assumption:
-                    yConst = self.cnet.getConstraint(y)
-                    self.queue.append((y, yConst))
-        self.filterDomain()
 
+    def rerun(self, assumption):
+        for c in getConstraints(assumption):
+            for k in c.variables:
+                if k != assumption:
+                    self.queue.append((k, getConstraints(k)))
+        self.filterDomain()
         
-    def isSatisfied(self, i, j, pair):
-        return c(v1, v2)
-        # use constraint function
+
+    def isSatisfied(self, pair, constraint):
+        return constraint(pair[0], pair[1])
 
         
     def getPairs(self, x, y):
-        return itertools.product(x.domain, y.domain)
+        return itertools.product(x.domain, [k.domain for k in y] )
 
-    
-    # def getConstraints(self, variable):
-    #     constraints = []
-    #     for c in self.constraints:
-    #         if variable in c.variables:
-    #             constraints.append(c)
-    #     return constraints
+
+    def getConstraints(self, variable):
+        constraints = []
+        for c in self.constraints:
+            if variable in c.variables:
+                constraints.append(c)
+        return constraints
+
+    # for k in set(self.constarints).difference(c):
+    #     if x in k.variables:
+    #         for v in k.variables:
+    #             if v == x :
+    #                 continue
+    #             self.queue.append(v, k)
+    # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
+    #     self.queue.append(k[0], i)

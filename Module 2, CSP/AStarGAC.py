@@ -6,6 +6,7 @@ from astar import AStar
 from cnet import CNET
 from cnetGraph import CNETGraph
 from gac import GAC
+from state import STATE
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
@@ -15,30 +16,32 @@ class Astar_GAC(Graph):
         # self.initilizeState()
         # self.cnet = self.convertToCNET(graph)
         # self.currentState = startCNet
-        self.currentState = self.initilizeState(startCNet)
+        # self.currentState = self.initilizeState(startCNet)
+
+        # Do we initialize the state in this class? if not what do we do with initializeState()
+
         self.GAC = self.createGAC(self.currentState)
         self.graph = cnetGraph
         self.AStar = self.createAstar(self.graph, 'AStar')
-
         self.constraintInstances = [] 
         self.variableInstances = []
-        
+        self.state = STATE(startCNet.viList, startCNet.ciList)
+        # Ininitialiser først
+        self.currentState = (self.constraintInstances, self.variableInstances)
 
     def createGAC(self, state):
         return GAC(self.initilizeState(self.cnet))
 
-
     def createAstar(self, graph, method):
         return AStar(graph, method)
 
-
-    def convertToCNET(self, graph):
-        variables = graph.getVariables()
-        domains = graph.getDomains()
-        exp = graph.getExperssion()
-        cNet = CNET(variables, domains, exp)
-        cNet.addConstraints(variables, exp)
-        return cNet
+    # def convertToCNET(self, graph):
+    #     variables = graph.getVariables()
+    #     domains = graph.getDomains()
+    #     exp = graph.getExperssion()
+    #     cNet = CNET(variables, domains, exp)
+    #     cNet.addConstraints(variables, exp)
+    #     return cNet
 
     
     def initializeState(self, cnet, expression):
@@ -94,7 +97,7 @@ class Astar_GAC(Graph):
             # − Computing the f , g and h values for each new state ,
             # where h is based on the state of the CSP after the call to GAC−Rerun.
 
-            return self.currentState
+            return self.currentState.viList
 
             
 

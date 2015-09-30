@@ -8,48 +8,21 @@ class CNET():
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
-
-    def __init__(self, variables, domainList):
+    def __init__(self, variables, domains, expression):
         super(CNET, self).__init__()
-        self.variables = variables # a list with vertex class instances
-        self.domains = dict() # A dictionary with key as a variable x with value as x's domain
-        for v in variables:
-            self.domains[v] = domainList
-        # self.constraints = self.addConstarints(self.variables, self.expression)
+        self.variables = self.addVariable(domains) # a list with variable class instances
+        self.domains = domains
+        self.constraints = self.addConstarints(self.variables, self.expression)
         self.id = uuid.uuid4()
-        self.g = 0 # we don't care about the distance walked
-
-
-    def getConstraintList(self):
-        pass
-        # create dict with v and f
-        # not sure if needed
-
-    # def initDomains(self, variables, domain):
-    #     self.variables = variables
-    #     for v in variables:
-    #             self.domains[v] = domain
-    #     # for x in variables:
-        #     self.constraints[x] = []
-
+        # self.domains = dict() # A dictionary with key as a variable x with value as x's domain
+        # for v in variables:
+        #     self.domains[v] = domainList
+        # self.g = 0 # we don't care about the distance walked
 
     def addVariable(self, domains):
         for d in domains.items():
-            self.variables.extend(VIs.variables)
-
-
-    def updateDomain(self, x, domain):
-        self.domains[x] = domain
-
-
-    def getAllArcs(self):
-        allArcs = []
-        for i in self.constraints:
-            for j in self.constraints:
-                if i != j:
-                    allArcs.append((i, j))
-        return allArcs
-    
+            # d is a tuple of items in domains
+            self.variables.extend(VI(d[0], d[1])
 
     def getArcsOf(self, x):
         return [ (i, x) for i in self.constraints[x] ]
@@ -67,8 +40,8 @@ class CNET():
         constraint = self.makeFunc(variables, expression)
         ci = CI(constraint, variables)
         self.constraints.append(ci)
-        
-        
+
+
     def makeConstraint(self, variables, expression, envir=globals()):
         # expression is a  string of mathematical/logical representation of a constraint
         args = ""
