@@ -10,7 +10,7 @@ from state import STATE
 
 class Astar_GAC(object): 
     """Astar_GAC integrates Astar and GAC"""
-    def __init__(self, cnetGraph, startCNet):
+    def __init__(self, csp):
         # cnet : cnet of searh problem
         # self.currentState = self.convertToCNET( searchProblem )
         # self.initilizeState()
@@ -25,7 +25,7 @@ class Astar_GAC(object):
         self.AStar = self.createAstar(self.graph, 'AStar')
         self.constraintInstances = [] 
         self.variableInstances = []
-        self.state = STATE(startCNet.viList, startCNet.ciList)
+        self.state = STATE(csp.viList, csp.ciList)
         # Ininitialiser først
         self.currentState = (self.constraintInstances, self.variableInstances)
 
@@ -34,28 +34,20 @@ class Astar_GAC(object):
 
     def createAstar(self, graph, method):
         return AStar(graph, method)
-
-    # def convertToCNET(self, graph):
-    #     variables = graph.getVariables()
-    #     domains = graph.getDomains()
-    #     exp = graph.getExperssion()
-    #     cNet = CNET(variables, domains, exp)
-    #     cNet.addConstraints(variables, exp)
-    #     return cNet
-
-    
+  
     def initializeState(self, cnet, expression):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        varList = self.cnet.variables
-        domDic = self.cnet.domains
-        for d in domDic.items():
-            vi = VI(d[0], d[1])
-            self.variableInstances.append(vi)
-        self.constraintInstances.extend(self.cnet.constraints)
+        # varList = self.cnet.variables
+        # domDic = self.cnet.domains
+        # for d in domDic.items():
+        #     vi = VI(d[0], d[1])
+        #     self.variableInstances.append(vi)
+        # self.constraintInstances.extend(self.cnet.constraints)
 
-        initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
-        return initState
+        # initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
+        # return initState
+
 
 
     def search(self):
@@ -84,7 +76,6 @@ class Astar_GAC(object):
             
             # assumption: a "logical" guess for assignment
             assumption = self.makeAssumption(self.currentState)
-
 
             # − Generating their successor states (by making assumptions)
             self.generateSucc(assumption)
