@@ -1,12 +1,12 @@
 from graph import Graph
 
-class CNETGraph:
+class CNETGraph(Graph):
 
     def __init__(self, startNode):
         self.startNode = startNode
         self.startNode.g = 0
         self.goalNode = None #must be a state with domain length equal to 1 for all variables
-        activeCNet = None # TODO, give initial state
+        activeCNet = startNode # TODO, give initial state
 
 #  Define goalNode == isSolution in Astar-GAC
     def update_cell(self, state):
@@ -18,7 +18,6 @@ class CNETGraph:
         return self.startNode
 
 
-    @abstractmethod
     def generateNeighbors(self, node):
         pass
         # use deepcopy

@@ -19,9 +19,14 @@ class Window:
 
     def initialize_problem(self, vertices, constraints, colors):
         self.set_vertices(vertices)
-        self.currentCNet = CNET()
-        self.graph = CNETGraph( currentCNet )
-        self.astarGAC = Astar_GAC( (vertices, constraints, colors), graph, )
+        for vertex in vertices:
+            for c in constraints:
+                vertex.addConstraint(c)
+        self.currentCNet = CNET( vertices, colors )
+        self.currentCNet.update('start')
+        self.graph = CNETGraph( self.currentCNet )
+        self.astarGAC = Astar_GAC( self.graph, self.currentCNet )
+        self.astarGAC.search()
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
@@ -58,7 +63,7 @@ class Window:
 
         while True:
             pygame.event.pump()
-
+            currentState = self.astarGAC.iterateSearch()
             self.draw_vertices( self.vertices )
 
             for event in pygame.event.get():

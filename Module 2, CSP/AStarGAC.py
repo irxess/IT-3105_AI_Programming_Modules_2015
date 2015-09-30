@@ -9,12 +9,16 @@ from gac import GAC
 
 class Astar_GAC(object): 
     """Astar_GAC integrates Astar and GAC"""
-    def __init__(self, searchProblem, cnetGraph):
+    def __init__(self, cnetGraph, startCNet):
         # cnet : cnet of searh problem
-        self.cnet = self.convertToCNET( searchProblem )
-        self.GAC = createGAC(self.cnet)
-        self.graph = cnetGraph.CNETGraph()
-        self.AStar = createAstar(self.graph)
+        # self.currentState = self.convertToCNET( searchProblem )
+        # self.initilizeState()
+        self.currentState = startCNet
+        self.GAC = self.createGAC(self.currentState)
+        self.graph = cnetGraph
+        self.AStar = self.createAstar(self.graph, 'AStar')
+        self.constraintInstances = [] 
+        self.variableInstances = []
         
 
     def createGAC(self, state):
@@ -22,38 +26,42 @@ class Astar_GAC(object):
 
 
     def createAstar(self, graph, method):
-        return AStar(cnetGraph, method)
+        return AStar(graph, method)
 
 
 ############ TODO : implement the converter : (uncomplete) ################
-# graph : searchProblem
-    def convertToCNET(self, graph):
-        variables = graph.getVariables()
-        domains = graph.getDomains()
-        exp = graph.getExpression()
-        cNet = CNET()
-        cNet.addVariable(variables, domains)
-        # Do we add constraints here or in initilizeState???
-        cNet.addConstraints(variables, exp)
-
-        return cNet
+# # graph : serachProblem
+#     def convertToCNET(self, graph):
+#         variables = graph.getVariables()
+#         domains = graph.getDomains()
+#         exp = graph.getExperssion()
+#         cNet = CNET(variables, domains, exp)
+#         cNet.addConstraints(variables, exp)
+#         return cNet
 
     
-############ TODO : implement the generateInitState ################
-    def initializeState(self, cnet, expression):
+# ############ TODO : implement the generateInitState ################
+    def initializeState(self):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        initState = 0
-        # cNet = self.convertToCNET(self.searchProblem)
-        # cNet.addVariable(variable, domain)
+        varList = self.cnet.variables
+        domDic = self.cnet.domains
+        for d in domDic.items():
+            vi = VI(d[0], d[1])
+            self.variableInstances.append(vi)
+        self.constraintInstances.extend(self.cnet.constraints)
+
+        initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
         return initState
-##########################################################
+# ##########################################################
 
     def search(self):
         # self.cnet: is representation of search problem convertet to a cnet
-        self.currentState = self.initializeState(self.cnet, self.expression) #root node
+        # self.currentState = self.initializeState(self.cnet, self.expression) #root node
+        self.variableInsstaances = CI(self.currentState.variables, self.currentState.domains)
+        # self.constraintInstances = self.
         # refine initState
-        self.GAC.initilize()
+        self.GAC.initialize()
         self.GAC.filterDomain()
 
         if isSolution(self.currentState):
@@ -63,7 +71,9 @@ class Astar_GAC(object):
             print( 'Dismissed. There is no solution!')
             return False
 
-        while not isContradictory(self.currentState) and not isSolution(self.currentState):
+
+    def iterateSearch(self):
+        if not isContradictory(self.currentState) and not isSolution(self.currentState):
             
             # AStar må returnere den noden vi popper
             # − Popping search nodes from the agenda 
@@ -82,6 +92,8 @@ class Astar_GAC(object):
 
             # − Computing the f , g and h values for each new state ,
             # where h is based on the state of the CSP after the call to GAC−Rerun.
+
+            return self.currentState
 
             
 

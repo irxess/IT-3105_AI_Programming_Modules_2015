@@ -1,7 +1,5 @@
 import window
 import sys
-current_directory = sys.path[0]
-sys.path.append( os.path.abspath('../Common/') )
 from vertex import Vertex
 
 def createConstraint(variables, expression, envir=globals()):

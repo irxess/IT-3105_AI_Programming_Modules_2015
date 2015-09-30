@@ -1,4 +1,5 @@
 from copy import deepcopy
+import itertools
 
 class GAC(object):
 
@@ -21,7 +22,8 @@ class GAC(object):
 
     def initialize(self):
         for x in self.variables:
-            for c in self.cnet.getConstraint(x):
+            # for c in self.cnet.getConstraint(x):
+            for c in x.constraints:
                 self.queue.append((x, c))
 
 
@@ -60,8 +62,8 @@ class GAC(object):
 
     def isSatisfied(self, i, j, pair):
         # if apply(self.cnet.):
-        #     pass
+        pass
 
         
     def getPairs(self, x, y):
-        return itertools.product(domains[x], domains[y])
+        return itertools.product(x.domain, y.domain)

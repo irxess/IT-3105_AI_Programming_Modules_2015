@@ -2,32 +2,39 @@ import itertools
 from abstractnode import AbstractNode
 import uuid
 
-class CNET(object):
+class CNET(AbstractNode):
     """CNET is a representation of 
         constraints with components (variabels, domain, constraints)
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
-    def __init__(self):
-        # super(CNET, self).__init__()
-        self.variables = []
+    def __init__(self, variables, domainList):
+        super(CNET, self).__init__()
+        self.variables = variables # a list with vertex class instances
         self.domains = dict() # A dictionary with key as a variable x with value as x's domain
-        self.constrains = [] # A list with functions
+        for v in variables:
+            self.domains[v] = domainList
+        # self.constrains = constraints # A list with functions
         self.id = uuid.uuid4()
+        self.g = 0 # we don't care about the distance walked
 
 # modified addVariable to add a list of values + list of ther domains
-    def constraint(self, variables):
-        pass
-        # self.constraints = 
+    # def constraint(self, variables):
+    #     pass
+    #     # self.constraints = 
 
-    def addVariables(self, variables, dom=None):
-        self.variables.extend(variables)
-        if dom:
-            for x in iter(dom):
-                self.domains[x] = dom[x]
-        # self.domains = {zip([x for x in variables], [d for k, d in domains )
-        for x in variables:
-            self.constraints[x] = []
+
+    def getConstraintList(self):
+        pass
+        # create dict with v and f
+        # not sure if needed
+
+    # def initDomains(self, variables, domain):
+    #     self.variables = variables
+    #     for v in variables:
+    #             self.domains[v] = domain
+    #     # for x in variables:
+        #     self.constraints[x] = []
 
 
     def updateDomain(self, x, domain):
@@ -46,27 +53,14 @@ class CNET(object):
     def getArcsOf(self, x):
         return [ (i, x) for i in self.constraints[x] ]
     
-    def getConstraint(self, x):
-        return self.constraints[x]
+
+    # def getConstraints(self):
+    #     return self.constraints
+
 
     def getDomains(self):
-        return self.domains
 
-# hvordan blir dette?
-    def addConstraint(self, variables, expression):
-        # if y not in self.constraints[x]:
-        #   self.constraints[x][y] = self.
-        # valid = True
-        # for x in variables:
-        #     if x not in self.variables:
-        #         valid = False
-        # if valid:
-        #     return self.makeFunc(variables, expression)
-        #     # for x in variables:
-        #     #     # Jeg vet ikke om denne er riktig :s
-        #     #     self.constraints[x] = apply(makeConstraint, variables)
-        # return valid
-        constraintFunc = self.makeFunc(variables, expression)
+        return self.domains
 
 
     # return an ID unique for this cnet
@@ -83,4 +77,11 @@ class CNET(object):
 
     def draw(self):
         pass
-        # iterate over vertices in the cnet, draw them
+        # iterate over variables in the cnet, draw them
+
+    def estimateDistance(self, g):
+        # find heuristic
+        self.h = 0
+        for v in self.variables:
+            self.h += len(v.getDomain())
+        super(CNET, self).estimateDistance()
