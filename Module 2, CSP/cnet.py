@@ -1,10 +1,8 @@
 import itertools
-from abstractnode import AbstractNode
-import uuid
 from constraintInstance import *
 from variableInstance import *
 
-class CNET(AbstractNode):
+class CNET():
     """CNET is a representation of 
         constraints with components (variabels, domain, constraints)
         Domain is a function. domain(x) returns the domain of given variable x
@@ -65,38 +63,15 @@ class CNET(AbstractNode):
         return self.domains
 
 
-    # def addConstarints(self, variables, expression):
-    #     constraint = self.makeFunc(variables, expression)
-    #     ci = CI(constraint, variables)
-    #     self.constraints.append(ci)
+    def addConstarints(self, variables, expression):
+        constraint = self.makeFunc(variables, expression)
+        ci = CI(constraint, variables)
+        self.constraints.append(ci)
         
-    # def makeConstraint(self, variables, expression, envir=globals()):
-    #     # expression is a  string of mathematical/logical representation of a constraint
-    #     args = ""
-    #     for x in variables:
-    #         args += "," + x 
-    #         return eval("(lambda " + args[1:] + ": " + expression + ")", envir)
-
-
-    # return an ID unique for this cnet
-    def getID(self):
-        return self.id
-
-
-    def cost(self, node):
-        nodeID = node.getID()
-        if self.id == nodeID:
-            return 0
-        return 1
-
-
-    def draw(self):
-        pass
-        # iterate over variables in the cnet, draw them
-
-    def estimateDistance(self, g):
-        # find heuristic
-        self.h = 0
-        for v in self.variables:
-            self.h += len(v.getDomain())
-        super(CNET, self).estimateDistance()
+        
+    def makeConstraint(self, variables, expression, envir=globals()):
+        # expression is a  string of mathematical/logical representation of a constraint
+        args = ""
+        for x in variables:
+            args += "," + x 
+            return eval("(lambda " + args[1:] + ": " + expression + ")", envir)

@@ -20,19 +20,22 @@ class GAC(object):
         self.queue = [] # queue of requests(focal variable, their constraints), initially all requests
         self.constraints = deepcopy(cnet.constraints)
 
+
     def initialize(self):
-        for x in self.variables:
-            for c in x.constraints:
+        for c in x.constraintInstanceList:
+            for x in c.variables:
                 self.queue.append((x, c))
+
 
     def filterDomain(self):         
         while len(self.queue):
             request = self.queue.pop()
             (x, c) = request
+            # check if we can reduce a domain
             if self.reviseStar(x, c.variables):
                 if len( x.domain ) == 0:
                     return False
-                # 
+                # check the other variable in the constraint
                 for k in set(self.constarints).difference(c):
                     if x in k.variables:
                         for v in k.variables:
@@ -45,13 +48,16 @@ class GAC(object):
 
 # compare her med constraint isSatisfied
 # uncomplete
-    def reviseStar(self, x, y):
+# reduce x's domain
+    def reviseStar(self, x, c):
         revised = False
-        pairs = self.getPairs(x, y)
+        pairs = self.getPairs(x, c)
 
         # This condition is wrong I will edit this later
+        # check all pairs found for isSatisfied
         if len( set(self.constraints).intersection(pairs) ) == 0:
                 self.domains[j].pop(k)
+                # reduced the list
                 revised = True
         return revised
 # uncomplete
@@ -65,8 +71,8 @@ class GAC(object):
 
         
     def isSatisfied(self, i, j, pair):
-        # if apply(self.cnet.):
-        pass
+        return c(v1, v2)
+        # use constraint function
 
         
     def getPairs(self, x, y):

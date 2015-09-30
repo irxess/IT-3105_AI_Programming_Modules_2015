@@ -7,7 +7,7 @@ from cnet import CNET
 from cnetGraph import CNETGraph
 from gac import GAC
 
-class Astar_GAC(object): 
+class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
     def __init__(self, cnetGraph, startCNet):
         # cnet : cnet of searh problem
@@ -52,7 +52,8 @@ class Astar_GAC(object):
         self.constraintInstances.extend(self.cnet.constraints)
 
         initState = CNET(self.variableInstances.variables, self.variableInstances.domains, self.expression)
-        return initState
+        # return initState
+        return (vi, self.constraintInstances)
 
 
     def search(self):

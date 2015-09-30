@@ -1,5 +1,7 @@
 from graph import Graph
 
+# Use AStarGAC instead
+
 class CNETGraph(Graph):
 
     def __init__(self, startNode):
