@@ -4,7 +4,7 @@ class Vertex:
         self.y = y
         self.neighbors = []
         self.color = (0,0,0)
-        self.domain = [] # list of colors
+        # self.domain = [] # list of colors
         self.constraints = [] # list of functions
 
 
@@ -32,14 +32,14 @@ class Vertex:
         return (self.x,self.y)
 
 
-    def getDomain(self):
-        return self.domain
+    # def getDomain(self):
+    #     return self.domain
 
 
     def addConstraint(self, expression):
         self.constraints.append(expression)
 
 
-    def reduceDomain(self, value):
-        self.domain.pop(value)
+    # def reduceDomain(self, value):
+    #     self.domain.pop(value)
 

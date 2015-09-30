@@ -18,10 +18,12 @@ class GAC(object):
         self.constraints = state.ciList
         self.variables = state.viList
 
+
     def initialize(self):
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
+
 
     def filterDomain(self):         
         while len(self.queue):
@@ -29,11 +31,14 @@ class GAC(object):
             if self.reviseStar(x, c):
                 if len( x.domain ) == 0:
                     return False
+            # check the other variable in the constraint
             for k in c.variables:
                 if k != x:
                     self.queue.append(k, getConstraints(k))
             return True
 
+
+# reduce x's domain
     def reviseStar(self, x, c):
         revised = False
         pairs = self.getPairs(x, c.variables)
@@ -50,11 +55,14 @@ class GAC(object):
                     self.queue.append((k, getConstraints(k)))
         self.filterDomain()
         
+
     def isSatisfied(self, pair, constraint):
         return constraint(pair[0], pair[1])
+
         
     def getPairs(self, x, y):
         return itertools.product(x.domain, [k.domain for k in y] )
+
 
     def getConstraints(self, variable):
         constraints = []
