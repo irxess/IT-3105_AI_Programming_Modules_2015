@@ -1,5 +1,6 @@
 from copy import deepcopy
 import itertools
+from state import *
 
 class GAC(object):
 
@@ -18,12 +19,10 @@ class GAC(object):
         self.constraints = state.ciList
         self.variables = state.viList
 
-
     def initialize(self):
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
-
 
     def filterDomain(self):         
         while len(self.queue):
@@ -35,7 +34,7 @@ class GAC(object):
             for k in c.variables:
                 if k != x:
                     self.queue.append(k, getConstraints(k))
-            return True
+        return State(self.variables, self.constraints)
 
 
 # reduce x's domain
@@ -45,9 +44,11 @@ class GAC(object):
         for pair in pairs:
             if not isSatisfied(pair, c):
                 x.domain.pop(pair[0])
+                self.reduceDomain(x, pair[0])
                 revised = True
         return revised
 
+# assumption: a variable assignment/singleton domain
     def rerun(self, assumption):
         for c in getConstraints(assumption):
             for k in c.variables:
@@ -70,6 +71,12 @@ class GAC(object):
             if variable in c.variables:
                 constraints.append(c)
         return constraints
+
+# updates self.variables after reducing 
+    def reduceDomain(self, vi, item):
+        for v in self.variables:
+            if v == vi:
+                vi.domain.pop(item)
 
     # for k in set(self.constarints).difference(c):
     #     if x in k.variables:
