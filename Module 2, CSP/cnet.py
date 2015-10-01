@@ -19,20 +19,19 @@ class CNET():
             self.addConstraint(self.variables, e)
         self.id = uuid.uuid4()
 
-
     def addVariables(self, domains):
         for d in domains.items():
             # d is a tuple of items in domains
             self.variables.append(VI(d[0], d[1]))
 
-
     def getConstraints(self):
         return self.constraints
 
+    # def addConstarints(self, variables, expression):
+    #     constraint = self.makeFunc(variables, expression)
 
     def getDomains(self):
         return self.domains
-
 
     def addConstraint(self, variables, expression):
         (args, func) = expression
@@ -40,10 +39,8 @@ class CNET():
         ci = CI(constraint, variables)
         self.constraints.append(ci)
 
-
     def makeConstraint(self, variables, expression, envir=globals()):
         # expression is a  string of mathematical/logical representation of a constraint
-        args = ""
         function = "(lambda " + variables + ": " + expression + ")"
         print(function)
         return eval(function, envir)

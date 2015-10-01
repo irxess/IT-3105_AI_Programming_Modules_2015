@@ -37,7 +37,6 @@ class GAC():
                     self.queue.append(k, getConstraints(k))
         return State(self.variables, self.constraints)
 
-
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
@@ -87,12 +86,3 @@ class GAC():
                 print(v.domain)
                 print(item)
                 vi.domain.remove(item)
-
-    # for k in set(self.constarints).difference(c):
-    #     if x in k.variables:
-    #         for v in k.variables:
-    #             if v == x :
-    #                 continue
-    #             self.queue.append(v, k)
-    # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
-    #     self.queue.append(k[0], i)
