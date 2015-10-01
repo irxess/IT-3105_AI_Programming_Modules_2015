@@ -2,7 +2,7 @@ from copy import deepcopy
 import itertools
 from state import *
 
-class GAC(object):
+class GAC():
 
     """GAC is a generalazied arc consistency algoritm that
         outputs arc-consistent doamins for each variable v in given variable set
@@ -13,8 +13,8 @@ class GAC(object):
         Output: queue consists of arc-consistent domains for each variable
         """
 
-   def __init__(self, state):
-        super(GAC, self).__init__() 
+    def __init__(self, state):
+        # super(GAC, self).__init__() 
         self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
         self.constraints = state.ciList
         self.variables = state.viList

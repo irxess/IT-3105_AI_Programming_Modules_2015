@@ -6,7 +6,7 @@ from heapq import *
 
 class AStar:
 
-    def __init__(self, graph, method):
+    def __init__(self, graph, method='Best first'):
         self.graph = graph
         self.startNode = graph.getStart()
         self.goalNode = graph.getGoal()
@@ -32,6 +32,7 @@ class AStar:
             else:
                 return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Search failed, no path found."
         return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Path length: " + str(self.pathLength)
+
 
     def extractMin(self, li):
         if self.method == 'BFS':
@@ -123,9 +124,9 @@ class AStar:
                 self.backtrackPath()
                 return r
 
-            neighbors = self.graph.generateNeighbors(self.newNode)
+            succ = self.graph.generateSucc(self.newNode)
 
-            for s in neighbors:
+            for s in succ:
 
                 if self.isClosed(s):
                     if self.betterPathFound(self.newNode, s):

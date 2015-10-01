@@ -2,6 +2,7 @@ import window
 import sys
 from vertex import Vertex
 
+
 def createConstraint(variables, expression, envir=globals()):
     args = ""
     for x in variables: 
@@ -9,7 +10,14 @@ def createConstraint(variables, expression, envir=globals()):
     # return an anonymous function
     function = "(lambda " + args[1:] + ": " + expression + ") "
     print(function)
-    return eval( function, envir)
+    return eval(function, envir)
+
+
+def pairwise(iterable):
+    "s -> (s0,s1), (s2,s3), (s4, s5), ..."
+    a = iter(iterable)
+    return zip(a, a)
+
 
 def main():
     w = window.Window(700,700)
@@ -35,6 +43,7 @@ def main():
 
     inputFile = sys.argv[2]
     f = open(inputFile, 'r')
+    print(inputFile)
 
     vertexList = []
     for line in f:
@@ -71,8 +80,8 @@ def main():
     w.set_coordinates( highest_x, highest_y, lowest_x, lowest_y )
 
     constraints = []
-    for c in sys.argv[3:]:
-        constraints.append( createConstraint(['x','y'], c) )
+    for variables,expression in pairwise( sys.argv[3:] ):
+        constraints.append( (variables,expression) )
 
     w.initialize_problem( vertices, constraints, colors )
     w.loop()

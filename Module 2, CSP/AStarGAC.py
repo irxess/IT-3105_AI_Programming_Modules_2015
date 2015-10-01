@@ -6,13 +6,14 @@ from astar import AStar
 from cnet import CNET
 from gac import GAC
 from state import State
+from graph import Graph
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
     def __init__(self, csp):
         # cnet : cnet of searh problem
         # Do we initialize the state in this class? if not what do we do with initializeState()
-        self.cnet = CNET(csp.domains, csp.expression)
+        self.cnet = CNET(csp.domains, csp.expressions)
         self.currentState = initializeState(self.cnet)
         self.GAC = self.createGAC(self.currentState)
         # how do we represent csp as graph as an argument to AStar?
@@ -27,7 +28,9 @@ class Astar_GAC(Graph):
     def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        return State(cnet.variables, cnet.constraints)        
+        s = State(cnet.variables, cnet.constraints)  
+        s.update('start')
+        return s 
 
     def search(self):
         # refine initState
@@ -70,7 +73,6 @@ class Astar_GAC(Graph):
             # − Computing the f , g and h values for each new state ,
             # where h is based on the state of the CSP after the call to GAC−Rerun.
             h = newState.computeHeuristic()
-            g = newState.
 
             return newState.viList          
 

@@ -22,7 +22,8 @@ class CNET():
     def addVariables(self, domains):
         for d in domains.items():
             # d is a tuple of items in domains
-            self.variables.extend(VI(d[0], d[1])
+            self.variables.extend(VI(d[0], d[1]))
+
 
     def getArcsOf(self, x):
         return [ (i, x) for i in self.constraints[x] ]
