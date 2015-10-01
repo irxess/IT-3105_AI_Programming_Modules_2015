@@ -16,7 +16,7 @@ class State(AbstractNode):
         self.state = 'open'
 
     def setDomain(self, value):
-        return vi.domain = value
+        vi.domain = value
 
     # return an ID unique for this state
     def getID(self):
@@ -30,11 +30,11 @@ class State(AbstractNode):
         return 1
 
 
-    def estimateDistance(self, g):
+    def estimateDistance(self, goal):
         # find heuristic
         self.h = 0
         for v in self.viList:
-            self.h += len(v.domain()) - 1 
+            self.h += len(v.domain) - 1 
         super(State, self).estimateDistance()
 
 

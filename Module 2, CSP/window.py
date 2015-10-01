@@ -16,14 +16,11 @@ class Window:
 
     def initialize_problem(self, vertices, constraints, colors):
         self.set_vertices(vertices)
+        domains = {}
         for vertex in vertices:
-            for c in constraints:
-                vertex.addConstraint(c)
-        # self.currentCNet = CNET( vertices, colors )
-        # self.currentCNet.update('start')
-        self.state = State( vertices, constraints )
-        self.state.update('start')
-        self.astarGAC = Astar_GAC( self.graph, self.currentCNet )
+            domains[vertex] = colors
+
+        self.astarGAC = Astar_GAC( domains, constraints )
         self.astarGAC.search()
 
 

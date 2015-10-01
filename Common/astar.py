@@ -6,7 +6,7 @@ from heapq import *
 
 class AStar:
 
-    def __init__(self, graph, method):
+    def __init__(self, graph, method='Best first'):
         self.graph = graph
         self.startNode = graph.getStart()
         self.goalNode = graph.getGoal()

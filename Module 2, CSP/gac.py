@@ -1,9 +1,9 @@
 from copy import deepcopy
 import itertools
 from state import *
-from constraintInstance import *
+from constraintInstance import CI
 
-class GAC(object):
+class GAC():
 
     """GAC is a generalazied arc consistency algoritm that
         outputs arc-consistent doamins for each variable v in given variable set
@@ -14,8 +14,8 @@ class GAC(object):
         Output: queue consists of arc-consistent domains for each variable
         """
 
-   def __init__(self, state):
-        super(GAC, self).__init__() 
+    def __init__(self, state):
+        # super(GAC, self).__init__() 
         self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
         self.constraints = state.ciList
         self.variables = state.viList
@@ -40,6 +40,9 @@ class GAC(object):
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
+        print('-------')
+        print(x)
+        print(c.variables)
         pairs = self.getPairs(x, c.variables)
         for pair in pairs:
             if not self.isSatisfied(pair, c):
@@ -58,7 +61,8 @@ class GAC(object):
         
 
     def isSatisfied(self, pair, constraint):
-        return constraint(pair[0], pair[1])
+        print(pair)
+        return constraint.constraint(pair[0], pair[1])
 
         
     def getPairs(self, x, y):

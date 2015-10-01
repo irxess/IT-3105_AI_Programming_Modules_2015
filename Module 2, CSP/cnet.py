@@ -1,6 +1,7 @@
 import itertools
 from constraintInstance import *
 from variableInstance import *
+import uuid
 
 class CNET():
     """CNET is a representation of 
@@ -11,10 +12,11 @@ class CNET():
     def __init__(self, domains, expression):
         super(CNET, self).__init__()
         self.variables = []
+        self.constraints = []
         self.addVariables(domains) # a list with variable class instances
         self.domains = domains
-        self.constraints = []
-        self.addConstarints(self.variables, self.expression)
+        for e in expression:
+            self.addConstraint(self.variables, e)
         self.id = uuid.uuid4()
 
     def addVariables(self, domains):
@@ -25,14 +27,24 @@ class CNET():
     def getConstraints(self):
         return self.constraints
 
-    def addConstarints(self, variables, expression):
-        constraint = self.makeFunc(variables, expression)
+    # def addConstarints(self, variables, expression):
+    #     constraint = self.makeFunc(variables, expression)
+
+    def getDomains(self):
+        return self.domains
+
+    def addConstraint(self, variables, expression):
+        (args, func) = expression
+        constraint = self.makeConstraint(args, func)
         ci = CI(constraint, variables)
         self.constraints.append(ci)
 
     def makeConstraint(self, variables, expression, envir=globals()):
         # expression is a  string of mathematical/logical representation of a constraint
         args = ""
-        for x in variables:
-            args += "," + x 
-            return eval("(lambda " + args[1:] + ": " + expression + ")", envir)
+        # for x in variables:
+            # args += "," + x 
+            # function = "(lambda " + args[1:] + ": " + expression + ")"
+        function = "(lambda " + variables + ": " + expression + ")"
+        print(function)
+        return eval(function, envir)
