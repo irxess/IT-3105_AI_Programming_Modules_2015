@@ -10,33 +10,26 @@ from graph import Graph
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
-    def __init__(self, csp):
+    def __init__(self, domains, expressions):
         # cnet : cnet of searh problem
-        # Do we initialize the state in this class? if not what do we do with initializeState()
         self.cnet = CNET(csp.domains, csp.expressions)
         self.currentState = initializeState(self.cnet)
-        self.GAC = self.createGAC(self.currentState)
-        # how do we represent csp as graph as an argument to AStar?
-        # we use best_first method in Astar:
-        
-    def createGAC(self, state):
-        return GAC(self.initilizeState(self.cnet))
+        self.gac = GAC(self.currentState)
+        self.Astar = AStar(self.currentState)
 
-    def createAstar(self, graph, method):
-        return AStar(graph, method)
-  
-    def initializeState(self, cnet):
+    def initializeState(self, state):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        s = State(cnet.variables, cnet.constraints)  
+        s = State(state.variables, state.constraints)  
         s.update('start')
         return s 
+
 
     def search(self):
         # refine initState
         stateCounter = 1
-        self.GAC.initialize()
-        self.currentState = self.GAC.filterDomain()
+        self.gac.initialize()
+        self.currentState = self.gac.filterDomain()
 
         if isSolution(self.currentState):
             return self.currentState
@@ -44,32 +37,26 @@ class Astar_GAC(Graph):
         elif isContradictory(self.currentState):
             print( 'Dismissed. There is no solution!')
             return False
-
         self.iterateSearch()
 
-
     def iterateSearch(self):
-
         # if not isContradictory(newState) and not isSolution(newState):
-            # AStar må returnere den noden vi popper
             # − Popping search nodes from the agenda 
             curr = self.currentState 
-            self.currentState = AStar(self.currentState, 'best_first').iterateAStar()
+            self.currentState = self.Astar.iterateAStar()
             self.currentState.parent = curr#er det nødvendig?
 
-            
             # − Generating their successor states (by making assumptions)
             successors = self.makeAssumption(self.currentState)
+
             # − Enforcing the assumption in each successor state by reducing
             for succ in successors:
-                # RERUN GAC instead?
-                gac = GAC(currentState)
-                gac.initialize()
-                gac.filterDomain()
+                succGac = GAC(succ)
+                succGac.initialize()
+                succGac.filterDomain()
 
             # the domain of the assumed variable to a singleton set − Calling GAC−Rerun on each newly−generated state
-            GAC.rerun(newState) #??
-
+            GAC.rerun(self.currentState) #??
             # − Computing the f , g and h values for each new state ,
             # where h is based on the state of the CSP after the call to GAC−Rerun.
             h = newState.computeHeuristic()
