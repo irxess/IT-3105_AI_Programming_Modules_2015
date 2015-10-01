@@ -4,4 +4,5 @@ class VI(object):
         super(VI, self).__init__()
         self.variable = variable
         self.domain = domain
+        self.h = float('inf')
 

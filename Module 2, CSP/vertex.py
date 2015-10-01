@@ -5,7 +5,7 @@ class Vertex:
         self.neighbors = []
         self.color = (0,0,0)
         self.domain = [] # list of colors
-        # self.constraints = [] # list of functions
+        self.constraints = [] # list of functions
 
 
     def __repr__(self):
@@ -32,6 +32,11 @@ class Vertex:
 
     def getPosition(self):
         return (self.x,self.y)
+
+
+    # def getDomain(self):
+    #     return self.domain
+
 
     def addConstraint(self, expression):
         self.constraints.append(expression)

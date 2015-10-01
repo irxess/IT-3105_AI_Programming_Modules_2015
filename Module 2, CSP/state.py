@@ -12,11 +12,16 @@ class State(AbstractNode):
         self.viList = variables
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
+        self.parent = None #not sure if needed
+        self.state = 'open'
 
 
     def getDomain(self, vi):
         return vi.domain
 
+
+    def setDomain(self, value):
+        return vi.domain = value
 
     # return an ID unique for this state
     def getID(self):
@@ -34,7 +39,7 @@ class State(AbstractNode):
         # find heuristic
         self.h = 0
         for v in self.viList:
-            self.h += len(v.domain())
+            self.h += len(v.domain()) - 1
         super(State, self).estimateDistance()
 
 
@@ -46,3 +51,4 @@ class State(AbstractNode):
             else:
                 vi.variable.coolor = (0,0,0)
             vertices.append(vi.variable)
+
