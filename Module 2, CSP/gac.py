@@ -1,6 +1,7 @@
 from copy import deepcopy
 import itertools
 from state import *
+from constraintInstance import CI
 
 class GAC():
 
@@ -40,9 +41,12 @@ class GAC():
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
+        print('-------')
+        print(x)
+        print(c.variables)
         pairs = self.getPairs(x, c.variables)
         for pair in pairs:
-            if not isSatisfied(pair, c):
+            if not self.isSatisfied(pair, c):
                 x.domain.pop(pair[0])
                 self.reduceDomain(x, pair[0])
                 revised = True
@@ -58,7 +62,8 @@ class GAC():
         
 
     def isSatisfied(self, pair, constraint):
-        return constraint(pair[0], pair[1])
+        print(pair)
+        return constraint.constraint(pair[0], pair[1])
 
         
     def getPairs(self, x, y):

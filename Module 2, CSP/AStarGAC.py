@@ -11,17 +11,19 @@ from graph import Graph
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
     def __init__(self, domains, expressions):
-        # cnet : cnet of searh problem
-        self.cnet = CNET(csp.domains, csp.expressions)
-        self.currentState = initializeState(self.cnet)
+        self.cnet = CNET(domains, expressions)
+        self.currentState = self.initializeState(self.cnet)
         self.gac = GAC(self.currentState)
-        self.Astar = AStar(self.currentState)
+        self.Astar = AStar(self)
+        self.startNode = None
+        self.goalNode = None
 
-    def initializeState(self, state):
+    def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        s = State(state.variables, state.constraints)  
+        s = State(cnet.variables, cnet.constraints)  
         s.update('start')
+        self.startNode = s
         return s 
 
 
@@ -74,6 +76,7 @@ class Astar_GAC(Graph):
             if len( state.getDomain(vi) ) > 1:
                 return False
         return True
+
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
@@ -87,11 +90,7 @@ class Astar_GAC(Graph):
                 succStates.append(succ)
         return succStates
         
-##### TODO : implement generateSucc
-# Should this be defined here or in cnetGraph?
-    # def generateSucc(self, assumption):
-    #     # generate succ. states by assumptions->
-    #     pass
 
-
+    def getGoal(self):
+        return None
 

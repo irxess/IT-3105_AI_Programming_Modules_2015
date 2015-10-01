@@ -19,10 +19,8 @@ class Window:
         domains = {}
         for vertex in vertices:
             domains[vertex] = colors
-            
-        # self.state = State( vertices, constraints )
-        # self.state.update('start')
-        self.astarGAC = Astar_GAC( domains, constraints, self.currentCNet )
+
+        self.astarGAC = Astar_GAC( domains, constraints )
         self.astarGAC.search()
 
 

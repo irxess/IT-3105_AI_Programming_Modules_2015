@@ -1,6 +1,7 @@
 import itertools
 from constraintInstance import *
 from variableInstance import *
+import uuid
 
 class CNET():
     """CNET is a representation of 
@@ -10,24 +11,20 @@ class CNET():
 
     def __init__(self, domains, expression):
         super(CNET, self).__init__()
-        self.variables = self.addVariables(domains) # a list with variable class instances
+        self.variables = []
+        self.constraints = []
+        self.addVariables(domains) # a list with variable class instances
         self.domains = domains
-        self.constraints = self.addConstarints(self.variables, self.expression)
+        for e in expression:
+            self.addConstraint(self.variables, e)
         self.id = uuid.uuid4()
-        # self.domains = dict() # A dictionary with key as a variable x with value as x's domain
-        # for v in variables:
-        #     self.domains[v] = domainList
-        # self.g = 0 # we don't care about the distance walked
+
 
     def addVariables(self, domains):
         for d in domains.items():
             # d is a tuple of items in domains
-            self.variables.extend(VI(d[0], d[1]))
+            self.variables.append(VI(d[0], d[1]))
 
-
-    def getArcsOf(self, x):
-        return [ (i, x) for i in self.constraints[x] ]
-    
 
     def getConstraints(self):
         return self.constraints
@@ -37,8 +34,9 @@ class CNET():
         return self.domains
 
 
-    def addConstarints(self, variables, expression):
-        constraint = self.makeFunc(variables, expression)
+    def addConstraint(self, variables, expression):
+        (args, func) = expression
+        constraint = self.makeConstraint(args, func)
         ci = CI(constraint, variables)
         self.constraints.append(ci)
 
@@ -47,5 +45,8 @@ class CNET():
         # expression is a  string of mathematical/logical representation of a constraint
         args = ""
         for x in variables:
-            args += "," + x 
-            return eval("(lambda " + args[1:] + ": " + expression + ")", envir)
+            # args += "," + x 
+            # function = "(lambda " + args[1:] + ": " + expression + ")"
+            function = "(lambda " + variables + ": " + expression + ")"
+            print(function)
+            return eval(function, envir)

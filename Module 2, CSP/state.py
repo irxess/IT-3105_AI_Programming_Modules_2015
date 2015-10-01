@@ -35,11 +35,11 @@ class State(AbstractNode):
         return 1
 
 
-    def estimateDistance(self, g):
+    def estimateDistance(self, goal):
         # find heuristic
         self.h = 0
         for v in self.viList:
-            self.h += len(v.domain()) - 1 
+            self.h += len(v.domain) - 1 
         super(State, self).estimateDistance()
 
 
