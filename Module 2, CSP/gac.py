@@ -17,8 +17,8 @@ class GAC():
     def __init__(self, state):
         # super(GAC, self).__init__() 
         self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
-        self.constraints = state.ciList
-        self.variables = state.viList
+        self.constraints = deepcopy(state.ciList)
+        self.variables = deepcopy(state.viList)
 
     def initialize(self):
         for c in self.constraints:
@@ -41,14 +41,13 @@ class GAC():
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
-        print('-------')
-        print(x)
-        print(c.variables)
         pairs = self.getPairs(x, c.variables)
         for pair in pairs:
             if not self.isSatisfied(pair, c):
-                x.domain.pop(pair[0])
-                self.reduceDomain(x, pair[0])
+                print(pair[0])
+                print(x.domain)
+                x.domain.remove(pair[0])
+                # self.reduceDomain(x, pair[0])
                 revised = True
         return revised
 
@@ -62,12 +61,16 @@ class GAC():
         
 
     def isSatisfied(self, pair, constraint):
-        print(pair)
+        print('constrain:', pair[0], pair[1])
         return constraint.constraint(pair[0], pair[1])
 
         
     def getPairs(self, x, y):
-        return itertools.product(x.domain, [k.domain for k in y] )
+        pairs = []
+        for k in y:
+            if k != x:
+                pairs += itertools.product(x.domain, k.domain)
+        return pairs
 
 
     def getConstraints(self, variable):
@@ -81,7 +84,9 @@ class GAC():
     def reduceDomain(self, vi, item):
         for v in self.variables:
             if v == vi:
-                vi.domain.pop(item)
+                print(v.domain)
+                print(item)
+                vi.domain.remove(item)
 
     # for k in set(self.constarints).difference(c):
     #     if x in k.variables:

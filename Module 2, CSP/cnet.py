@@ -44,9 +44,6 @@ class CNET():
     def makeConstraint(self, variables, expression, envir=globals()):
         # expression is a  string of mathematical/logical representation of a constraint
         args = ""
-        for x in variables:
-            # args += "," + x 
-            # function = "(lambda " + args[1:] + ": " + expression + ")"
-            function = "(lambda " + variables + ": " + expression + ")"
-            print(function)
-            return eval(function, envir)
+        function = "(lambda " + variables + ": " + expression + ")"
+        print(function)
+        return eval(function, envir)
