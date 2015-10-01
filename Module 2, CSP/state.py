@@ -9,11 +9,17 @@ class State(AbstractNode):
     def __init__(self, variables, constraints):
         super(State, self).__init__()
         self.ciList = constraints
+        print('state created with', len(variables), 'variables')
         self.viList = variables
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
         self.parent = None #not sure if needed
         self.state = 'open'
+
+
+    def getDomain(self, vi):
+         return vi.domain
+
 
     def setDomain(self, value):
         vi.domain = value

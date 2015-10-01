@@ -9,7 +9,6 @@ def createConstraint(variables, expression, envir=globals()):
         args += "," + x 
     # return an anonymous function
     function = "(lambda " + args[1:] + ": " + expression + ") "
-    print(function)
     return eval(function, envir)
 
 
@@ -25,7 +24,6 @@ def main():
     input_constraint = ""
     # lamba x: return (x.1 == x.2)
     # lambda v1, v2: v1.color != v2.color
-    print(sys.argv[1])
     number_of_colors = int(sys.argv[1])
     colorList = [
          (216,107,255), # purple
@@ -43,7 +41,6 @@ def main():
 
     inputFile = sys.argv[2]
     f = open(inputFile, 'r')
-    print(inputFile)
 
     vertexList = []
     for line in f:

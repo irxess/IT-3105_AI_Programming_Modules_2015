@@ -4,11 +4,11 @@ class Vertex:
         self.y = y
         self.neighbors = []
         self.color = (0,0,0)
-        # self.domain = [] # list of colors
+        self.domain = [] # list of colors
         # self.constraints = [] # list of functions
 
     def __repr__(self):
-        return 'vertex(x=%s, y=%s, color=%s, domain=%s' %(self.x, self.y, self.color. self.domain)
+        return 'vertex(x=%s, y=%s, color=%s, domain=%s||' %(self.x, self.y, self.color, self.domain)
 
     def setDomain(self, value):
         self.domain = value

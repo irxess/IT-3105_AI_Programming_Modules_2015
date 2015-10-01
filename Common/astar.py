@@ -104,6 +104,7 @@ class AStar:
 
 
     def iterateAStar(self):
+        print('Iterate A*')
         if self.newNode.state != 'goal':
 
             if len(self.openList) == 0:

@@ -21,6 +21,7 @@ class GAC():
         self.variables = deepcopy(state.viList)
 
     def initialize(self):
+        print('Put all constraints + variables in the GAC queue')
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
@@ -30,23 +31,32 @@ class GAC():
             (x, c) = self.queue.pop()
             if self.reviseStar(x, c):
                 if len( x.domain ) == 0:
-                    return False
-            # check the other variable in the constraint
-            for k in c.variables:
-                if k != x:
-                    self.queue.append(k, getConstraints(k))
+                    return None
+            # # check the other variable in the constraint
+            # don't think we need this
+            # for k in c.variables:
+            #     if k != x:
+            #         for c in self.getConstraints(k):
+            #             self.queue.append( (k, c) )
         return State(self.variables, self.constraints)
 
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
         pairs = self.getPairs(x, c.variables)
-        for pair in pairs:
-            if not self.isSatisfied(pair, c):
-                print(pair[0])
-                print(x.domain)
+        for listOfPairs in pairs:
+            satisfiedCount = 0
+            for pair in listOfPairs:
+                if self.isSatisfied(pair, c):
+                    satisfiedCount += 1
+
+            if satisfiedCount == 0:
+                # remove the variable from the domain,
+                # as there is no combination with the variable 
+                # where the constraint is satisfied
+                print('remove', pair[0], 'from the domain of', x)
                 x.domain.remove(pair[0])
-                # self.reduceDomain(x, pair[0])
+                self.reduceDomain(x, pair[0])
                 revised = True
         return revised
 
@@ -60,7 +70,6 @@ class GAC():
         
 
     def isSatisfied(self, pair, constraint):
-        print('constrain:', pair[0], pair[1])
         return constraint.constraint(pair[0], pair[1])
 
         
@@ -68,7 +77,8 @@ class GAC():
         pairs = []
         for k in y:
             if k != x:
-                pairs += itertools.product(x.domain, k.domain)
+                for var in x.domain:
+                    pairs.append( list(itertools.product([var], k.domain)) )
         return pairs
 
 
