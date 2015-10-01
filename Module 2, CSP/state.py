@@ -15,11 +15,6 @@ class State(AbstractNode):
         self.parent = None #not sure if needed
         self.state = 'open'
 
-
-    def getDomain(self, vi):
-        return vi.domain
-
-
     def setDomain(self, value):
         return vi.domain = value
 

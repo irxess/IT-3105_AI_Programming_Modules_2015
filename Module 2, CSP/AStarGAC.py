@@ -12,21 +12,21 @@ class Astar_GAC(Graph):
     def __init__(self, domains, expression):
         # cnet : cnet of searh problem
         self.cnet = CNET(csp.domains, csp.expression)
-        self.currentState = initializeState(self.cnet)
+        self.currentState = self.initializeState(self.cnet)
         self.gac = GAC(self.currentState)
         self.Astar = AStar(self.currentState)
+        self.stateCounter = 0
 
-    def initializeState(self, state):
+    def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-        return State(state.variables, state.constraints)        
+        return State(cnet.variables, cnet.constraints)        
 
     def search(self):
         # refine initState
-        stateCounter = 1
         self.gac.initialize()
         self.currentState = self.gac.filterDomain()
-
+        self.stateCounter += 1
         if isSolution(self.currentState):
             return self.currentState
 
@@ -37,27 +37,11 @@ class Astar_GAC(Graph):
 
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
-            # − Popping search nodes from the agenda 
             curr = self.currentState 
             self.currentState = self.Astar.iterateAStar()
+            self.stateCounter += 1
             self.currentState.parent = curr#er det nødvendig?
-
-            # − Generating their successor states (by making assumptions)
-            successors = self.makeAssumption(self.currentState)
-
-            # − Enforcing the assumption in each successor state by reducing
-            for succ in successors:
-                succGac = GAC(succ)
-                succGac.initialize()
-                succGac.filterDomain()
-
-            # the domain of the assumed variable to a singleton set − Calling GAC−Rerun on each newly−generated state
-            GAC.rerun(self.currentState) #??
-            # − Computing the f , g and h values for each new state ,
-            # where h is based on the state of the CSP after the call to GAC−Rerun.
-            h = newState.computeHeuristic()
-            g = newState.
-            return newState.viList          
+            return self.currentState.viList          
 
     def isContradictory(self, state):
         for d in state.domains:
@@ -70,6 +54,7 @@ class Astar_GAC(Graph):
             if len( state.getDomain(vi) ) > 1:
                 return False
         return True
+
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
@@ -78,16 +63,11 @@ class Astar_GAC(Graph):
         if betterVI.domain:
             # how many assumption should I make? 
             for d in betterVI.domain:
-                betterVI.domain = d
+                betterVI.domain = [d]
                 succ = state.setDomain(betterVI, assignment)
-                succStates.append(succ)
+                # runs gac.rerun on newly guessed state before adding 
+                succStates.append(self.gac.rerun(succ))
         return succStates
-        
-##### TODO : implement generateSucc
-# Should this be defined here or in cnetGraph?
-    # def generateSucc(self, assumption):
-    #     # generate succ. states by assumptions->
-    #     pass
 
 
 

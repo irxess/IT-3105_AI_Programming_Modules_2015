@@ -1,6 +1,7 @@
 from copy import deepcopy
 import itertools
 from state import *
+from constraintInstance import *
 
 class GAC(object):
 
@@ -36,13 +37,12 @@ class GAC(object):
                     self.queue.append(k, getConstraints(k))
         return State(self.variables, self.constraints)
 
-
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
         pairs = self.getPairs(x, c.variables)
         for pair in pairs:
-            if not isSatisfied(pair, c):
+            if not self.isSatisfied(pair, c):
                 x.domain.pop(pair[0])
                 self.reduceDomain(x, pair[0])
                 revised = True
@@ -77,12 +77,3 @@ class GAC(object):
         for v in self.variables:
             if v == vi:
                 vi.domain.pop(item)
-
-    # for k in set(self.constarints).difference(c):
-    #     if x in k.variables:
-    #         for v in k.variables:
-    #             if v == x :
-    #                 continue
-    #             self.queue.append(v, k)
-    # for k in set(self.cnet.getArcsOf(i).difference(i, j)):
-    #     self.queue.append(k[0], i)
