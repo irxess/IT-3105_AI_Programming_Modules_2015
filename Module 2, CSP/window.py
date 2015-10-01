@@ -5,9 +5,6 @@ from cnetGraph import CNETGraph
 from cnet import CNET
 
 class Window:
-    
-    def create_astar(self):
-        pass
 
     def __init__(self, width=600,height=600):
         pygame.init()
@@ -22,9 +19,10 @@ class Window:
         for vertex in vertices:
             for c in constraints:
                 vertex.addConstraint(c)
-        self.currentCNet = CNET( vertices, colors )
-        self.currentCNet.update('start')
-        self.graph = CNETGraph( self.currentCNet )
+        # self.currentCNet = CNET( vertices, colors )
+        # self.currentCNet.update('start')
+        self.state = State( vertices, constraints )
+        self.state.update('start')
         self.astarGAC = Astar_GAC( self.graph, self.currentCNet )
         self.astarGAC.search()
 
@@ -36,12 +34,19 @@ class Window:
         self.scale_y = (self.height - 20) / (max_y - min_y)
 
 
-    def draw_vertices(self, vertices):
+    def draw_state(self, vertices):
         for v in vertices:
             start_pos = self.getAndFitPosition(v)
             for n in v.neighbors:
                 end_pos = self.getAndFitPosition(n)
                 pygame.draw.line(self.screen, (90,90,90), start_pos, end_pos, 1)
+            color = v.getColor()
+            pygame.draw.circle(self.screen, color, start_pos, 5)
+
+
+    def draw_vertices(self, vertices):
+        for v in vertices:
+            start_pos = self.getAndFitPosition(v)
             color = v.getColor()
             pygame.draw.circle(self.screen, color, start_pos, 5)
 
@@ -64,6 +69,7 @@ class Window:
         while True:
             pygame.event.pump()
             currentState = self.astarGAC.iterateSearch()
+            self.vertices = currentState.getVerticesToDraw()
             self.draw_vertices( self.vertices )
 
             for event in pygame.event.get():

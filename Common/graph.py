@@ -27,7 +27,7 @@ class Graph:
 
 
     @abstractmethod
-    def generateNeighbors(self, node):
+    def generateSucc(self, node):
         pass
 
 
