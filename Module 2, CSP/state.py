@@ -6,13 +6,15 @@ from variableInstance import *
 
 class State(AbstractNode):
 
-    def __init__(self, variables, domainList):
+    def __init__(self, variables, constraints):
         super(State, self).__init__()
-        self.ciList = 
-        self.viList = 
+        self.ciList = constraints
+        self.viList = variables
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
 
+    def getDomain(self, vi):
+        return vi.domain
 
     # return an ID unique for this state
     def getID(self):

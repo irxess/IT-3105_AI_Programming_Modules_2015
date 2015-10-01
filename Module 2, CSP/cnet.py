@@ -8,9 +8,9 @@ class CNET():
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
-    def __init__(self, variables, domains, expression):
+    def __init__(self, domains, expression):
         super(CNET, self).__init__()
-        self.variables = self.addVariable(domains) # a list with variable class instances
+        self.variables = self.addVariables(domains) # a list with variable class instances
         self.domains = domains
         self.constraints = self.addConstarints(self.variables, self.expression)
         self.id = uuid.uuid4()
@@ -19,7 +19,7 @@ class CNET():
         #     self.domains[v] = domainList
         # self.g = 0 # we don't care about the distance walked
 
-    def addVariable(self, domains):
+    def addVariables(self, domains):
         for d in domains.items():
             # d is a tuple of items in domains
             self.variables.extend(VI(d[0], d[1])
