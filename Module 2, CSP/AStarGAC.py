@@ -86,7 +86,7 @@ class Astar_GAC(Graph):
                 return False
         return True
     # making successor list by assumptions.
-    def makeAssumption(self, state):
+    def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
         succStates = []
         betterVI = sorted(state.variables, key=lambda v: len(v.domain), reverse=True).pop()
@@ -100,9 +100,9 @@ class Astar_GAC(Graph):
         
 ##### TODO : implement generateSucc
 # Should this be defined here or in cnetGraph?
-    def generateSucc(self, assumption):
-        # generate succ. states by assumptions->
-        pass
+    # def generateSucc(self, assumption):
+    #     # generate succ. states by assumptions->
+    #     pass
 
 
 
