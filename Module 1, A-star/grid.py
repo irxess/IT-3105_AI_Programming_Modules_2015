@@ -51,7 +51,7 @@ class Grid(Graph):
             return None
 
 
-    def generateNeighbors(self, node):
+    def generateSucc(self, node):
         listToCheck = []
         (x,y,s) = node.getID()
         directions = [[-1, 0], [0,-1], [1,0], [0,1]]

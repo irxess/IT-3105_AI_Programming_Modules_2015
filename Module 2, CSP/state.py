@@ -13,8 +13,10 @@ class State(AbstractNode):
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
 
+
     def getDomain(self, vi):
         return vi.domain
+
 
     # return an ID unique for this state
     def getID(self):
@@ -34,3 +36,13 @@ class State(AbstractNode):
         for v in self.viList:
             self.h += len(v.domain())
         super(State, self).estimateDistance()
+
+
+    def getVerticesToDraw():
+        vertices = []
+        for vi in self.viList:
+            if len(vi.domain) == 1:
+                vi.variable.color = vi.domain[0]
+            else:
+                vi.variable.coolor = (0,0,0)
+            vertices.append(vi.variable)

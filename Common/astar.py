@@ -33,6 +33,7 @@ class AStar:
                 return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Search failed, no path found."
         return self.method + ":   Nodes opened: " + str(self.countNodes) + "  Path length: " + str(self.pathLength)
 
+
     def extractMin(self, li):
         if self.method == 'BFS':
             return li.popleft()
@@ -123,9 +124,9 @@ class AStar:
                 self.backtrackPath()
                 return r
 
-            neighbors = self.graph.generateNeighbors(self.newNode)
+            succ = self.graph.generateSucc(self.newNode)
 
-            for s in neighbors:
+            for s in succ:
 
                 if self.isClosed(s):
                     if self.betterPathFound(self.newNode, s):
