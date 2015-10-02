@@ -102,8 +102,8 @@ class Astar_GAC(Graph):
         for v in succ.viList:
             for n in v.variable.neighbors:
                 for c in constraints:
-                    succ.ciList.append( CI(c,[v,n]) )
-
+                    succ.ciList.append( CI(c,[v,n.currentVI]) )
+                    
         return succ
 
 

@@ -2,6 +2,7 @@ class VI():
     """docstring for VI"""
     def __init__(self, variable, domain):
         self.variable = variable # pointer to a vertex?
+        variable.currentVI = self
         self.domain = domain
 
     def __cmp__(self, vi):

@@ -24,7 +24,7 @@ class GAC():
         # self.state = state
         # print('GAC.state', self.state)
         # print('GAC.constraints:' , self.constraints)
-        # self.state = state
+        self.state = state
 
         print('Put all constraints + variables in the GAC queue')
         for c in self.constraints:
@@ -44,8 +44,9 @@ class GAC():
         #         print('domlengde til x: ', len(x.domain))
         #         self.rerun(state)
         # print("vars in currState after filterDomain:", self.variables)
-            (revised, updatedStete) = self.reviseStar(x, c, state)
-            state = updatedStete
+            (revised, updatedState) = self.reviseStar(x, c, state)
+            state = updatedState
+            self.state = state
             if revised :
                 if len( x.domain ) == 0:
                     print ("inconsistency", x.domain, "reduced to empty")
@@ -87,7 +88,6 @@ class GAC():
     def reviseStar(self, x, c, state):
         print("call to revise **********************")
         revised = False
-        print('Starting REVISE*')
         print(x)
 
         print('c.variables',c.variables)
@@ -118,15 +118,18 @@ class GAC():
     def rerun(self, assumptionState, guessedVI):
         # pdb.set_trace()
         print('starting rerun')
+        print(assumptionState.viList)
         print('guessedVI:', guessedVI)
-        for c in self.getConstraints(assumptionState.ciList) :
-        # for c in assumptionState.ciList:
+        # for c in self.getConstraints(assumptionState.ciList) :
+        for c in assumptionState.ciList:
             for x in c.variables:
                 if x != guessedVI:
-                    self.queue.append((x, self.getConstraints(k)))
-                    # self.queue.append( (x,c) )
-                    print('x', k)
+                    # self.queue.append((x, self.getConstraints(c)))
+                    self.queue.append( (x,c) )
+                    print('x', x)
         print('length', len(self.queue))
+        print(self.queue[-1])
+        # sys.exit()
         return self.filterDomain(assumptionState)
 
 
