@@ -4,4 +4,4 @@ class CI(object):
         self.variables = variables # list of variableInstances that the constraint function needs
         
     def __repr__(self):
-    	return 'CI(constraint:=%s, dependentVariables:=%s)' %(self.constraint, self.variables)
+    	return '(constraint:=%s, dependentVariables:=%s)' %(self.constraint, self.variables)

@@ -5,7 +5,7 @@ class VI():
         self.domain = domain
         
     def __cmp__(self, variable, domain):
-        if self.variable.x == variable.x and self.variable.y == variable.y:
+        if self.variable.x == variable.x and self.variable.y == variable.y and self.domain == domain:
             return True
         return False
 
