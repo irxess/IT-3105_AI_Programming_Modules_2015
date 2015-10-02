@@ -38,6 +38,11 @@ class Astar_GAC(Graph):
         print('Filtering initial domain')
         self.currentState = self.gac.filterDomain(self.currentState)
         self.stateCounter += 1
+
+        if not self.currentState:
+            print("Inconsistent")
+            return False
+
         if self.isSolution(self.currentState):
             return self.currentState
 
@@ -63,8 +68,8 @@ class Astar_GAC(Graph):
         for vi in state.viList:
             if len(state.getDomain(vi)) == 0:
                 return True
-        return False
-                
+        return False            
+
 
     def isSolution(self, state):
         for vi in state.viList:
@@ -77,7 +82,7 @@ class Astar_GAC(Graph):
         """ make a guess. start gussing value for variables with min. domain length"""
         succStates = []
         print('Generating successors')
-        # betterVI = sorted(state.variables, key=lambda v: len(v.domain), reverse=True).pop()
+        
         finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
@@ -93,7 +98,6 @@ class Astar_GAC(Graph):
                 succ = State([newVI]+otherVIs+finishedVIs, state.ciList) # todo: should I copy?
                 succ.parent = state
                 # succ = state.setDomain(newVI, assignment)
-
                 # runs gac.rerun on newly guessed state before adding
                 print( 'successor before gac rerun', succ)
                 succStates.append( self.gac.rerun(succ) )

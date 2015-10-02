@@ -15,12 +15,12 @@ class State(AbstractNode):
         self.parent = None
         self.state = 'unvisited'
 
+
     def __repr__(self):
         string = 'State: ID:%s, f:%s, constraints:%s, variables:%s\n' %(self.id, self.f, len(self.ciList), len(self.viList))
         for vi in self.viList:
             string += vi.__repr__() + '\n'
         return string
-
 
 
     def getDomain(self, vi):

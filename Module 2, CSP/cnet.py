@@ -31,6 +31,7 @@ class CNET():
     def getConstraints(self):
         return self.constraints
 
+
     def getDomains(self):
         return self.domains
 
