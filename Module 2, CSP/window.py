@@ -1,8 +1,7 @@
 import pygame
 import sys
 from AStarGAC import Astar_GAC
-from cnetGraph import CNETGraph
-from cnet import CNET
+# from cnet import CNET
 
 class Window:
 
@@ -12,16 +11,23 @@ class Window:
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.WHITE = (255, 255, 255)
+        self.screen.fill(self.WHITE)
 
 
     def initialize_problem(self, vertices, constraints, colors):
         self.set_vertices(vertices)
+        self.draw_state(vertices)
         domains = {}
         for vertex in vertices:
             domains[vertex] = colors
 
         self.astarGAC = Astar_GAC( domains, constraints )
-        self.astarGAC.search()
+        self.currentState = self.astarGAC.search()
+        # should be in loop, but for testing purposes
+        # only run A* a few times
+        self.currentState = self.astarGAC.iterateSearch()
+        self.currentState = self.astarGAC.iterateSearch()
+        self.currentState = self.astarGAC.iterateSearch()
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
@@ -61,11 +67,10 @@ class Window:
 
     def loop(self):
         clock = pygame.time.Clock()
-        self.screen.fill(self.WHITE)
 
         while True:
             pygame.event.pump()
-            self.vertices = currentState.getVerticesToDraw()
+            self.vertices = self.currentState.getVerticesToDraw()
             self.draw_vertices( self.vertices )
 
             for event in pygame.event.get():

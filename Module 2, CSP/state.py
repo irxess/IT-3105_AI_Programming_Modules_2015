@@ -13,8 +13,8 @@ class State(AbstractNode):
         self.viList = variables
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
-        self.parent = None #not sure if needed
-        self.state = 'open'
+        self.parent = None
+        self.state = 'unvisited'
 
 
     def getDomain(self, vi):
@@ -44,12 +44,13 @@ class State(AbstractNode):
         super(State, self).estimateDistance()
 
 
-    def getVerticesToDraw():
+    def getVerticesToDraw(self):
         vertices = []
         for vi in self.viList:
             if len(vi.domain) == 1:
                 vi.variable.color = vi.domain[0]
             else:
-                vi.variable.coolor = (0,0,0)
+                vi.variable.color = (0,0,0)
             vertices.append(vi.variable)
+        return vertices
 
