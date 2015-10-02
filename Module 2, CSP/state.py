@@ -9,12 +9,18 @@ class State(AbstractNode):
     def __init__(self, variables, constraints):
         super(State, self).__init__()
         self.ciList = constraints
-        print('state created with', len(variables), 'variables')
         self.viList = variables
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
         self.parent = None
         self.state = 'unvisited'
+
+    def __repr__(self):
+        string = 'State: ID:%s, f:%s, constraints:%s, variables:%s\n' %(self.id, self.f, len(self.ciList), len(self.viList))
+        for vi in self.viList:
+            string += vi.__repr__() + '\n'
+        return string
+
 
 
     def getDomain(self, vi):

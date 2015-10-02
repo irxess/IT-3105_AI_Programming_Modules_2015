@@ -78,9 +78,11 @@ class Astar_GAC(Graph):
         succStates = []
         print('Generating successors')
         # betterVI = sorted(state.variables, key=lambda v: len(v.domain), reverse=True).pop()
+        finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
         while len(betterVI.domain)==1:
+            finishedVIs.append(betterVI)
             betterVI = otherVIs.pop()
 
         if betterVI.domain:
@@ -88,11 +90,8 @@ class Astar_GAC(Graph):
             for d in betterVI.domain:
                 print('entry in domain', d)
                 newVI = VI( betterVI.variable, [d])
-                succ = State([newVI]+otherVIs, state.ciList) # todo: should I copy?
+                succ = State([newVI]+otherVIs+finishedVIs, state.ciList) # todo: should I copy?
                 succ.parent = state
-                print('VI domains in successor state:')
-                for v in succ.viList:
-                    print(v)
                 # succ = state.setDomain(newVI, assignment)
 
                 # runs gac.rerun on newly guessed state before adding

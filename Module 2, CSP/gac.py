@@ -43,9 +43,9 @@ class GAC():
         # Todo: filterdomain should probably update assumption
         assumption.variables = self.variables
         assumption.constraints = self.constraints
-        print('Domain filtered:', self.variables, self.constraints)
+        print('Domain filtered:\n', self.variables)
         return assumption
-        # return State(self.variables, self.constraints)
+
 
 # reduce x's domain
     def reviseStar(self, x, c):
@@ -92,7 +92,6 @@ class GAC():
     def getConstraints(self, variable):
         constraints = []
         for c in self.constraints:
-            print(c)
             if variable in c.variables:
                 constraints.append(c)
         return constraints
