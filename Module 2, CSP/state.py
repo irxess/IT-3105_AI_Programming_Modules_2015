@@ -10,6 +10,7 @@ class State(AbstractNode):
         super(State, self).__init__()
         self.ciList = constraints
         self.viList = variables
+        self.pairs = []
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
         self.parent = None

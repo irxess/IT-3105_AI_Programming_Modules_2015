@@ -54,7 +54,7 @@ class AStar:
 
 
     def closeNode(self, node):
-        print('Adding', node, 'to closeList')
+        # print('Adding', node, 'to closeList')
         self.closed.add(node)
         node.update('closed')
 

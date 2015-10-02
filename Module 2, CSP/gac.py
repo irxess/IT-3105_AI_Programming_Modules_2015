@@ -21,32 +21,17 @@ class GAC():
         self.constraints = state.ciList
         self.variables = state.viList
         # self.state = state
-        print(self.constraints)
 
-    def initialize(self):
+    # def initialize(self):
         print('Put all constraints + variables in the GAC queue')
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
 
 
-    def filterDomain(self): 
-        print('queue:' , self.queue)         
+    def filterDomain(self, state):           
         while len(self.queue):
-
             (x, c) = self.queue.pop()
-            print("todoRevise var:", (x, c))
-            # er x.domain en liste?
-            # pdb.set_trace()
-
-            # print(hasattr(c, 'variables'))#false
-            # print(hasattr(c, 'constraint'))#false
-            # print(hasattr(x, 'domain'))#true
-
-            if hasattr(c, 'variables'):
-                v = c.variables
-                print(v)
-            
             if self.reviseStar(x, c):
                 if len( x.domain ) == 0:
                     print ("inconsistency", x.domain, "reduced to empty")
@@ -71,9 +56,10 @@ class GAC():
 # reduce x's domain
     def reviseStar(self, x, c):
         revised = False
-        # pdb.set_trace()
-        print('c.variables',c.variables)
         pairs = self.getPairs(x, c.variables)
+        print('///////////////////')
+        print(x)
+        print(c.variables)
         for listOfPairs in pairs:
             satisfiedCount = 0
             print("pairList in revise:", listOfPairs)
@@ -96,23 +82,26 @@ class GAC():
                     # self.reduceDomain(state, x, pair[0])
                     revised = True
                     return revised
-
         return revised
 
-# assumption: a variable assignment/singleton domain
-    def rerun(self, assumption):
-        for c in self.getConstraints(assumption):
+# assumptionState: state with a variable assignment/singleton domain
+    # add todoRevise's to the queue,
+    # a
+    def rerun(self, assumptionState):
+        # pdb.set_trace()
+        for c in self.getConstraints(assumptionState.ciList):
             for k in c.variables:
-                print('k != assumption',k != assumption)
-                if k != assumption:
+
+                if k != assumptionState:
+                    # does this code run at all?
                     self.queue.append((k, self.getConstraints(k)))
-        return self.filterDomain()
+        return self.filterDomain(assumptionState)
 
     def isSatisfied(self, pair, constraint):
         return constraint.constraint(pair[0], pair[1])
         
+
     def getPairs(self, x, y):
-        # pdb.set_trace()
         pairs = [] 
         for k in y:
             if k != x:
@@ -120,7 +109,7 @@ class GAC():
                     pairs.append( list(itertools.product([value], k.domain)) )
         return pairs
 
-
+# get all constraints applying to a certain variable
     def getConstraints(self, variable):
         constraints = []
         for c in self.constraints:
@@ -128,6 +117,7 @@ class GAC():
             if variable in c.variables:
                 constraints.append(c)
         return constraints
+
 
 # updates self.variables after reducing 
     def reduceDomain(self, state, vi, item):
