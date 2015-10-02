@@ -10,22 +10,23 @@ class CNET():
         Each variable x is a vertex"""
 
     def __init__(self, domains, expression):
-        super(CNET, self).__init__()
         self.variables = []
         self.constraints = []
-        self.addVariables(domains) # a list with variable class instances
+        self.ciList = []
         self.domains = domains
+        self.addVariables(domains) # a list with variable class instances
         for e in expression:
-            self.addConstraint(self.variables, e)
+            for v in self.variables:
+                for n in v.variable.neighbors:
+                    self.addConstraint([v,n.initialVI], e)
         self.id = uuid.uuid4()
 
 
     def addVariables(self, domains):
-        print('Adding variables to CNET')
         for d in domains.items():
-            # d is a tuple of items in domains
-            print(d)
-            self.variables.append(VI(d[0], d[1]))
+            vi = VI(d[0], d[1])
+            d[0].initialVI = vi
+            self.variables.append(vi)
 
 
     def getConstraints(self):
@@ -39,8 +40,9 @@ class CNET():
     def addConstraint(self, variables, expression):
         (args, func) = expression
         constraint = self.makeConstraint(args, func)
+        self.constraints.append(constraint)
         ci = CI(constraint, variables)
-        self.constraints.append(ci)
+        self.ciList.append(ci)
 
 
     def makeConstraint(self, variables, expression, envir=globals()):

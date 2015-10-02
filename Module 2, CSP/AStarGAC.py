@@ -8,6 +8,7 @@ from gac import GAC
 from state import State
 from graph import Graph
 from variableInstance import VI
+from constraintInstance import CI
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
@@ -24,7 +25,7 @@ class Astar_GAC(Graph):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
 
-        s = State(cnet.variables, cnet.constraints)  
+        s = State(cnet.variables, cnet.ciList)  
         s.update('start')
         self.startNode = s
         self.stateCounter = 0
@@ -89,6 +90,28 @@ class Astar_GAC(Graph):
                 return False
         return True
 
+
+    def makeAssumption(self, VIs, parentState):
+        succ = State(VIs, []) # todo: should I copy?
+        succ.parent = parentState
+        succ.pairs = []
+
+
+        constraints = self.cnet.getConstraints()
+        for v in succ.viList:
+            for n in v.variable.neighbors:
+                for c in constraints:
+                    succ.ciList.append( CI(c,[v,n]) )
+        #VIs[0] had some entries removed
+        # update the pairs
+        # variable = VIs[0]
+        # for (x,c) in parentState.pairs:
+        #     if variable != x:
+        #         succ.pairs.append( (x,c) )
+        #     else 
+        return succ
+
+
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
@@ -107,14 +130,13 @@ class Astar_GAC(Graph):
             for d in betterVI.domain:
                 # print('entry in domain', d)
                 newVI = VI( betterVI.variable, [d])
-                succ = State([newVI]+otherVIs+finishedVIs, state.ciList) # todo: should I copy?
-                succ.pairs = state.pairs
-                succ.parent = state
-                # succ = state.setDomain(newVI, assignment)
+                successor = self.makeAssumption([newVI]+otherVIs+finishedVIs, state)
+
                 # runs gac.rerun on newly guessed state before adding
-                print( 'successor before gac rerun', succ)
-                succStates.append( self.gac.rerun(succ) )
+                print( 'successor before gac rerun', successor)
+                succStates.append( self.gac.rerun(successor) )
                 print( 'successor after gac rerun', succStates[-1])
+                sys.exit()
         return succStates
 
 
