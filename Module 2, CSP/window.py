@@ -65,7 +65,6 @@ class Window:
 
         while True:
             pygame.event.pump()
-            currentState = self.astarGAC.iterateSearch()
             self.vertices = currentState.getVerticesToDraw()
             self.draw_vertices( self.vertices )
 
