@@ -6,6 +6,7 @@ class Vertex:
         self.color = (0,0,0)
         self.domain = [] # list of colors
         self.initialVI = None
+        self.currentVI = None
         # self.constraints = [] # list of functions
 
     def __repr__(self):

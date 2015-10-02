@@ -26,6 +26,7 @@ class CNET():
         for d in domains.items():
             vi = VI(d[0], d[1])
             d[0].initialVI = vi
+            d[0].currentVI = vi
             self.variables.append(vi)
 
 
