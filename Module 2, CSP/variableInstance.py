@@ -5,7 +5,7 @@ class VI():
         self.domain = domain
 
     def __cmp__(self, vi):
-        if self.variable.x == vi.variable.x and self.variable.y == vi.variable.y and self.domain == vi.domain:
+        if self.variable.x == vi.variable.x and self.variable.y == vi.variable.y and comp(self.domain, vi.domain):
             return True
         return False
 
@@ -16,4 +16,10 @@ class VI():
         # for color in self.domain:
         #     print_string += '(%s,%s,%s),' %(color[0],color[1],color[2])
         return print_string
-
+    def comp(self, x, y):
+        for i in x:
+            # for j in y:
+            #     pass
+            if i not in y:
+                return False
+        return True
