@@ -25,7 +25,8 @@ class GAC():
             for x in c.variables:
                 self.queue.append((x, c))
 
-    def filterDomain(self):         
+    def filterDomain(self): 
+        print(self.constraints)        
         while len(self.queue):
             (x, c) = self.queue.pop()
             if self.reviseStar(x, c):
@@ -34,7 +35,7 @@ class GAC():
             # check the other variable in the constraint
             for k in c.variables:
                 if k != x:
-                    self.queue.append(k, getConstraints(k))
+                    self.queue.append((k, self.getConstraints(k)))
         return State(self.variables, self.constraints)
 
 # reduce x's domain
@@ -42,12 +43,11 @@ class GAC():
         revised = False
         print('-------')
         print(x)
-        print(c.variables)
         pairs = self.getPairs(x, c.variables)
         for pair in pairs:
             if not self.isSatisfied(pair, c):
                 x.domain.pop(pair[0])
-                self.reduceDomain(x, pair[0])
+                # self.reduceDomain(x, pair[0])
                 revised = True
         return revised
 
@@ -72,6 +72,7 @@ class GAC():
     def getConstraints(self, variable):
         constraints = []
         for c in self.constraints:
+            print(c)
             if variable in c.variables:
                 constraints.append(c)
         return constraints

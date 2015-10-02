@@ -27,9 +27,6 @@ class CNET():
     def getConstraints(self):
         return self.constraints
 
-    # def addConstarints(self, variables, expression):
-    #     constraint = self.makeFunc(variables, expression)
-
     def getDomains(self):
         return self.domains
 

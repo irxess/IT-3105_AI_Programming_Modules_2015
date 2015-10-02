@@ -16,10 +16,8 @@ class Vertex:
     def add_neighbor(self, vertex):
         self.neighbors.append(vertex)
 
-    
     def getNeighbors(self):
         return self.neighbors
-
 
     def setColor(self, color):
         self.color = color

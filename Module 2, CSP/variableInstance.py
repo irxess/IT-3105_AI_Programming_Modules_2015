@@ -4,3 +4,6 @@ class VI(object):
         super(VI, self).__init__()
         self.variable = variable
         self.domain = domain
+    def __cmp__(self, variable, domain):
+    	if self.variable:
+    		pass
