@@ -36,7 +36,7 @@ class Astar_GAC(Graph):
         print('Starting A* GAC search')
         self.gac.initialize()
         print('Filtering initial domain')
-        self.currentState = self.gac.filterDomain()
+        self.currentState = self.gac.filterDomain(self.currentState)
         self.stateCounter += 1
         if self.isSolution(self.currentState):
             return self.currentState
@@ -80,6 +80,8 @@ class Astar_GAC(Graph):
         # betterVI = sorted(state.variables, key=lambda v: len(v.domain), reverse=True).pop()
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
+        while len(betterVI.domain)==1:
+            betterVI = otherVIs.pop()
 
         if betterVI.domain:
             # how many assumption should I make? 

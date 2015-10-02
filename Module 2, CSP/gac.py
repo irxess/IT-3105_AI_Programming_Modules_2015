@@ -26,7 +26,7 @@ class GAC():
             for x in c.variables:
                 self.queue.append((x, c))
 
-    def filterDomain(self):         
+    def filterDomain(self, assumption):         
         while len(self.queue):
             (x, c) = self.queue.pop()
             if self.reviseStar(x, c):
@@ -38,7 +38,13 @@ class GAC():
             #     if k != x:
             #         for c in self.getConstraints(k):
             #             self.queue.append( (k, c) )
-        return State(self.variables, self.constraints)
+            
+        # Todo: filterdomain should probably update assumption
+        assumption.variables = self.variables
+        assumption.constraints = self.constraints
+        print('Domain filtered:', self.variables, self.constraints)
+        return assumption
+        # return State(self.variables, self.constraints)
 
 # reduce x's domain
     def reviseStar(self, x, c):
@@ -54,7 +60,7 @@ class GAC():
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
                 # where the constraint is satisfied
-                print('remove', pair[0], 'from the domain of', x)
+                print('Remove', pair[0], 'from the domain of', x)
                 x.domain.remove(pair[0])
                 self.reduceDomain(x, pair[0])
                 revised = True
@@ -66,7 +72,7 @@ class GAC():
             for k in c.variables:
                 if k != assumption:
                     self.queue.append((k, getConstraints(k)))
-        return self.filterDomain()
+        return self.filterDomain(assumption)
         
 
     def isSatisfied(self, pair, constraint):
