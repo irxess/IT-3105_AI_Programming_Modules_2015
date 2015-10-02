@@ -7,6 +7,7 @@ from cnet import CNET
 from gac import GAC
 from state import State
 from graph import Graph
+from variableInstance import VI
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
@@ -43,18 +44,19 @@ class Astar_GAC(Graph):
         elif self.isContradictory(self.currentState):
             print( 'Dismissed. There is no solution!')
             return False
-        self.iterateSearch()
+        return self.iterateSearch()
 
 
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
             curr = self.currentState 
-            print('Starting Astar')
+            print('\n\nStarting Astar iteration')
             self.currentState = self.Astar.iterateAStar()
-            print('Iteration', stateCounter, 'of Astar done')
+            print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            return self.currentState.viList          
+            print('A* found', self.currentState)
+            return self.currentState          
 
 
     def isContradictory(self, state):
@@ -76,21 +78,25 @@ class Astar_GAC(Graph):
         succStates = []
         print('Generating successors')
         # betterVI = sorted(state.variables, key=lambda v: len(v.domain), reverse=True).pop()
-        otherVIs = sorted(state.variables, key=lambda v: len(v.domain), reverse=True)
+        otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
 
-        print('Smallest domain length found', len(betterVI.domain))
-        print('')
         if betterVI.domain:
             # how many assumption should I make? 
             for d in betterVI.domain:
-                newVI = VI( betterVI.variables, [d])
-                # betterVI.domain = [d]
+                print('entry in domain', d)
+                newVI = VI( betterVI.variable, [d])
                 succ = State([newVI]+otherVIs, state.ciList) # todo: should I copy?
+                succ.parent = state
+                print('VI domains in successor state:')
+                for v in succ.viList:
+                    print(v)
                 # succ = state.setDomain(newVI, assignment)
 
-                # runs gac.rerun on newly guessed state before adding 
-                succStates.append(self.gac.rerun(succ))
+                # runs gac.rerun on newly guessed state before adding
+                print( 'successor before gac rerun', succ)
+                succStates.append( self.gac.rerun(succ) )
+                print( 'successor after gac rerun', succStates[-1])
         return succStates
 
 

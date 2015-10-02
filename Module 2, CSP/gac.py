@@ -33,7 +33,7 @@ class GAC():
                 if len( x.domain ) == 0:
                     return None
             # # check the other variable in the constraint
-            # don't think we need this
+            # do we need this?
             # for k in c.variables:
             #     if k != x:
             #         for c in self.getConstraints(k):
@@ -62,11 +62,11 @@ class GAC():
 
 # assumption: a variable assignment/singleton domain
     def rerun(self, assumption):
-        for c in getConstraints(assumption):
+        for c in self.getConstraints(assumption):
             for k in c.variables:
                 if k != assumption:
                     self.queue.append((k, getConstraints(k)))
-        self.filterDomain()
+        return self.filterDomain()
         
 
     def isSatisfied(self, pair, constraint):

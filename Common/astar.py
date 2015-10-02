@@ -48,11 +48,13 @@ class AStar:
  
 
     def openNode(self, node):
+        print('Adding', node, 'to openList')
         self.openList.append(node)
         node.update('open')
 
 
     def closeNode(self, node):
+        print('Adding', node, 'to closeList')
         self.closed.add(node)
         node.update('closed')
 
@@ -128,14 +130,16 @@ class AStar:
             succ = self.graph.generateSucc(self.newNode)
 
             for s in succ:
-
+                print('trying to use successor', s)
                 if self.isClosed(s):
+                    print('go through A* closed list')
                     if self.betterPathFound(self.newNode, s):
                         self.newNode.updateChildren(s)
                     self.newNode.addChild(s) 
                     continue
 
                 elif self.isOpen(s):
+                    print('go through A* closed list')
                     if self.betterPathFound(self.newNode, s):
                         self.attachAndEval(s, self.newNode)
                     self.newNode.addChild(s) 
@@ -145,4 +149,5 @@ class AStar:
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.newNode.addChild(s) 
+        print('A* returned', self.newNode)
         return self.newNode
