@@ -3,6 +3,7 @@ import itertools
 from state import *
 from constraintInstance import CI
 import pdb
+import sys
 
 class GAC():
 
@@ -20,21 +21,29 @@ class GAC():
         self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
         self.constraints = state.ciList
         self.variables = state.viList
-        self.state = state
-        print('GAC.state', self.state)
-        print('GAC.constraints:' , self.constraints)
+        # self.state = state
+        # print('GAC.state', self.state)
+        # print('GAC.constraints:' , self.constraints)
+        # self.state = state
 
-    # def initialize(self):
         print('Put all constraints + variables in the GAC queue')
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
+        state.pairs = self.queue
 
 
     def filterDomain(self, state):  
         print('call to filterDomain--------------------')         
         while len(self.queue):
             (x, c) = self.queue.pop()
+        #     if self.reviseStar(x, c):
+        #         if len( x.domain ) == 0:
+        #             print ("inconsistency", x.domain, "reduced to empty")
+        #             return None
+        #         print('domlengde til x: ', len(x.domain))
+        #         self.rerun(state)
+        # print("vars in currState after filterDomain:", self.variables)
             (revised, updatedStete) = self.reviseStar(x, c, state)
             state = updatedStete
             if revised :
@@ -78,51 +87,48 @@ class GAC():
     def reviseStar(self, x, c, state):
         print("call to revise **********************")
         revised = False
-        pairs = self.getPairs(x, c.variables)
-        print('///////////////////')
+        print('Starting REVISE*')
         print(x)
-        print('c.variables', c.variables)
+
+        print('c.variables',c.variables)
+        pairs = self.getPairs(x, c.variables)
         for listOfPairs in pairs:
             satisfiedCount = 0
-            print("pairList in revise:", listOfPairs)
+            # print(listOfPairs)
             for pair in listOfPairs:
-                print("checking pair: ", pair)
                 if self.isSatisfied(pair, c):
-                    print("satisfied:",self.isSatisfied(pair, c))
                     satisfiedCount += 1
-                    continue
-                # else: 
-                if satisfiedCount == 0:
-                    print("Satisfied:",self.isSatisfied(pair, c))
-
+            if satisfiedCount == 0:
+                print("Satisfied:",self.isSatisfied(pair, c))
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
                 # where the constraint is satisfied
+                print('should remove stuff')
+                print(listOfPairs)
                 print('x.domain',x.domain)
-                print('Remove', pair[0], 'from the domain of', x)
-                x.domain.remove(pair[0])
-                print('x.domain',x.domain)
+                # print('Remove', pair[0], 'from the domain of', x)
+                # x.domain.remove(pair[0])
+                # print('x.domain',x.domain)
                 # self.reduceDomain(state, x, pair[0])
                 revised = True
-                return (revised, state)
         return (revised, state)
 
-# assumptionState: state with a variable assignment/singleton domain
-    # add todoRevise's to the queue,
-    # a
+ 
+    # def rerun(self, assumptionState):
     def rerun(self, assumptionState, guessedVI):
         # pdb.set_trace()
+        print('starting rerun')
         print('guessedVI:', guessedVI)
-        print(guessedVI.variable.x)
-        for c in self.getConstraints(guessedVI) :
-            for k in c.variables:
-
-                # if not cmp(guessedVI.domain, k.domain) and not k.variable.x == guessedVI.variable.x and not k.variable.y==guessedVI.variable.y:
-                if k != guessedVI:
-                    # does this code run at all?
-                    self.queue.append((k, self.getConstraints(k)))
-                    print('k', k)
+        for c in self.getConstraints(assumptionState.ciList) :
+        # for c in assumptionState.ciList:
+            for x in c.variables:
+                if x != guessedVI:
+                    self.queue.append((x, self.getConstraints(k)))
+                    # self.queue.append( (x,c) )
+                    print('x', k)
+        print('length', len(self.queue))
         return self.filterDomain(assumptionState)
+
 
     def isSatisfied(self, pair, constraint):
         return constraint.constraint(pair[0], pair[1])
@@ -150,10 +156,10 @@ class GAC():
 
 
 # updates self.variables after reducing 
-    def reduceDomain(self, state, vi, item):
+
+    def reduceDomain(self, vi, item):
         print('call to reduceDomain################################')
-        print(state)
-        for v in state.viList:
+        for v in self.variables:
             if v == vi:
             # if not cmp(v.domain, vi.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
 
