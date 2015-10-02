@@ -19,14 +19,12 @@ class CNET():
             self.addConstraint(self.variables, e)
         self.id = uuid.uuid4()
 
-
     def addVariables(self, domains):
         print('Adding variables to CNET')
         for d in domains.items():
             # d is a tuple of items in domains
             print(d)
             self.variables.append(VI(d[0], d[1]))
-
 
     def getConstraints(self):
         return self.constraints

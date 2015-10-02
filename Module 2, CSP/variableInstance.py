@@ -5,8 +5,8 @@ class VI():
         self.domain = domain
         
     def __cmp__(self, variable, domain):
-    	if self.variable.x == variable.x and self.variable.y == variable.y:
-    		return True
+        if self.variable.x == variable.x and self.variable.y == variable.y:
+            return True
         return False
 
     def __repr__(self):

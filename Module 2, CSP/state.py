@@ -15,7 +15,7 @@ class State(AbstractNode):
         self.g = 0 # we don't care about the distance walked
         self.parent = None
         self.state = 'unvisited'
-
+        
 
     def getDomain(self, vi):
          return vi.domain
