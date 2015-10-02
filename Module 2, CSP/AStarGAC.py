@@ -106,7 +106,6 @@ class Astar_GAC(Graph):
             for n in v.variable.neighbors:
                 for c in constraints:
                     succ.ciList.append( CI(c,[v,n]) )
-
         return succ
 
 
@@ -119,6 +118,7 @@ class Astar_GAC(Graph):
         finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
+
         while len( betterVI.domain ) == 1:
             finishedVIs.append(betterVI)
             betterVI = otherVIs.pop()
@@ -129,7 +129,6 @@ class Astar_GAC(Graph):
                 # print('entry in domain', d)
                 newVI = VI( betterVI.variable, [d])
                 successor = self.makeAssumption([newVI]+otherVIs+finishedVIs, state)
-
                 # runs gac.rerun on newly guessed state before adding
                 print( 'successor before gac rerun', successor)
                 succStates.append( self.gac.rerun(successor, newVI) )

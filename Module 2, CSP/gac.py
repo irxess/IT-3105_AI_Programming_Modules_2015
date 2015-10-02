@@ -88,8 +88,8 @@ class GAC():
                 if self.isSatisfied(pair, c):
                     satisfiedCount += 1
                     continue
-            if satisfiedCount == 0:
-                print("Satisfied:",self.isSatisfied(pair, c))
+            # if satisfiedCount == 0:
+            #     print("Satisfied:",self.isSatisfied(pair, c))
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
                 # where the constraint is satisfied
@@ -149,12 +149,10 @@ class GAC():
 
 # updates self.variables after reducing 
 
-    def reduceDomain(self, vi, item):
+    def reduceDomain(self, vi, item, state):
         print('call to reduceDomain################################')
-        for v in self.variables:
+        for v in state.viList:
             if v == vi:
-            # if not cmp(v.domain, vi.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
-
                 print("vi.domain", vi.domain)
                 print(item)
                 print('v.domain', v.domain)
