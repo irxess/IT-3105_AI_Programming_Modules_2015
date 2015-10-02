@@ -10,7 +10,7 @@ class GAC():
     """GAC is a generalazied arc consistency algoritm that
         outputs arc-consistent doamins for each variable v in given variable set
         cnet is given to GAC as a representation of 
-        constraints with components (variabels, domain, constarints)
+        constraints with components (variables, domain, constarints)
         domain is a dictionary and domain[v] returns a list of values(the domain of key v)
         Variable v is a vertex.
         Output: queue consists of arc-consistent domains for each variable
@@ -23,6 +23,7 @@ class GAC():
         self.variables = state.viList
         # self.state = state
 
+        print('Put all constraints + variables in the GAC queue')
         for c in self.constraints:
             for x in c.variables:
                 self.queue.append((x, c))
@@ -32,14 +33,32 @@ class GAC():
     def filterDomain(self, state):           
         while len(self.queue):
             (x, c) = self.queue.pop()
-
-            if self.reviseStar(x, c):
+        #     if self.reviseStar(x, c):
+        #         if len( x.domain ) == 0:
+        #             print ("inconsistency", x.domain, "reduced to empty")
+        #             return None
+        #         print('domlengde til x: ', len(x.domain))
+        #         self.rerun(state)
+        # print("vars in currState after filterDomain:", self.variables)
+            (revised, updatedStete) = self.reviseStar(x, c, state)
+            state = updatedStete
+            if revised :
                 if len( x.domain ) == 0:
                     print ("inconsistency", x.domain, "reduced to empty")
-                    return None
+                    print ('self.state.variables:', state.viList)
+
+                    return False
                 print('domlengde til x: ', len(x.domain))
-                self.rerun(state)
-        print("vars in currState after filterDomain:", self.variables)
+                print('x:', x)
+                for k in c.variables:
+                    print('k',k)
+                    if k != x:
+                        for c in self.getConstraints(k):
+                            self.queue.append( (k, c) )
+
+        print("vars in currState after filterDomain:", state.viList)
+        # do we though return the self.state???
+        print ('self.state.variables:', state.viList)
         return state
             # # check the other variable in the constraint
             # do we need this?
@@ -55,53 +74,48 @@ class GAC():
 
 
 # reduce x's domain
-    def reviseStar(self, x, c):
+    def reviseStar(self, x, c, state):
         revised = False
         print('Starting REVISE*')
         print(x)
-        print(c)
+        print('c.variables',c.variables)
         pairs = self.getPairs(x, c.variables)
-
         for listOfPairs in pairs:
             satisfiedCount = 0
-            # print('""""""""""""""""""""""""""""""""""""""""""""""')
             # print(listOfPairs)
             for pair in listOfPairs:
                 if self.isSatisfied(pair, c):
                     satisfiedCount += 1
-                # else:
-
-                #     state.pairs.remove(pair)
             if satisfiedCount == 0:
+                print("Satisfied:",self.isSatisfied(pair, c))
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
                 # where the constraint is satisfied
                 print('should remove stuff')
                 print(listOfPairs)
-                sys.exit()
+                print('x.domain',x.domain)
                 # print('Remove', pair[0], 'from the domain of', x)
                 # x.domain.remove(pair[0])
-                # self.reduceDomain(x, pair[0])
+                # print('x.domain',x.domain)
+                # self.reduceDomain(state, x, pair[0])
                 revised = True
-        return revised
+        return (revised, state)
 
-# assumptionState: state with a variable assignment/singleton domain
-    # add todoRevise's to the queue,
-    # should discover it 
-    def rerun(self, assumptionState):
+ 
+    # def rerun(self, assumptionState):
+    def rerun(self, assumptionState, guessedVI):
         # pdb.set_trace()
         print('starting rerun')
-        # for c in self.getConstraints(assumptionState.ciList):
-        for c in assumptionState.ciList:
+        print('guessedVI:', guessedVI)
+        for c in self.getConstraints(assumptionState.ciList) :
+        # for c in assumptionState.ciList:
             for x in c.variables:
-                # print('x != assumption',x != assumption)
-                # if x != assumptionState:
-                #     # does this code run at all?
-                #     self.queue.append((k, self.getConstraints(k)))
-                print(x)
-                self.queue.append( (x,c) )
+                if x != guessedVI:
+                    self.queue.append((x, self.getConstraints(k)))
+                    # self.queue.append( (x,c) )
+                    print('x', k)
+
         print('length', len(self.queue))
-        # sys.exit()
         return self.filterDomain(assumptionState)
 
 

@@ -9,6 +9,8 @@ from state import State
 from graph import Graph
 from variableInstance import VI
 from constraintInstance import CI
+import pdb
+
 
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
@@ -20,6 +22,7 @@ class Astar_GAC(Graph):
         self.Astar = AStar(self)
         self.startNode = None
         self.goalNode = None
+
 
     def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
@@ -39,7 +42,6 @@ class Astar_GAC(Graph):
         print('Filtering initial domain')
         self.currentState = self.gac.filterDomain(self.currentState)
         self.stateCounter += 1
-
         # if not self.currentState:
         #     print("Inconsistent")
         #     return False
@@ -56,7 +58,7 @@ class Astar_GAC(Graph):
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
             curr = self.currentState 
-
+            # pdb.set_trace()
             if not curr:
                 print("Inconsistent")
                 return False
@@ -73,7 +75,7 @@ class Astar_GAC(Graph):
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            print('A* found', self.currentState)
+            print('A* found', self.currentState)            
             return self.currentState          
 
 
@@ -96,19 +98,12 @@ class Astar_GAC(Graph):
         succ.parent = parentState
         succ.pairs = []
 
-
         constraints = self.cnet.getConstraints()
         for v in succ.viList:
             for n in v.variable.neighbors:
                 for c in constraints:
                     succ.ciList.append( CI(c,[v,n]) )
-        #VIs[0] had some entries removed
-        # update the pairs
-        # variable = VIs[0]
-        # for (x,c) in parentState.pairs:
-        #     if variable != x:
-        #         succ.pairs.append( (x,c) )
-        #     else 
+
         return succ
 
 
@@ -121,7 +116,7 @@ class Astar_GAC(Graph):
         finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
-        while len(betterVI.domain)==1:
+        while len( betterVI.domain ) == 1:
             finishedVIs.append(betterVI)
             betterVI = otherVIs.pop()
 
@@ -134,9 +129,9 @@ class Astar_GAC(Graph):
 
                 # runs gac.rerun on newly guessed state before adding
                 print( 'successor before gac rerun', successor)
-                succStates.append( self.gac.rerun(successor) )
+                succStates.append( self.gac.rerun(successor, newVI) )
                 print( 'successor after gac rerun', succStates[-1])
-                sys.exit()
+        # print("succStates",[succVar for succVar in succStates])
         return succStates
 
 

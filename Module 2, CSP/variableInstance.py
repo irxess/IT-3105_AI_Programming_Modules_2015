@@ -3,9 +3,9 @@ class VI():
     def __init__(self, variable, domain):
         self.variable = variable # pointer to a vertex?
         self.domain = domain
-        
-    def __cmp__(self, variable, domain):
-        if self.variable.x == variable.x and self.variable.y == variable.y and self.domain == domain:
+
+    def __cmp__(self, vi):
+        if self.variable.x == vi.variable.x and self.variable.y == vi.variable.y and self.domain == vi.domain:
             return True
         return False
 
