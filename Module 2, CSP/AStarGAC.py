@@ -34,27 +34,39 @@ class Astar_GAC(Graph):
     def search(self):
         # refine initState
         print('Starting A* GAC search')
-        self.gac.initialize()
+        # self.gac.initialize()
         print('Filtering initial domain')
         self.currentState = self.gac.filterDomain(self.currentState)
         self.stateCounter += 1
 
-        if not self.currentState:
-            print("Inconsistent")
-            return False
+        # if not self.currentState:
+        #     print("Inconsistent")
+        #     return False
 
-        if self.isSolution(self.currentState):
-            return self.currentState
+        # if self.isSolution(self.currentState):
+        #     return self.currentState
 
-        elif self.isContradictory(self.currentState):
-            print( 'Dismissed. There is no solution!')
-            return False
+        # elif self.isContradictory(self.currentState):
+        #     print( 'Dismissed. There is no solution!')
+        #     return False
         return self.iterateSearch()
 
 
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
             curr = self.currentState 
+
+            if not curr:
+                print("Inconsistent")
+                return False
+
+            if self.isSolution(curr):
+                return curr
+
+            elif self.isContradictory(curr):
+                print( 'Dismissed. There is no solution!')
+                return False
+
             print('\n\nStarting Astar iteration')
             self.currentState = self.Astar.iterateAStar()
             print('Iteration', self.stateCounter, 'of Astar done')
@@ -82,7 +94,7 @@ class Astar_GAC(Graph):
         """ make a guess. start gussing value for variables with min. domain length"""
         succStates = []
         print('Generating successors')
-        
+
         finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
@@ -93,9 +105,10 @@ class Astar_GAC(Graph):
         if betterVI.domain:
             # how many assumption should I make? 
             for d in betterVI.domain:
-                print('entry in domain', d)
+                # print('entry in domain', d)
                 newVI = VI( betterVI.variable, [d])
                 succ = State([newVI]+otherVIs+finishedVIs, state.ciList) # todo: should I copy?
+                succ.pairs = state.pairs
                 succ.parent = state
                 # succ = state.setDomain(newVI, assignment)
                 # runs gac.rerun on newly guessed state before adding

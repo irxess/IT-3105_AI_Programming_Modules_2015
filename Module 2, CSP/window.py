@@ -26,7 +26,7 @@ class Window:
         # should be in loop, but for testing purposes
         # only run A* a few times
         self.currentState = self.astarGAC.iterateSearch()
-        self.currentState = self.astarGAC.iterateSearch()
+        # self.currentState = self.astarGAC.iterateSearch()
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
