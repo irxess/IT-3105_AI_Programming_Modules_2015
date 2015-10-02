@@ -5,10 +5,8 @@ class VI():
         variable.currentVI = self
         self.domain = domain
 
-    def __cmp__(self, vi):
-        if self.variable.x == vi.variable.x and self.variable.y == vi.variable.y and comp(self.domain, vi.domain):
-            return True
-        return False
+    def __eq__(self, vi):
+        return (self.variable.x == vi.variable.x and self.variable.y == vi.variable.y and self.comp(self.domain, vi.domain))
 
     def __repr__(self):
         x = self.variable.x

@@ -47,41 +47,31 @@ class GAC():
             (revised, updatedState) = self.reviseStar(x, c, state)
             state = updatedState
             self.state = state
+
             if revised :
                 if len( x.domain ) == 0:
                     print ("inconsistency", x.domain, "reduced to empty")
                     print ('self.state.variables:', state.viList)
 
-                    return False
-                print('domlengde til x: ', len(x.domain))
-                print('x:', x)
-                for k in c.variables:
-                    print('k:  ',(k.variable.x, k.variable.y), 'x:  ', (x.variable.x, x.variable.y))
+                    return None
+                # self.rerun(state, x)
+                # print('domlengde til x: ', len(x.domain))
+                # print('x:', x)
+                # for k in c.variables:
+                #     print('k:  ',(k.variable.x, k.variable.y), 'x:  ', (x.variable.x, x.variable.y))
 
-                    print(c.variables)
-                    print('k',k)
-                    if k != x:
-                    # if not cmp(k.domain, x.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
-
-                        for c in self.getConstraints(k):
-                            self.queue.append( (k, c) )
+                #     print(c.variables)
+                #     print('k',k)
+                #     if k != x:
+                #     # if not cmp(k.domain, x.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
+                #         for c in self.getConstraints(k):
+                #             self.queue.append( (k, c) )
 
         print("vars in currState after filterDomain:", state.viList)
         # do we though return the self.state???
 
-        print ('self.state.variables:', self.state.viList)
+        # print ('self.state.variables:', self.state.viList)
         return state
-            # # check the other variable in the constraint
-            # do we need this?
-            # for k in c.variables:
-            #     if k != x:
-            #         for c in self.getConstraints(k):
-            #             self.queue.append( (k, c) )
-            
-        # assumption.variables = self.variables
-        # assumption.constraints = self.constraints
-        # print('Domain filtered:\n', self.variables)
-        # return assumption
 
 
 # reduce x's domain
@@ -98,8 +88,9 @@ class GAC():
             for pair in listOfPairs:
                 if self.isSatisfied(pair, c):
                     satisfiedCount += 1
+                    continue
             if satisfiedCount == 0:
-                print("Satisfied:",self.isSatisfied(pair, c))
+                # print("Satisfied:",self.isSatisfied(pair, c))
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
                 # where the constraint is satisfied
@@ -109,13 +100,14 @@ class GAC():
                 # print('Remove', pair[0], 'from the domain of', x)
                 # x.domain.remove(pair[0])
                 # print('x.domain',x.domain)
-                # self.reduceDomain(state, x, pair[0])
+                # self.reduceDomain(x, pair[0])
                 revised = True
         return (revised, state)
 
  
     # def rerun(self, assumptionState):
     def rerun(self, assumptionState, guessedVI):
+        print('call to rerun///////////////////')
         # pdb.set_trace()
         print('starting rerun')
         print(assumptionState.viList)
@@ -126,7 +118,7 @@ class GAC():
                 if x != guessedVI:
                     # self.queue.append((x, self.getConstraints(c)))
                     self.queue.append( (x,c) )
-                    print('x', x)
+                    # print('x', x)
         print('length', len(self.queue))
         print(self.queue[-1])
         # sys.exit()

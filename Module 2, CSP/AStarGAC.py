@@ -75,7 +75,10 @@ class Astar_GAC(Graph):
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            print('A* found', self.currentState)            
+            print('A* found', self.currentState)   
+            if not self.gac.filterDomain(self.currentState):
+                self.currentState = curr
+
             return self.currentState          
 
 
