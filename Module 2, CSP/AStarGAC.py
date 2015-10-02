@@ -20,6 +20,7 @@ class Astar_GAC(Graph):
         self.startNode = None
         self.goalNode = None
 
+
     def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
@@ -36,7 +37,7 @@ class Astar_GAC(Graph):
         print('Starting A* GAC search')
         self.gac.initialize()
         print('Filtering initial domain')
-        self.currentState = self.gac.filterDomain(self.currentState)
+        self.currentState.variables = self.gac.filterDomain()
         self.stateCounter += 1
 
         if not self.currentState:
