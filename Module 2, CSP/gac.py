@@ -20,7 +20,6 @@ class GAC():
         self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
         self.constraints = state.ciList
         self.variables = state.viList
-        # self.state = state
 
     # def initialize(self):
         print('Put all constraints + variables in the GAC queue')
@@ -32,14 +31,26 @@ class GAC():
     def filterDomain(self, state):           
         while len(self.queue):
             (x, c) = self.queue.pop()
-            if self.reviseStar(x, c):
+            (revised, updatedStete) = self.reviseStar(x, c, state)
+            state = updatedStete
+            if revised :
                 if len( x.domain ) == 0:
                     print ("inconsistency", x.domain, "reduced to empty")
+                    print ('self.state.variables:', state.viList)
+
                     return False
                 print('domlengde til x: ', len(x.domain))
-                self.rerun(x)
-        print("vars in currState after filterDomain:", self.variables)
-        return self.variables
+                print('x:', x)
+                for k in c.variables:
+                    print('k',k)
+                    if k != x:
+                        for c in self.getConstraints(k):
+                            self.queue.append( (k, c) )
+
+        print("vars in currState after filterDomain:", state.viList)
+        # do we though return the self.state???
+        print ('self.state.variables:', state.viList)
+        return state
             # # check the other variable in the constraint
             # do we need this?
             # for k in c.variables:
@@ -54,12 +65,12 @@ class GAC():
 
 
 # reduce x's domain
-    def reviseStar(self, x, c):
+    def reviseStar(self, x, c, state):
         revised = False
         pairs = self.getPairs(x, c.variables)
         print('///////////////////')
         print(x)
-        print(c.variables)
+        print('c.variables',c.variables)
         for listOfPairs in pairs:
             satisfiedCount = 0
             print("pairList in revise:", listOfPairs)
@@ -69,8 +80,8 @@ class GAC():
                     print("satisfied:",self.isSatisfied(pair, c))
                     satisfiedCount += 1
                 # else: 
-                if satisfiedCount == 0:
-                    print("notSatisfied:",self.isSatisfied(pair, c))
+            if satisfiedCount == 0:
+                    print("Satisfied:",self.isSatisfied(pair, c))
 
                 # remove the variable from the domain,
                 # as there is no combination with the variable 
@@ -79,22 +90,23 @@ class GAC():
                     print('Remove', pair[0], 'from the domain of', x)
                     x.domain.remove(pair[0])
                     print('x.domain',x.domain)
-                    # self.reduceDomain(state, x, pair[0])
+                    self.reduceDomain(state, x, pair[0])
                     revised = True
-                    return revised
-        return revised
+                    return (revised, state)
+        return (revised, state)
 
 # assumptionState: state with a variable assignment/singleton domain
     # add todoRevise's to the queue,
     # a
-    def rerun(self, assumptionState):
+    def rerun(self, assumptionState, guessedVI):
         # pdb.set_trace()
-        for c in self.getConstraints(assumptionState.ciList):
+        print('guessedVI:', guessedVI)
+        for c in self.getConstraints(assumptionState.ciList) :
             for k in c.variables:
-
-                if k != assumptionState:
+                if k != guessedVI:
                     # does this code run at all?
                     self.queue.append((k, self.getConstraints(k)))
+                    print('k', k)
         return self.filterDomain(assumptionState)
 
     def isSatisfied(self, pair, constraint):

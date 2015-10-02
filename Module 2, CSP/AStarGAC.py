@@ -8,7 +8,7 @@ from gac import GAC
 from state import State
 from graph import Graph
 from variableInstance import VI
-
+import pdb
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
 
@@ -37,9 +37,8 @@ class Astar_GAC(Graph):
         print('Starting A* GAC search')
         # self.gac.initialize()
         print('Filtering initial domain')
-        self.currentState.variables = self.gac.filterDomain()
+        self.currentState = self.gac.filterDomain(self.currentState)
         self.stateCounter += 1
-
         # if not self.currentState:
         #     print("Inconsistent")
         #     return False
@@ -56,7 +55,7 @@ class Astar_GAC(Graph):
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
             curr = self.currentState 
-
+            # pdb.set_trace()
             if not curr:
                 print("Inconsistent")
                 return False
@@ -73,7 +72,7 @@ class Astar_GAC(Graph):
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            print('A* found', self.currentState)
+            print('A* found', self.currentState)            
             return self.currentState          
 
 
@@ -99,7 +98,7 @@ class Astar_GAC(Graph):
         finishedVIs = []
         otherVIs = sorted(state.viList, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
-        while len(betterVI.domain)==1:
+        while len( betterVI.domain ) == 1:
             finishedVIs.append(betterVI)
             betterVI = otherVIs.pop()
 
@@ -114,8 +113,9 @@ class Astar_GAC(Graph):
                 # succ = state.setDomain(newVI, assignment)
                 # runs gac.rerun on newly guessed state before adding
                 print( 'successor before gac rerun', succ)
-                succStates.append( self.gac.rerun(succ) )
+                succStates.append( self.gac.rerun(succ, newVI) )
                 print( 'successor after gac rerun', succStates[-1])
+        print("succStates",[succVar for succVar in succStates])
         return succStates
 
 
