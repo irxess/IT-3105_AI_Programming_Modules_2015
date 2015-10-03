@@ -48,13 +48,11 @@ class AStar:
  
 
     def openNode(self, node):
-        # print('Adding', node, 'to openList')
         self.openList.append(node)
         node.update('open')
 
 
     def closeNode(self, node):
-        # print('Adding', node, 'to closeList')
         self.closed.add(node)
         node.update('closed')
 
@@ -84,7 +82,6 @@ class AStar:
 
 
     def backtrackPath(self):
-        # print('goal condition', self.newNode)
         self.countNodes += 1
         self.bestPath = []
 
@@ -106,22 +103,18 @@ class AStar:
 
 
     def iterateAStar(self):
-        print('Iterate A*')
         if self.newNode.state != 'goal':
 
             if len(self.openList) == 0:
-                # print (self.solution + 'FAILED. No more nodes left in agenda to expand. \n')
                 self.failed = True
                 return self.newNode
 
             if self.countNodes > self.limit:
-                # print (self.solution + 'FAILED. A maximum number of nodes is reached. \n', 'Number of nodes is ')
                 self.failed = True
                 return self.newNode
 
             self.newNode = self.extractMin(self.openList)
             self.closeNode(self.newNode)
-            print('extracted from openList:\n', self.newNode)
 
             if self.newNode.getState() == 'goal':
                 r = self.newNode
@@ -132,23 +125,19 @@ class AStar:
 
             for s in succ:
                 if self.isClosed(s):
-                    print('go through A* closed list')
                     if self.betterPathFound(self.newNode, s):
                         self.newNode.updateChildren(s)
                     self.newNode.addChild(s) 
                     continue
 
                 elif self.isOpen(s):
-                    print('go through A* closed list')
                     if self.betterPathFound(self.newNode, s):
                         self.attachAndEval(s, self.newNode)
                     self.newNode.addChild(s) 
 
                 else:
-                    # print('add to openlist:\n', s)
                     self.countNodes += 1
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.newNode.addChild(s) 
-        print('A* returned', self.newNode)
         return self.newNode

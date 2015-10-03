@@ -36,7 +36,6 @@ class GAC():
             if len(vi.neighbors)==0:
                 satisfied = True
             for y in vi.neighbors:
-                print('comparing', value_i, 'with', y)
                 satisfied = False
                 for value_j in y.domain:
                     if self.isSatisfied( (value_i, value_j), c.constraint ):
@@ -45,7 +44,6 @@ class GAC():
                     revised = True
                     toBeRemovedFromDomain.append( value_i )
         for ele in toBeRemovedFromDomain:
-            print('Remove', ele, 'from', vi.domain, 'after comparing it')
             if ele in vi.domain:
                 vi.domain.remove(ele)
         return revised
@@ -63,13 +61,11 @@ class GAC():
             index, ci = self.queue.pop()
             revised = self.revise(index, ci)
             if revised:
-                print('adding stuff to queue')
                 # assume all variables are in all constraints
                 for c in state.constraintList:
                     for vi in ci.variables[index].neighbors:
                         newCI = CI(c, [vi, ci.variables[index]])
                         self.queue.append( (0,newCI) )
-                print(self.queue)
         return state
 
 
@@ -82,10 +78,8 @@ class GAC():
         # assume all variables are in all constraints
         self.state = state
         self.queue = []
-        print(len(state.viList))
         for vi in state.viList:
         # for vi in state.undecidedVariables:
-            print(vi.neighbors)
             for vi_n in vi.neighbors:
                 for c in state.constraintList:
                     newCI = CI( c, [vi,vi_n] )
