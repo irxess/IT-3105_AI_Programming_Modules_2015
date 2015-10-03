@@ -22,6 +22,10 @@ class State(AbstractNode):
         for vi in self.viList:
             string += vi.__repr__() + '\n'
         return string
+    def reduceDomain(self, var, d):
+        for vi in self.viList:
+            if v == vi:
+                vi.domain.remove(d)
 
 
     def getDomain(self, vi):

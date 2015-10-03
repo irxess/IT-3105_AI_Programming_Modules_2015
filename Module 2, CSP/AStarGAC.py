@@ -40,27 +40,21 @@ class Astar_GAC(Graph):
         print('Starting A* GAC search')
         # self.gac.initialize()
         print('Filtering initial domain')
-        self.currentState = self.gac.filterDomain(self.currentState)
+        # pdb.set_trace()
+
+        self.currentState = self.gac.filterDomain()
         self.stateCounter += 1
-        # if not self.currentState:
-        #     print("Inconsistent")
-        #     return False
-
-        # if self.isSolution(self.currentState):
-        #     return self.currentState
-
-        # elif self.isContradictory(self.currentState):
-        #     print( 'Dismissed. There is no solution!')
-        #     return False
         return self.iterateSearch()
 
 
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
+            # pdb.set_trace()
+
             curr = self.currentState 
             # pdb.set_trace()
             if not curr:
-                print("Inconsistent")
+                print("Inconsistent, state is ")
                 return False
 
             if self.isSolution(curr):
@@ -76,8 +70,6 @@ class Astar_GAC(Graph):
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
             print('A* found', self.currentState)   
-            if not self.gac.filterDomain(self.currentState):
-                self.currentState = curr
 
             return self.currentState          
 
@@ -105,12 +97,8 @@ class Astar_GAC(Graph):
         for v in succ.viList:
             for n in v.variable.neighbors:
                 for c in constraints:
-<<<<<<< HEAD
-                    succ.ciList.append( CI(c,[v,n]) )
-=======
                     succ.ciList.append( CI(c,[v,n.currentVI]) )
                     
->>>>>>> c3a81ed3434631a3d8dc4979e8781acc388bbbda
         return succ
 
 
@@ -135,10 +123,10 @@ class Astar_GAC(Graph):
                 newVI = VI( betterVI.variable, [d])
                 successor = self.makeAssumption([newVI]+otherVIs+finishedVIs, state)
                 # runs gac.rerun on newly guessed state before adding
-                print( 'successor before gac rerun', successor)
+                print( 'successor before gac rerun:', successor)
                 succStates.append( self.gac.rerun(successor, newVI) )
-                print( 'successor after gac rerun', succStates[-1])
-        # print("succStates",[succVar for succVar in succStates])
+                print( 'successor after gac rerun:', succStates[-1])
+        print("succStates",[succVar for succVar in succStates])
         return succStates
 
 
