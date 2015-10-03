@@ -45,7 +45,8 @@ class GAC():
                     toBeRemovedFromDomain.append( value_i )
         for ele in toBeRemovedFromDomain:
             print('Remove', ele, 'from', vi.domain, 'after comparing it')
-            vi.domain.remove(ele)
+            if ele in vi.domain:
+                vi.domain.remove(ele)
         return revised
 
 

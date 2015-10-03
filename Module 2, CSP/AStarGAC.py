@@ -9,8 +9,7 @@ from state import State
 from graph import Graph
 from variableInstance import VI
 from constraintInstance import CI
-import pdb
-from copy import deepcopy
+import time
 
 
 class Astar_GAC(Graph): 
@@ -59,17 +58,16 @@ class Astar_GAC(Graph):
     def iterateSearch(self):
         # if not isContradictory(newState) and not isSolution(newState):
             curr = self.currentState 
-            # pdb.set_trace()
-            if not curr:
-                print("Inconsistent")
-                return False
+            # if not curr:
+            #     print("Inconsistent")
+            #     return None
 
             if self.isSolution(curr):
                 return curr
 
-            elif self.isContradictory(curr):
-                print( 'Dismissed. There is no solution!')
-                return False
+            # elif self.isContradictory(curr):
+            #     print( 'Dismissed. There is no solution!')
+            #     return None
 
             print('\n\nStarting Astar iteration')
             self.currentState = self.Astar.iterateAStar()
@@ -87,6 +85,10 @@ class Astar_GAC(Graph):
         for vi in state.viList:
             if len( vi.domain ) == 0:
                 return True
+            if len( vi.domain ) == 1:
+                for nb in vi.neighbors:
+                    if vi.color == nb.color and vi.color != (0,0,0):
+                        return True
         return False            
 
 
@@ -94,6 +96,10 @@ class Astar_GAC(Graph):
         for vi in state.viList:
             if len( vi.domain ) != 1:
                 return False
+            for nb in vi.neighbors:
+                if vi.color == nb.color:
+                    return False
+        print('found solution')
         return True
 
 
@@ -147,9 +153,14 @@ class Astar_GAC(Graph):
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
-        succStates = []
         print('Generating successors')
+        if self.isContradictory(state):
+            return []
 
+        if self.isSolution(state):
+            return []
+        
+        succStates = []
         finishedVIs = []
         varsCopy = state.undecidedVariables.copy()
         otherVIs = sorted(varsCopy, key=lambda v: len(v.domain), reverse=True)
