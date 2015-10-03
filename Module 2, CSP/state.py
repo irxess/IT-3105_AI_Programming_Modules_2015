@@ -6,15 +6,18 @@ from variableInstance import *
 
 class State(AbstractNode):
 
-    def __init__(self, variables, constraints):
+    def __init__(self, variables, ciList, constraints):
         super(State, self).__init__()
-        self.ciList = constraints
+        self.constraintList = constraints
+        self.ciList = ciList
         self.viList = variables
-        self.pairs = []
         self.id = uuid.uuid4()
         self.g = 0 # we don't care about the distance walked
         self.parent = None
         self.state = 'unvisited'
+        self.undecidedVariables = []
+        # self.updateUndecided()
+        self.updateCIList()
 
 
     def __repr__(self):
@@ -24,12 +27,21 @@ class State(AbstractNode):
         return string
 
 
-    def getDomain(self, vi):
-         return vi.domain
+    def updateUndecided(self):
+        self.undecidedVariables = []
+        for v in self.viList:
+            if len(v.domain) != 1:
+                self.undecidedVariables.append(v)
 
 
-    def setDomain(self, value):
-        vi.domain = value
+    def updateCIList(self):
+        self.updateUndecided()
+        self.ciList = []
+        for c in self.constraintList:
+            for v in self.undecidedVariables:
+                for n in v.neighbors:
+                    self.ciList.append( CI(c, [v,n]) )
+
 
     # return an ID unique for this state
     def getID(self):
@@ -55,9 +67,10 @@ class State(AbstractNode):
         vertices = []
         for vi in self.viList:
             if len(vi.domain) == 1:
-                vi.variable.color = vi.domain[0]
+                vi.color = vi.domain[0]
             else:
-                vi.variable.color = (0,0,0)
-            vertices.append(vi.variable)
+                vi.color = (0,0,0)
+            vertices.append(vi)
         return vertices
+
 

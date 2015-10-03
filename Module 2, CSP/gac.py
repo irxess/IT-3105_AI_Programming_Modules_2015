@@ -6,161 +6,88 @@ import pdb
 import sys
 
 class GAC():
-
-    """GAC is a generalazied arc consistency algoritm that
-        outputs arc-consistent doamins for each variable v in given variable set
-        cnet is given to GAC as a representation of 
-        constraints with components (variables, domain, constarints)
-        domain is a dictionary and domain[v] returns a list of values(the domain of key v)
-        Variable v is a vertex.
-        Output: queue consists of arc-consistent domains for each variable
-        """
-
     def __init__(self, state):
-        # super(GAC, self).__init__() 
-        self.queue = [] # queue of requests(focal variable, its constraints), initially all requests
-        self.constraints = state.ciList
-        self.variables = state.viList
-        # self.state = state
-        # print('GAC.state', self.state)
-        # print('GAC.constraints:' , self.constraints)
+        """
+        Push all valid combinations of x,c onto the queue
+        """
+        state.updateCIList()
+        self.queue = []
+        for ci in state.ciList:
+            # for i in range( len(ci.variables) ):
+            #     queue.append( (i, ci) )
+            self.queue.append( (0, ci) )
+        # return queue
         self.state = state
 
-        print('Put all constraints + variables in the GAC queue')
-        for c in self.constraints:
-            for x in c.variables:
-                self.queue.append((x, c))
-        state.pairs = self.queue
+
+    def revise(self, x, c):
+        """
+        Retain all x in the domain if there exists an y in the other domain
+        that satisfies the constraint. Remove all others.
+        """
+        # call this for each variable in state.undecidedVariables
+        # call for each constraint
+        revised = False
+        toBeRemovedFromDomain = []
+        vi = c.variables[x]
+        for value_i in vi.domain:
+            satisfied = False
+            if len(vi.neighbors)==0:
+                satisfied = True
+            for y in vi.neighbors:
+                print('comparing', value_i, 'with', y)
+                satisfied = False
+                for value_j in y.domain:
+                    if self.isSatisfied( (value_i, value_j), c.constraint ):
+                        satisfied = True
+                if not satisfied:
+                    revised = True
+                    toBeRemovedFromDomain.append( value_i )
+        for ele in toBeRemovedFromDomain:
+            print('Remove', ele, 'from', vi.domain, 'after comparing it')
+            vi.domain.remove(ele)
+        return revised
 
 
-    def filterDomain(self, state):  
-        print('call to filterDomain--------------------')         
-        while len(self.queue):
-            (x, c) = self.queue.pop()
-        #     if self.reviseStar(x, c):
-        #         if len( x.domain ) == 0:
-        #             print ("inconsistency", x.domain, "reduced to empty")
-        #             return None
-        #         print('domlengde til x: ', len(x.domain))
-        #         self.rerun(state)
-        # print("vars in currState after filterDomain:", self.variables)
-            (revised, updatedState) = self.reviseStar(x, c, state)
-            state = updatedState
-            self.state = state
-
-            if revised :
-                if len( x.domain ) == 0:
-                    print ("inconsistency", x.domain, "reduced to empty")
-                    print ('self.state.variables:', state.viList)
-
-                    return None
-                # self.rerun(state, x)
-                # print('domlengde til x: ', len(x.domain))
-                # print('x:', x)
-                # for k in c.variables:
-                #     print('k:  ',(k.variable.x, k.variable.y), 'x:  ', (x.variable.x, x.variable.y))
-
-                #     print(c.variables)
-                #     print('k',k)
-                #     if k != x:
-                #     # if not cmp(k.domain, x.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
-                #         for c in self.getConstraints(k):
-                #             self.queue.append( (k, c) )
-
-        print("vars in currState after filterDomain:", state.viList)
-        # do we though return the self.state???
-
-        # print ('self.state.variables:', self.state.viList)
+    def domainFiltering(self, state):
+        """
+        Queue masse sjekker.
+        Kjør revise på alle i queue i rekkefølge.
+        Hvis revise fjernet noe: 
+            queue alle komboer hvor naboene er hovedvariabelen
+        """
+        self.state = state
+        while len(self.queue) > 0:
+            index, ci = self.queue.pop()
+            revised = self.revise(index, ci)
+            if revised:
+                print('adding stuff to queue')
+                # assume all variables are in all constraints
+                for c in state.constraintList:
+                    for vi in ci.variables[index].neighbors:
+                        newCI = CI(c, [vi, ci.variables[index]])
+                        self.queue.append( (0,newCI) )
+                print(self.queue)
         return state
 
 
-# reduce x's domain
-    def reviseStar(self, x, c, state):
-        print("call to revise **********************")
-        revised = False
-        print(x)
-
-        print('c.variables',c.variables)
-        pairs = self.getPairs(x, c.variables)
-        for listOfPairs in pairs:
-            satisfiedCount = 0
-            # print(listOfPairs)
-            for pair in listOfPairs:
-                if self.isSatisfied(pair, c):
-                    satisfiedCount += 1
-                    continue
-            if satisfiedCount == 0:
-                # print("Satisfied:",self.isSatisfied(pair, c))
-                # remove the variable from the domain,
-                # as there is no combination with the variable 
-                # where the constraint is satisfied
-                print('should remove stuff')
-                print(listOfPairs)
-                print('x.domain',x.domain)
-                # print('Remove', pair[0], 'from the domain of', x)
-                # x.domain.remove(pair[0])
-                # print('x.domain',x.domain)
-                # self.reduceDomain(x, pair[0])
-                revised = True
-        return (revised, state)
-
- 
-    # def rerun(self, assumptionState):
-    def rerun(self, assumptionState, guessedVI):
-        print('call to rerun///////////////////')
-        # pdb.set_trace()
-        print('starting rerun')
-        print(assumptionState.viList)
-        print('guessedVI:', guessedVI)
-        # for c in self.getConstraints(assumptionState.ciList) :
-        for c in assumptionState.ciList:
-            for x in c.variables:
-                if x != guessedVI:
-                    # self.queue.append((x, self.getConstraints(c)))
-                    self.queue.append( (x,c) )
-                    # print('x', x)
-        print('length', len(self.queue))
-        print(self.queue[-1])
-        # sys.exit()
-        return self.filterDomain(assumptionState)
-
 
     def isSatisfied(self, pair, constraint):
-        return constraint.constraint(pair[0], pair[1])
-        
-
-    def getPairs(self, x, y):
-        pairs = [] 
-        for k in y:
-            # if not cmp(x.domain, k.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
-            if k != x:
-                print('k:',(k.variable.x, k.variable.y), 'x:', (x.variable.x, x.variable.y))
-                print('k != x  :', k != x, (k,x))
-                for value in x.domain:
-                    pairs.append( list(itertools.product([value], k.domain)) )
-        return pairs
-
-# get all constraints applying to a certain variable
-    def getConstraints(self, variable):
-        constraints = []
-        for c in self.constraints:
-            # print(c)
-            if variable in c.variables:
-                constraints.append(c)
-        return constraints
+            # useless comment
+            return constraint(pair[0], pair[1])
 
 
-# updates self.variables after reducing 
-
-    def reduceDomain(self, vi, item):
-        print('call to reduceDomain################################')
-        for v in self.variables:
-            if v == vi:
-            # if not cmp(v.domain, vi.domain) and not k.variable.x == x.variable.x and not k.variable.y==x.variable.y:
-
-                print("vi.domain", vi.domain)
-                print(item)
-                print('v.domain', v.domain)
-                v.domain.remove(item)
-
+    def rerun(self, state):
+        # assume all variables are in all constraints
+        self.state = state
+        self.queue = []
+        print(len(state.viList))
+        for vi in state.viList:
+        # for vi in state.undecidedVariables:
+            print(vi.neighbors)
+            for vi_n in vi.neighbors:
+                for c in state.constraintList:
+                    newCI = CI( c, [vi,vi_n] )
+                    self.queue.append( (0,newCI) )
+        return self.domainFiltering( state )
         
