@@ -9,25 +9,28 @@ class CNET():
         Domain is a function. domain(x) returns the domain of given variable x
         Each variable x is a vertex"""
 
-    def __init__(self, domains, expression):
-        self.variables = []
+    def __init__(self, variables, domains, expression):
+        self.variables = variables
         self.constraints = []
         self.ciList = []
         self.domains = domains
-        self.addVariables(domains) # a list with variable class instances
+        # self.addVariables(domains) # a list with variable class instances
         for e in expression:
+            (args, func) = e
+            constraint = self.makeConstraint(args, func)
+            self.constraints.append(constraint)
             for v in self.variables:
-                for n in v.variable.neighbors:
-                    self.addConstraint([v,n.initialVI], e)
+                for n in v.neighbors:
+                    self.addConstraint([v,n], constraint)
         self.id = uuid.uuid4()
 
 
-    def addVariables(self, domains):
-        for d in domains.items():
-            vi = VI(d[0], d[1])
-            d[0].initialVI = vi
-            d[0].currentVI = vi
-            self.variables.append(vi)
+    # def addVariables(self, domains):
+    #     for d in domains.items():
+    #         vi = VI(d[0], d[1])
+    #         d[0].initialVI = vi
+    #         d[0].currentVI = vi
+    #         self.variables.append(vi)
 
 
     def getConstraints(self):
@@ -38,10 +41,7 @@ class CNET():
         return self.domains
 
 
-    def addConstraint(self, variables, expression):
-        (args, func) = expression
-        constraint = self.makeConstraint(args, func)
-        self.constraints.append(constraint)
+    def addConstraint(self, variables, constraint):
         ci = CI(constraint, variables)
         self.ciList.append(ci)
 

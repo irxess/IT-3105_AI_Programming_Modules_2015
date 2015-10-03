@@ -1,16 +1,6 @@
 import window
 import sys
-from vertex import Vertex
-
-
-def createConstraint(variables, expression, envir=globals()):
-    args = ""
-    for x in variables: 
-        args += "," + x 
-    # return an anonymous function
-    function = "(lambda " + args[1:] + ": " + expression + ") "
-    return eval(function, envir)
-
+from variableInstance import VI
 
 def pairwise(iterable):
     a = iter(iterable)
@@ -56,7 +46,7 @@ def main():
     lowest_y = float("inf")
     for v in range(number_of_vertices):
         line = vertexList[v+1]
-        vertices[ int(line[0]) ] = Vertex( line[1], line[2])
+        vertices[ int(line[0]) ] = VI( line[1], line[2], [])
         if line[1] > highest_x:
             highest_x = line[1]
         if line[2] > highest_y:
@@ -78,7 +68,6 @@ def main():
     constraints = []
     for variables,expression in pairwise( sys.argv[3:] ):
         constraints.append( (variables,expression) )
-
     w.initialize_problem( vertices, constraints, colors )
     w.loop()
 

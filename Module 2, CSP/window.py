@@ -12,21 +12,20 @@ class Window:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.WHITE = (255, 255, 255)
         self.screen.fill(self.WHITE)
+        self.prevState = None
 
 
     def initialize_problem(self, vertices, constraints, colors):
         self.set_vertices(vertices)
         self.draw_state(vertices)
-        domains = {}
+        domains = colors
         for vertex in vertices:
-            domains[vertex] = colors
+            vertex.domain = colors
 
-        self.astarGAC = Astar_GAC( domains, constraints )
+        self.astarGAC = Astar_GAC( vertices, domains, constraints )
         self.currentState = self.astarGAC.search()
         # should be in loop, but for testing purposes
         # only run A* a few times
-        self.currentState = self.astarGAC.iterateSearch()
-        self.currentState = self.astarGAC.iterateSearch()
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
@@ -69,8 +68,11 @@ class Window:
 
         while True:
             pygame.event.pump()
-            self.vertices = self.currentState.getVerticesToDraw()
-            self.draw_vertices( self.vertices )
+            if self.currentState and self.currentState != self.prevState:
+                self.prevState = self.currentState
+                self.vertices = self.currentState.getVerticesToDraw()
+                self.draw_vertices( self.vertices )
+                self.currentState = self.astarGAC.iterateSearch()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
