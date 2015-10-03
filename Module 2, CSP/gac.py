@@ -28,6 +28,7 @@ class GAC():
         # call this for each variable in state.undecidedVariables
         # call for each constraint
         revised = False
+
         toBeRemovedFromDomain = []
         vi = c.variables[x]
         for value_i in vi.domain:
@@ -70,7 +71,6 @@ class GAC():
                         self.queue.append( (0,newCI) )
                 print(self.queue)
         return state
-
 
 
     def isSatisfied(self, pair, constraint):
