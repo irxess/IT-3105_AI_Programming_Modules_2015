@@ -49,7 +49,7 @@ class Astar_GAC(Graph):
 
         # if self.isSolution(self.currentState):
         #     return self.currentState
-        self.currentState = self.gac.filterDomain()
+        # self.currentState = self.gac.filterDomain()
         self.stateCounter += 1
         return self.iterateSearch()
 
