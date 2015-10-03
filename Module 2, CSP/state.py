@@ -68,13 +68,14 @@ class State(AbstractNode):
 
 
     def getVerticesToDraw(self):
-        vertices = []
+        self.updateColors()
+        return self.viList
+
+    def updateColors(self):
         for vi in self.viList:
             if len(vi.domain) == 1:
                 vi.color = vi.domain[0]
             else:
                 vi.color = (0,0,0)
-            vertices.append(vi)
-        return vertices
 
 

@@ -45,9 +45,9 @@ class VI():
 
     def getColor(self):
         if len(self.domain) == 1:
-            return self.domain[0]
-        return (0,0,0)
+            self.color = self.domain[0]
+        return self.color
 
-    
+
     def getPosition(self):
         return (self.x, self.y)

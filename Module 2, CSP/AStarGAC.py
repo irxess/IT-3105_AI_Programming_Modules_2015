@@ -36,11 +36,6 @@ class Astar_GAC(Graph):
 
 
     def search(self):
-        # refine initState
-        print('Starting A* GAC search')
-        # self.gac.initialize()
-        print('Filtering initial domain')
-
         self.currentState = self.gac.domainFiltering(self.currentState)
         self.stateCounter += 1
         # if not self.currentState:
@@ -66,17 +61,15 @@ class Astar_GAC(Graph):
             if self.isSolution(curr):
                 return curr
 
-            # elif self.isContradictory(curr):
-            #     print( 'Dismissed. There is no solution!')
-            #     return None
 
-            print('\n\nStarting Astar iteration')
             self.currentState = self.Astar.iterateAStar()
+            self.currentState.updateColors()
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            print('A* found', self.currentState)   
 
+            if self.isSolution(curr):
+                return curr
             # if not self.gac.domainFiltering(self.currentState):
             #     self.currentState = curr
             self.currentState = self.gac.domainFiltering(self.currentState)
@@ -150,16 +143,16 @@ class Astar_GAC(Graph):
                     # succ.ciList.append( CI(c,[v,n.currentVI]) )
                     succ.ciList.append( CI(c,[v,n]) )
 
+        succ.updateColors()
         return succ
 
 
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
-        print('Generating successors')
+        state.updateColors()
         if self.isContradictory(state):
             return []
-
         if self.isSolution(state):
             return []
         
@@ -172,18 +165,13 @@ class Astar_GAC(Graph):
         if betterVI.domain:
             # how many assumption should I make? 
             for d in betterVI.domain:
-                # print('entry in domain', d)
                 newVI = VI( betterVI.x, betterVI.y, [d])
                 newVI.neighbors = betterVI.neighbors.copy()
                 # betterVI.currentVI = newVI
                 successor = self.makeAssumption(newVI, state)
 
                 # runs gac.rerun on newly guessed state before adding
-
-                print( 'successor before gac rerun', successor)
                 succStates.append( self.gac.rerun(successor) )
-                print( 'successor after gac rerun', succStates[-1])
-        # print("succStates",[succVar for succVar in succStates])
         return succStates
 
 
