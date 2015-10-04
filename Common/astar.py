@@ -141,5 +141,5 @@ class AStar:
                     self.openNode(s)
                     self.newNode.addChild(s) 
 
-        self.nofExpandedNodes += 1
+            self.nofExpandedNodes += 1
         return self.newNode
