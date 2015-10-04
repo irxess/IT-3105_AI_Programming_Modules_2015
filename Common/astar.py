@@ -3,7 +3,6 @@ from heapq import *
 # import node
 # import grid
 
-
 class AStar:
 
     def __init__(self, graph, method='Best first'):
@@ -22,6 +21,7 @@ class AStar:
         self.openNode(self.newNode)
         self.solution = 'The solution is '
         self.pathLength = 1
+        self.nofExpandedNodes = 0
         self.failed = False
 
 
@@ -140,4 +140,6 @@ class AStar:
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.newNode.addChild(s) 
+
+        self.nofExpandedNodes += 1
         return self.newNode

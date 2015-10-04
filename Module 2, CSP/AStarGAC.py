@@ -32,6 +32,7 @@ class Astar_GAC(Graph):
         s.update('start')
         self.startNode = s
         self.stateCounter = 0
+        self.lengthOfPath = 0
         return s 
 
 
@@ -67,12 +68,10 @@ class Astar_GAC(Graph):
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-
+            
             if self.isSolution(curr):
                 return curr
-            # if not self.gac.domainFiltering(self.currentState):
-            #     self.currentState = curr
-            self.currentState = self.gac.domainFiltering(self.currentState)
+                
             return self.currentState          
 
 
@@ -169,6 +168,7 @@ class Astar_GAC(Graph):
                 newVI.neighbors = betterVI.neighbors.copy()
                 # betterVI.currentVI = newVI
                 successor = self.makeAssumption(newVI, state)
+                self.lengthOfPath += 1
 
                 # runs gac.rerun on newly guessed state before adding
                 succStates.append( self.gac.rerun(successor) )

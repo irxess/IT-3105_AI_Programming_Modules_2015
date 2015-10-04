@@ -19,6 +19,7 @@ class GAC():
             self.queue.append( (0, ci) )
         # return queue
         self.state = state
+        self.unSatisfied = 0
 
 
     def revise(self, x, c):
@@ -41,6 +42,8 @@ class GAC():
                 for value_j in y.domain:
                     if self.isSatisfied( (value_i, value_j), c.constraint ):
                         satisfied = True
+                    else: self.unSatisfied += 1
+
                 if not satisfied:
                     revised = True
                     toBeRemovedFromDomain.append( value_i )
