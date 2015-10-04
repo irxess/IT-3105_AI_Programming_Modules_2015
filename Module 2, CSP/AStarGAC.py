@@ -9,11 +9,12 @@ from state import State
 from graph import Graph
 from variableInstance import VI
 from constraintInstance import CI
-import time
+import time, itertools
 
-
+start = time.time()
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
+
 
     def __init__(self, variables, domains, expressions):
         self.cnet = CNET(variables, domains, expressions)
@@ -32,46 +33,41 @@ class Astar_GAC(Graph):
         s.update('start')
         self.startNode = s
         self.stateCounter = 0
-        self.lengthOfPath = 0
+        self.nofAssumption = 0
+        self.nofExpanded = 0
         return s 
 
 
     def search(self):
         self.currentState = self.gac.domainFiltering(self.currentState)
         self.stateCounter += 1
-        # if not self.currentState:
-        #     print("Inconsistent")
-        #     return False
+        
+        if self.isSolution(self.currentState):
+            self.printStatistics(self.currentState)
+            return curr
+
+        
 
         # if self.isSolution(self.currentState):
         #     return self.currentState
         # self.currentState = self.gac.filterDomain()
-        self.stateCounter += 1
         return self.iterateSearch()
 
 
     def iterateSearch(self):
-        # if not isContradictory(newState) and not isSolution(newState):
-            # pdb.set_trace()
 
             curr = self.currentState 
-            # if not curr:
-            #     print("Inconsistent")
-            #     return None
-
-            if self.isSolution(curr):
-                return curr
-
 
             self.currentState = self.Astar.iterateAStar()
             self.currentState.updateColors()
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            
+            self.nofExpanded += self.Astar.nofExpandedNodes
             if self.isSolution(curr):
+                self.printStatistics(curr)
                 return curr
-                
+
             return self.currentState          
 
 
@@ -98,21 +94,13 @@ class Astar_GAC(Graph):
 
 
     def makeAssumption(self, newVI, parentState):
-        # newVIList = parentState.viList.copy()
 
-        # lage dict av nye vertices
         newVertices = {}
         newVIList = []
         for vi in parentState.viList:
             tmpVI = VI(vi.x, vi.y, vi.domain.copy())
             newVertices[(vi.x,vi.y)] = tmpVI
             newVIList.append( tmpVI )
-
-        # gå gjennom neighbors, pek til nye vertices
-        # for i in range( (len(parentState.viList)) ):
-        #     for neighbor in parentState.viList[i]:
-        #         n = newVertices[ (neighbors.x, neighbors.y) ]
-        #         newVIList[i].neighbors.append( n )
 
         for vi in parentState.viList:
             for neighbor in vi.getNeighbors():
@@ -139,7 +127,6 @@ class Astar_GAC(Graph):
         for v in succ.undecidedVariables:
             for n in v.neighbors:
                 for c in constraints:
-                    # succ.ciList.append( CI(c,[v,n.currentVI]) )
                     succ.ciList.append( CI(c,[v,n]) )
 
         succ.updateColors()
@@ -149,15 +136,19 @@ class Astar_GAC(Graph):
     # making successor list by assumptions.
     def generateSucc(self, state):
         """ make a guess. start gussing value for variables with min. domain length"""
-        state.updateColors()
-        if self.isContradictory(state):
-            return []
-        if self.isSolution(state):
-            return []
+        # state.updateColors()
+        # if self.isContradictory(state):
+        #     return []
+        # if self.isSolution(state):
+        #     return []
         
         succStates = []
         finishedVIs = []
         varsCopy = state.undecidedVariables.copy()
+
+        if not len(varsCopy) :
+            return []
+
         otherVIs = sorted(varsCopy, key=lambda v: len(v.domain), reverse=True)
         betterVI = otherVIs.pop()
 
@@ -168,13 +159,59 @@ class Astar_GAC(Graph):
                 newVI.neighbors = betterVI.neighbors.copy()
                 # betterVI.currentVI = newVI
                 successor = self.makeAssumption(newVI, state)
-                self.lengthOfPath += 1
+                self.nofAssumption += 1
 
                 # runs gac.rerun on newly guessed state before adding
                 succStates.append( self.gac.rerun(successor) )
-        return succStates
+            return succStates
+        else:
+            return []
 
 
+# Not complete : TODO
+    def printStatistics(self, state):
+        print ( 'The number of unsatisfied constraints = ', self.countUnsatisfiedConstraints(state), '\n' )
+        print ( 'The total number of verticies without color assignment = ', self.countColorLess(state), '\n' )
+        print ( 'The total number of nodes in search tree = ', self.stateCounter, '\n' )
+        print ( 'The total number of nodes poped from agenda and expanded = ', self.nofExpanded, '\n' )
+        print ( 'The length of the path = ', self.nofAssumption ,'\n')
+        return
+
+
+        
+    def countColorLess(self, state):
+        nofColorLess = 0
+        for vi in state.viList:
+            if vi.domain == (0, 0, 0):
+                nofColorLess += 1
+        return nofColorLess
+        
+                
+    def countUnsatisfiedConstraints(self, state):
+        unsatisfied = 0
+        varList = state.viList
+        for c in state.ciList:
+            for var in varList: 
+                if var in c.variables:
+                    if self.countInconsistentDomainValues(var, c) or not len(var.domain):
+                        unsatisfied += 1
+        return unsatisfied
+                    
+                    
     def getGoal(self):
         return None
 
+    def countInconsistentDomainValues(self, x, c):
+        pairs = []
+        nofInconsistency = 0
+        for k in c.variables:
+            for value in x.domain:
+                pairs.extend( list(itertools.product([value], k.domain)) )
+        
+        for p in pairs :
+            if not c.constraint( p[0], p[1] ):
+                nofInconsistency += 1
+
+        return nofInconsistency
+
+        
