@@ -56,7 +56,7 @@ class Grid(Graph):
         directions = [[-1, 0], [0,-1], [1,0], [0,1]]
         for i in range(len(directions)):
             k = x + directions[i][0]
-            l = y + directions[i][1]    
+            l = y + directions[i][1] 
 
             if  k < self.rows and  l < self.columns:
                 neighbornode = self.getNode( (k,l) )

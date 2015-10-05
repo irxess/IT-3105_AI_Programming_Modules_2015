@@ -8,8 +8,6 @@ class Node(AbstractNode):
         self.x = x
         self.y = y
 
-
-
     def getID(self):
         return (self.x, self.y, self.state)
 
