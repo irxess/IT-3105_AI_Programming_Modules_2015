@@ -35,3 +35,5 @@ class Vertex:
 
     def addConstraint(self, expression):
         self.constraints.append(expression)
+    
+    

@@ -67,14 +67,14 @@ class AbstractNode:
         self.children.append(node)
 
 
-    def updateChildren(self, node):
+    def improvePath(self, node):
         cost = self.cost(node)
         for child in self.children:
             gNew = self.g + cost
             if gNew < child.g:
                 child.setParent(self)
                 # child.setG(gNew)
-                child.updateChildren(node)
+                child.improvePath(node)
     @abstractmethod
     def tieBreaking(self, goal=None):
         pass

@@ -48,7 +48,7 @@ class AStar:
             sortedlist = sorted(list(li), key=lambda x: x.f, reverse=True)
             n = sortedlist[ len(sortedlist) - 1 ]
             nodesLowesF = [ n ]
-            tie_n = n.tieBreaking()
+            tie_n = n.tieBreaking(self.goalNode)
             for node in sortedlist:
                 if node.f == n.f:
                     nodesLowesF.append(node)
@@ -58,7 +58,7 @@ class AStar:
                 return n
            
             for x in nodesLowesF:
-                tie_x = x.tieBreaking()
+                tie_x = x.tieBreaking(self.goalNode)
                 if  tie_x  < tie_n:
                     n = x
                     tie_n = tie_x
@@ -157,7 +157,7 @@ class AStar:
 
                 if self.isClosed(s):    
                     if self.betterPathFound(self.newNode, s):
-                        self.newNode.updateChildren(s)
+                        self.newNode.improvePath(s)
                         if self.method == "AStar":
                             print('succ.g, after', s.g )
                             print('succ.h, after', s.h )
@@ -177,7 +177,6 @@ class AStar:
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.countNodes += 1
-                    self.newNode.addChild(s) 
                     if self.method == "AStar":
                         print('succ.g, after', s.g )
 
