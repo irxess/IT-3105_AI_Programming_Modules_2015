@@ -23,6 +23,7 @@ class Astar_GAC(Graph):
         self.Astar = AStar(self)
         self.startNode = None
         self.goalNode = None
+        self.limit = 2000
 
 
     def initializeState(self, cnet):
@@ -63,7 +64,7 @@ class Astar_GAC(Graph):
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            self.nofExpanded += self.Astar.nofExpandedNodes
+            self.nofExpanded = self.Astar.countNodes
             if self.isSolution(curr):
                 self.printStatistics(curr)
                 return curr
@@ -175,7 +176,6 @@ class Astar_GAC(Graph):
         print ( 'The total number of nodes in search tree = ', self.stateCounter, '\n' )
         print ( 'The total number of nodes poped from agenda and expanded = ', self.nofExpanded, '\n' )
         print ( 'The length of the path = ', self.nofAssumption ,'\n')
-        return
 
 
         
