@@ -1,35 +1,36 @@
 import os
 import sys
 current_directory = sys.path[0]
-sys.path.append( os.path.abspath('../Common/') )
+sys.path.append( os.path.abspath('../Common/AStar') )
+sys.path.append( os.path.abspath('../Common/GAC') )
 from astar import AStar
 from cnet import CNET
 from gac import GAC
-from state import State
 from graph import Graph
 from variableInstance import VI
 from constraintInstance import CI
-import time, itertools
+import itertools
+from abc import ABCMeta, abstractmethod
 
-start = time.time()
 class Astar_GAC(Graph): 
     """Astar_GAC integrates Astar and GAC"""
-
-
+    #both
     def __init__(self, variables, domains, expressions):
+        super(Astar_GAC, self).__init__()
         self.cnet = CNET(variables, domains, expressions)
         self.currentState = self.initializeState(self.cnet)
         self.gac = GAC(self.currentState)
         self.Astar = AStar(self)
-        self.startNode = None
-        self.goalNode = None
+
+    @abstractmethod
+    def createNewState( self, variables, constraints):
+        pass 
 
 
     def initializeState(self, cnet):
         """in initState each variable has its full domain. It will be set as root node
         initilizes cnet"""
-
-        s = State(cnet.variables, cnet.ciList, cnet.constraints)  
+        s = self.createNewState( cnet.variables, cnet.constraints )
         s.update('start')
         self.startNode = s
         self.stateCounter = 0
@@ -42,83 +43,60 @@ class Astar_GAC(Graph):
         self.currentState = self.gac.domainFiltering(self.currentState)
         self.stateCounter += 1
         
-        if self.isSolution(self.currentState):
+        if self.currentState.isSolution():
             self.printStatistics(self.currentState)
-            return curr
+            return self.currentState
 
-        
-
-        # if self.isSolution(self.currentState):
-        #     return self.currentState
-        # self.currentState = self.gac.filterDomain()
         return self.iterateSearch()
 
 
     def iterateSearch(self):
-
-            curr = self.currentState 
+            prev = self.currentState 
+            if prev.isSolution():
+                return prev
 
             self.currentState = self.Astar.iterateAStar()
-            self.currentState.updateColors()
+            # self.currentState.updateColors()
             print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
-            self.currentState.parent = curr #used for backtracking to find 'shortest path' for statistics
-            self.nofExpanded += self.Astar.nofExpandedNodes
-            if self.isSolution(curr):
-                self.printStatistics(curr)
-                return curr
+            self.currentState.parent = prev #used for backtracking to find 'shortest path' for statistics
+            self.nofExpanded = self.Astar.nofExpandedNodes
+            if self.currentState.isSolution():
+                self.printStatistics(self.currentState)
+                return self.currentState
 
+            self.currentState = self.gac.domainFiltering(self.currentState)
             return self.currentState          
 
 
-    def isContradictory(self, state):
-        for vi in state.viList:
-            if len( vi.domain ) == 0:
-                return True
-            if len( vi.domain ) == 1:
-                for nb in vi.neighbors:
-                    if vi.color == nb.color and vi.color != (0,0,0):
-                        return True
-        return False            
-
-
-    def isSolution(self, state):
-        for vi in state.viList:
-            if len( vi.domain ) != 1:
-                return False
-            for nb in vi.neighbors:
-                if vi.color == nb.color:
-                    return False
-        print('found solution')
-        return True
-
-
     def makeAssumption(self, newVI, parentState):
+        """Generate one successor, and make sure all pointers are correct"""
 
         newVertices = {}
         newVIList = []
         for vi in parentState.viList:
-            tmpVI = VI(vi.x, vi.y, vi.domain.copy())
-            newVertices[(vi.x,vi.y)] = tmpVI
+            viID = vi.getID()
+            tmpVI = VI(viID, vi.domain.copy())
+            newVertices[viID] = tmpVI
             newVIList.append( tmpVI )
 
         for vi in parentState.viList:
-            for neighbor in vi.getNeighbors():
-                n = newVertices[ (neighbor.x, neighbor.y) ]
-                newVertices[vi.x,vi.y].add_neighbor( n )
-
+            viID = vi.getID()
+            for neighbor in vi.neighbors:
+                n = newVertices[ neighbor.getID() ]
+                newVertices[viID].add_neighbor( n )
 
         for vi in newVIList:
-            if vi.x == newVI.x and vi.y == newVI.y:
+            if vi.getID() == newVI.getID():
                 newVIList.remove(vi)
                 newVIList.append(newVI)
             else:
                 for vi_n in vi.neighbors:
-                    if vi_n.x == newVI.x and vi_n.y == newVI.y:
+                    if vi_n.getID() == newVI.getID():
                         vi.neighbors.remove(vi_n)
                         vi.neighbors.append(newVI)
 
-        succ = State(newVIList, [], parentState.constraintList)
+        succ = self.createNewState(newVIList, parentState.constraintList)
         succ.parent = parentState
         succ.updateUndecided() # maybe not needed
 
@@ -129,19 +107,11 @@ class Astar_GAC(Graph):
                 for c in constraints:
                     succ.ciList.append( CI(c,[v,n]) )
 
-        succ.updateColors()
         return succ
 
 
-    # making successor list by assumptions.
     def generateSucc(self, state):
-        """ make a guess. start gussing value for variables with min. domain length"""
-        # state.updateColors()
-        # if self.isContradictory(state):
-        #     return []
-        # if self.isSolution(state):
-        #     return []
-        
+        """ make a guess. start gussing value for variables with min. domain length"""        
         succStates = []
         finishedVIs = []
         varsCopy = state.undecidedVariables.copy()
@@ -153,15 +123,12 @@ class Astar_GAC(Graph):
         betterVI = otherVIs.pop()
 
         if betterVI.domain:
-            # how many assumption should I make? 
+            initID = betterVI.getID()
             for d in betterVI.domain:
-                newVI = VI( betterVI.x, betterVI.y, [d])
+                newVI = VI( initID, [d])
                 newVI.neighbors = betterVI.neighbors.copy()
-                # betterVI.currentVI = newVI
                 successor = self.makeAssumption(newVI, state)
-                self.nofAssumption += 1
 
-                # runs gac.rerun on newly guessed state before adding
                 succStates.append( self.gac.rerun(successor) )
             return succStates
         else:
@@ -178,15 +145,14 @@ class Astar_GAC(Graph):
         return
 
 
-        
     def countColorLess(self, state):
         nofColorLess = 0
         for vi in state.viList:
-            if vi.domain == (0, 0, 0):
+            if len(vi.domain) != 1:
                 nofColorLess += 1
         return nofColorLess
-        
-                
+
+
     def countUnsatisfiedConstraints(self, state):
         unsatisfied = 0
         varList = state.viList
@@ -196,10 +162,12 @@ class Astar_GAC(Graph):
                     if self.countInconsistentDomainValues(var, c) or not len(var.domain):
                         unsatisfied += 1
         return unsatisfied
-                    
-                    
+
+
+    # Needed for Graph
     def getGoal(self):
         return None
+
 
     def countInconsistentDomainValues(self, x, c):
         pairs = []
@@ -214,4 +182,4 @@ class Astar_GAC(Graph):
 
         return nofInconsistency
 
-        
+

@@ -1,8 +1,10 @@
 import pygame
-import sys
+import os, sys
 import time
+current_directory = sys.path[0]
+sys.path.append( os.path.abspath('../Common/GAC') )
 from gui_grid import GUIGrid
-from AStarGAC import Astar_GAC
+from nonogramSolver import NonogramSolver
 from variableInstance import VI
 
 
@@ -40,22 +42,11 @@ class Window:
         for vi in rowVIs:
             vi.neighbors = colVIs
 
-        self.astarGAC = Astar_GAC(rowVIs + colVIs, row_domains + column_domains, constraints)
+        self.astarGAC = NonogramSolver(rowVIs + colVIs, row_domains + column_domains, constraints)
         self.currentState = self.astarGAC.search()
-        # sys.exit()
-
-
-    # def show_text(self):
-    #     x = 10
-    #     y = self.height*2//3 + 50
-    #     text = self.bfs.getStats()
-    #     self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
-    #     y += 25
-    #     text = self.dfs.getStats()
-    #     self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
-    #     y += 25
-    #     text = self.astar.getStats()
-    #     self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
+        self.guigrid.reset()
+        for var in self.currentState.viList:
+            var.drawColorsToGUI(self.guigrid)
 
 
     def loop(self):
@@ -69,7 +60,7 @@ class Window:
 
             self.screen.fill(self.WHITE)
 
-            if self.currentState and self.currentState != self.prevState:
+            if not self.currentState.isSolution():
                 self.prevState = self.currentState
                 self.currentState = self.astarGAC.iterateSearch()
                 self.guigrid.reset()
@@ -81,10 +72,8 @@ class Window:
                 if event.type == pygame.QUIT: 
                     sys.exit()
 
-            # pygame.display.update(changed_rectangles) is faster
             pygame.display.flip()
  
             # --- Limit to 60 frames per second
             clock.tick(60)
-            # time.sleep(3)
-        
+            time.sleep(1)

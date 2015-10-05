@@ -1,7 +1,8 @@
 import pygame
-import sys
-from AStarGAC import Astar_GAC
-# from cnet import CNET
+import os, sys
+current_directory = sys.path[0]
+sys.path.append( os.path.abspath('../Common/GAC') )
+from vertexColoring import VertexColoring
 
 class Window:
 
@@ -22,10 +23,10 @@ class Window:
         for vertex in vertices:
             vertex.domain = colors
 
-        self.astarGAC = Astar_GAC( vertices, domains, constraints )
+        self.astarGAC = VertexColoring( vertices, domains, constraints )
         self.currentState = self.astarGAC.search()
-        # should be in loop, but for testing purposes
-        # only run A* a few times
+        self.vertices = self.currentState.getVerticesToDraw()
+        self.draw_vertices( self.vertices )
 
 
     def set_coordinates( self, max_x, max_y, min_x, min_y ):
@@ -68,11 +69,13 @@ class Window:
 
         while True:
             pygame.event.pump()
-            if self.currentState and self.currentState != self.prevState:
+
+            if not self.currentState.isSolution():
                 self.prevState = self.currentState
+                self.currentState = self.astarGAC.iterateSearch()
+                self.currentState.updateColors()
                 self.vertices = self.currentState.getVerticesToDraw()
                 self.draw_vertices( self.vertices )
-                self.currentState = self.astarGAC.iterateSearch()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 
