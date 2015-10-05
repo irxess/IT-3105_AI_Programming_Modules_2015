@@ -36,3 +36,8 @@ class GUIGrid():
         if x >= 0 and x < self.rows:
             if y >= 0 and y < self.columns:
                 self.grid[x][y] = state
+
+    def reset(self):
+        for x in range(self.rows):
+            for y in range(self.columns):
+                self.grid[x][y] = 'white'

@@ -5,34 +5,39 @@ sys.path.append( os.path.abspath('../Common/') )
 import window
 
 
-def find_box_index( array, box_nr ):
+def pairwise(iterable):
+    a = iter(iterable)
+    return zip(a, a)
+
+
+def find_segment_index( array, segment_nr ):
     i = 0
     while i < len(array):
         if array[i] == 'black':
-            box_nr -= 1
-            if box_nr == 0:
+            segment_nr -= 1
+            if segment_nr == 0:
                 start = i
                 end = i
             i += 1
             while i < len(array):
                 if array[i] == 'black':
-                    if box_nr == 0:
+                    if segment_nr == 0:
                         end = i
                     i += 1
                 else:
                     break
         else:
             i += 1
-        if box_nr == 0:
+        if segment_nr == 0:
             return (start,end)
 
 
-def generateDomain( array, box_nr ):
+def generateDomain( array, segment_nr ):
     r = []
-    (i,j) = find_box_index( array, box_nr )
+    (i,j) = find_segment_index( array, segment_nr )
     while j < len(array):
-        if box_nr > 1:
-            r += ( generateDomain( array.copy(), box_nr-1 ))
+        if segment_nr > 1:
+            r += ( generateDomain( array.copy(), segment_nr-1 ))
         if (j<len(array)-1 and array[j+1] == 'white') and ((j < len(array) - 2 and array[j+2] == 'white') or j==len(array)-2):
                 array[i] = 'white'
                 array[j+1] = 'black'
@@ -46,12 +51,28 @@ def generateDomain( array, box_nr ):
 
 def main():
 
+    inputFile = sys.argv[1]
+    f = open(inputFile, 'r')
+    (rows_domain, columns_domain) = readInputFile(f)
+
+    constraints = []
+    for variables,expression in pairwise( sys.argv[2:] ):
+        constraints.append( (variables,expression) )
+
+    # TODO: None should be variables
+    w = window.Window(500, 750)
+    w.initialize_problem(rows_domain, columns_domain, constraints)
+
+    # w.create_astar()
+    w.loop()
+
+
+def readInputFile(inputFile):
     stdin = []
-    for line in sys.stdin:
+    for line in inputFile:
         stdin.append(line.split(' '))
         stdin[-1] = [ int(x) for x in stdin[-1] ]
 
-    print(stdin[0])
     row_length = stdin[0][0]
     column_length = stdin[0][1]
     row_count = column_length
@@ -78,7 +99,8 @@ def main():
                 column[col_offset] = 'black'
                 col_offset += 1
             col_offset += 1
-        columns.append(column.copy())
+        # columns.append(column.copy())
+        columns.append( column.copy())
 
     rows_domain = []
     for i,r in enumerate(rows):
@@ -94,11 +116,10 @@ def main():
         l += generateDomain( c.copy(), len(stdin[i+1+row_count]) )
         column_domain.append(l.copy())
 
-    # TODO: None should be variables
-    w = window.Window(None, (rows_domain,column_domain), row_count, column_count, 500, 750)
+    for i,c in enumerate(columns):
+        columns[i] = list(reversed(c))
 
-    # w.create_astar()
-    w.loop()
+    return (list(reversed(rows_domain)), column_domain)
 
 
 if __name__ == "__main__":
