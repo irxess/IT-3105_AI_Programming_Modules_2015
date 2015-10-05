@@ -36,19 +36,22 @@ class AbstractNode:
         return self.g
 
 
-    def setG(self, g):
-        self.g = g
+    def setG(self, gValue):
+        self.g = gValue
         self.f = self.g + self.h
 
 
     def getState(self):
         return self.state
 
+    # def updateF(self, g, h):
+    #     self.f = g + h
+
 
     def setParent(self, parentNode):
         parentG = parentNode.getG()
-        if self.g + 1 > parentG:
-            self.g = parentG + 1
+        if self.g + self.cost(parentNode) > parentG:
+            self.setG(parentG + self.cost(parentNode))
             self.parent = parentNode
 
 
@@ -65,13 +68,16 @@ class AbstractNode:
 
 
     def updateChildren(self, node):
-        if self.g + 1 < node.getG():
-            for child in self.children:
-                gNew = self.g + self.cost(child)
-                if gNew < child.g:
-                    child.setParent(self)
-                    child.setG(gNew)
-                    child.updateChildren(node)
+        cost = self.cost(node)
+        for child in self.children:
+            gNew = self.g + cost
+            if gNew < child.g:
+                child.setParent(self)
+                # child.setG(gNew)
+                child.updateChildren(node)
+    @abstractmethod
+    def tieBreaking(self, goal=None):
+        pass
 
 
     @abstractmethod

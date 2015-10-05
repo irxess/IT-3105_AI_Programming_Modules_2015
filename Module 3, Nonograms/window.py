@@ -6,7 +6,6 @@ import time
 from astar import AStar
 from gui_grid import GUIGrid
 
-
 class Window:
 
     def update_cell(self, row, column, state):
