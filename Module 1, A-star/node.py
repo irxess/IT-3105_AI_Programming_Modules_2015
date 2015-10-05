@@ -18,8 +18,9 @@ class Node(AbstractNode):
             return 0 
         return 1
 
-    def tieBreaking(self, goal):
-        return sqrt( pow((self.x - goal.x), 2) + pow((self.y - goal.y), 2) ) 
+    def tieBreaking(self):
+        (goalX,goalY,s) = goal.getID()
+        return sqrt( pow((self.x - goalX), 2) + pow((self.y - goalY), 2) ) 
 
     def estimateDistance(self, goal):
         # (goalX,goalY,s) = goal.getID()
