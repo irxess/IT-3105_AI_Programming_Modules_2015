@@ -46,7 +46,7 @@ def main():
     lowest_y = float("inf")
     for v in range(number_of_vertices):
         line = vertexList[v+1]
-        vertices[ int(line[0]) ] = VI( line[1], line[2], [])
+        vertices[ int(line[0]) ] = VI( (line[1], line[2]), [])
         if line[1] > highest_x:
             highest_x = line[1]
         if line[2] > highest_y:

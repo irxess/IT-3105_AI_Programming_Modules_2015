@@ -23,7 +23,7 @@ class AStar:
         self.countNodes = 1
         self.solution = 'The solution is '
         self.pathLength = 1
-        # self.nofExpandedNodes = 0
+        self.nofExpandedNodes = 0
         self.failed = False
 
 
@@ -53,7 +53,7 @@ class AStar:
                 if node.f == n.f:
                     nodesLowesF.append(node)
             
-            if len(sortedlist) == 1:
+            if len(nodesLowesF) == 1:
                 self.openList.remove(n)
                 return n
            
@@ -124,7 +124,6 @@ class AStar:
 
 
     def iterateAStar(self):
-        # pdb.set_trace()
         if self.newNode.state != 'goal':
 
             if len(self.openList) == 0:
@@ -139,8 +138,6 @@ class AStar:
             self.closeNode(self.newNode)
             # self.nofExpandedNodes += 1
 
-            # self.newNode.state = 'path'
-
             if self.newNode.getState() == 'goal':
                 r = self.newNode
                 self.backtrackPath()
@@ -149,38 +146,20 @@ class AStar:
             succ = self.graph.generateSucc(self.newNode)
 
             for s in succ:
-                # pdb.set_trace()
-                if self.method == "AStar" :
-                    print('succ.g, before', s.g )
-                    print('succ.h, before', s.h )
-                    print('succ.f, before', s.f )
 
-                if self.isClosed(s):    
+                if self.isClosed(s):
                     if self.betterPathFound(self.newNode, s):
                         self.newNode.improvePath(s)
-                        if self.method == "AStar":
-                            print('succ.g, after', s.g )
-                            print('succ.h, after', s.h )
-                            print('succ.f, after', s.f )
-
 
                 elif self.isOpen(s):
                     if self.betterPathFound(self.newNode, s):
                         self.attachAndEval(s, self.newNode)
-                        if self.method == "AStar":
-                            print('succ.g, after', s.g )
-                            print('succ.h, after', s.h )
-                            print('succ.f, after', s.f )
-                    
 
                 else:
                     self.attachAndEval(s, self.newNode)
                     self.openNode(s)
                     self.countNodes += 1
-                    if self.method == "AStar":
-                        print('succ.g, after', s.g )
 
-                        print('succ.h, after', s.h )
-                        print('succ.f, after', s.f )
                 self.newNode.addChild(s) 
+        self.nofExpandedNodes += 1
         return self.newNode
