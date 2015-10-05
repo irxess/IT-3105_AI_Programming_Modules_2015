@@ -6,6 +6,7 @@ class Graph:
     def __init__(self):
         self.startNode = None
         self.goalNode = None
+        self.limit = 2000
 
 
     def update_cell(self, state):

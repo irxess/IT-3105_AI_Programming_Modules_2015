@@ -22,6 +22,7 @@ class Astar_GAC(Graph):
         self.gac = GAC(self.currentState)
         self.Astar = AStar(self)
 
+
     @abstractmethod
     def createNewState( self, variables, constraints):
         pass 
@@ -57,7 +58,6 @@ class Astar_GAC(Graph):
 
             self.currentState = self.Astar.iterateAStar()
             # self.currentState.updateColors()
-            print('Iteration', self.stateCounter, 'of Astar done')
             self.stateCounter += 1
             self.currentState.parent = prev #used for backtracking to find 'shortest path' for statistics
             self.nofExpanded = self.Astar.nofExpandedNodes
@@ -66,7 +66,7 @@ class Astar_GAC(Graph):
                 return self.currentState
 
             self.currentState = self.gac.domainFiltering(self.currentState)
-            return self.currentState          
+            return self.currentState
 
 
     def makeAssumption(self, newVI, parentState):
@@ -111,12 +111,12 @@ class Astar_GAC(Graph):
 
 
     def generateSucc(self, state):
-        """ make a guess. start gussing value for variables with min. domain length"""        
+        """ make a guess. start gussing value for variables with min. domain length"""
         succStates = []
         finishedVIs = []
         varsCopy = state.undecidedVariables.copy()
 
-        if not len(varsCopy) :
+        if not len(varsCopy):
             return []
 
         otherVIs = sorted(varsCopy, key=lambda v: len(v.domain), reverse=True)
@@ -142,7 +142,6 @@ class Astar_GAC(Graph):
         print ( 'The total number of nodes in search tree = ', self.stateCounter, '\n' )
         print ( 'The total number of nodes poped from agenda and expanded = ', self.nofExpanded, '\n' )
         print ( 'The length of the path = ', self.nofAssumption ,'\n')
-        return
 
 
     def countColorLess(self, state):

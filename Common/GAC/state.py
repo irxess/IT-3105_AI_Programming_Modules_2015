@@ -74,3 +74,11 @@ class State(AbstractNode):
     @abstractmethod
     def isSolution(self):
         pass
+
+
+    def tieBreaking(self):
+        countVarLowestDomainLength = 0
+        for variable in self.viList:
+            if len(variable.domain) == 1:
+                countVarLowestDomainLength += 1
+        return countVarLowestDomainLength

@@ -7,7 +7,6 @@ from gui_grid import GUIGrid
 from nonogramSolver import NonogramSolver
 from variableInstance import VI
 
-
 class Window:
 
     def update_cell(self, row, column, state):
@@ -21,9 +20,7 @@ class Window:
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.prevState = None
-        # self.font = pygame.font.Font('freesansbold.ttf', 16)
-        # self.grid = CNET(variables, domainList)
-        # self.astar = AStar(self.astar_grid, 'AStar')
+
 
     def initialize_problem(self, row_domains, column_domains, constraints):
         rows = len(row_domains)
@@ -73,7 +70,4 @@ class Window:
                     sys.exit()
 
             pygame.display.flip()
- 
-            # --- Limit to 60 frames per second
             clock.tick(60)
-            time.sleep(1)

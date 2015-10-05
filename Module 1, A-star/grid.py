@@ -50,10 +50,9 @@ class Grid(Graph):
         else:
             return None
 
-
     def generateSucc(self, node):
         listToCheck = []
-        (x,y,s) = node.getID()
+        (x,y, s) = node.getID()
         directions = [[-1, 0], [0,-1], [1,0], [0,1]]
         for i in range(len(directions)):
             k = x + directions[i][0]
@@ -65,9 +64,13 @@ class Grid(Graph):
 
         neighbors = []
         for neighbornode in listToCheck:
-            if neighbornode and neighbornode.getState() != 'blocked':
+            
+            if neighbornode and neighbornode.getState()!= 'blocked':
                 if neighbornode.getG() > node.getG() + 1 :
                     neighbornode.setG( node.getG() + 1 )
                 neighbors.append( neighbornode )
+            # else:
+            #     neighbornode.setG(100)
+            #     neighbors.append( neighbornode )
         return neighbors
 
