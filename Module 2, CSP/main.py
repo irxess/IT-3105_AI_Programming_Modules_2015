@@ -15,11 +15,11 @@ def main():
     # lambda v1, v2: v1.color != v2.color
     number_of_colors = int(sys.argv[1])
     colorList = [
+         (255,107,107), # red 
          (216,107,255), # purple
-         (255,169,107), # orange
          (107,255,110), # green
          (107,228,255), # light blue 
-         (255,107,107), # red 
+         (255,169,107), # orange
          (255,208,107), # light orange
          (107,255,188), # cyan
          (107,124,255), # blue
