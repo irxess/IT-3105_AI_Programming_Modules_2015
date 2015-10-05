@@ -73,5 +73,16 @@ class State(AbstractNode):
                 vi.color = vi.domain[0]
             else:
                 vi.color = (0,0,0)
+    
+    def tieBreaking(self):
+        countVarLowestDomainLength = 0
+        for variable in self.viList:
+            if len(variable.domain) == 1:
+                countVarLowestDomainLength += 1
+        return countVarLowestDomainLength
+            
+
+
+        
 
 
