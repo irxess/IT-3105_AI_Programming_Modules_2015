@@ -1,7 +1,7 @@
 import sys
 import os
 current_directory = sys.path[0]
-sys.path.append( os.path.abspath('../Common/') )
+sys.path.append( os.path.abspath('../Common/AStar') )
 import window
 
 

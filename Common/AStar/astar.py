@@ -48,7 +48,7 @@ class AStar:
             sortedlist = sorted(list(li), key=lambda x: x.f, reverse=True)
             n = sortedlist[ len(sortedlist) - 1 ]
             nodesLowesF = [ n ]
-            tie_n = n.tieBreaking()
+            tie_n = n.tieBreaking(self.goalNode)
             for node in sortedlist:
                 if node.f == n.f:
                     nodesLowesF.append(node)
@@ -58,7 +58,7 @@ class AStar:
                 return n
            
             for x in nodesLowesF:
-                tie_x = x.tieBreaking()
+                tie_x = x.tieBreaking(self.goalNode)
                 if  tie_x  < tie_n:
                     n = x
                     tie_n = tie_x
@@ -105,14 +105,16 @@ class AStar:
 
     def backtrackPath(self):
         self.bestPath = []
+        pathNode = self.newNode
+        self.pathLength = 1
 
-        while self.newNode.getParent() != None:
+        while pathNode.getParent() != None:
             self.pathLength += 1
-            self.bestPath.append(self.newNode)
-            self.newNode = self.newNode.getParent()
-        self.bestPath.append(self.newNode)   
+            self.bestPath.append(pathNode)
+            pathNode = pathNode.getParent()
+        self.bestPath.append(pathNode)   
 
-        self.updatePath()
+        # self.updatePath()
         return self.goalNode
 
 
@@ -139,9 +141,9 @@ class AStar:
             # self.nofExpandedNodes += 1
 
             if self.newNode.getState() == 'goal':
-                r = self.newNode
-                self.backtrackPath()
-                return r
+                # r = self.newNode
+                # self.backtrackPath()
+                return self.backtrackPath()
 
             succ = self.graph.generateSucc(self.newNode)
 

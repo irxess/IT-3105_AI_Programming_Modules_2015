@@ -64,6 +64,15 @@ class Window:
         self.screen.blit(self.font.render(text, True, self.BLACK), (x, y))
 
 
+    def drawPath(self):
+        self.active_search.backtrackPath()
+        pathNodes = self.active_search.bestPath
+        for node in pathNodes[:-1]:
+            ((x,y),s) = node.getID()
+            if node.state != 'goal':
+                self.active_grid.drawPath(x, y)
+
+
     def loop(self):
         clock = pygame.time.Clock()
         results = [None, None, None]
@@ -80,6 +89,7 @@ class Window:
 
             self.screen.fill(self.WHITE)
             self.active_grid.draw()
+            self.drawPath()
             self.show_text()
 
             for event in pygame.event.get():

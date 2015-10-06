@@ -32,6 +32,9 @@ class Grid(Graph):
                 icon = self.celltype[ self.grid[row][column].state ]
                 self.display.blit( icon, (self.cellwidth*column, self.cellheight*row) )
 
+    def drawPath(self, x, y):
+        self.display.blit( self.celltype['path'], (self.cellwidth*y, self.cellheight*x))
+
 
     def update_cell(self, row, column, state):
         self.grid[row][column].update(state)
@@ -52,7 +55,7 @@ class Grid(Graph):
 
     def generateSucc(self, node):
         listToCheck = []
-        (x,y, s) = node.getID()
+        ((x,y), s) = node.getID()
         directions = [[-1, 0], [0,-1], [1,0], [0,1]]
         for i in range(len(directions)):
             k = x + directions[i][0]
