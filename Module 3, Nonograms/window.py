@@ -41,9 +41,14 @@ class Window:
 
         self.astarGAC = NonogramSolver(rowVIs + colVIs, row_domains + column_domains, constraints)
         self.currentState = self.astarGAC.search()
+
+        self.screen.fill(self.WHITE)
         self.guigrid.reset()
-        for var in self.currentState.viList:
-            var.drawColorsToGUI(self.guigrid)
+        if self.currentState:
+            for var in self.currentState.viList:
+                var.drawColorsToGUI(self.guigrid)
+        self.guigrid.draw()
+        pygame.display.flip()
 
 
     def loop(self):
@@ -54,16 +59,19 @@ class Window:
 
         while True:
             pygame.event.pump()
-
-            self.screen.fill(self.WHITE)
+            time.sleep(0.3)
 
             if not self.currentState.isSolution():
                 self.prevState = self.currentState
                 self.currentState = self.astarGAC.iterateSearch()
+
+            if self.currentState is not None:
+                self.screen.fill(self.WHITE)
                 self.guigrid.reset()
-                for var in self.currentState.viList:
-                    var.drawColorsToGUI(self.guigrid)
-            self.guigrid.draw()
+                if self.currentState:
+                    for var in self.currentState.viList:
+                        var.drawColorsToGUI(self.guigrid)
+                self.guigrid.draw()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 

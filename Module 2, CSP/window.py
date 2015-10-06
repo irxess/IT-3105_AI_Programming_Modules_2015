@@ -66,6 +66,7 @@ class Window:
 
     def loop(self):
         clock = pygame.time.Clock()
+        printedStatistics = False
 
         while True:
             pygame.event.pump()
@@ -76,6 +77,10 @@ class Window:
                 self.currentState.updateColors()
                 self.vertices = self.currentState.getVerticesToDraw()
                 self.draw_vertices( self.vertices )
+            else:
+                if not printedStatistics:
+                    self.astarGAC.printStatistics( self.currentState )
+                    printedStatistics = True
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: 

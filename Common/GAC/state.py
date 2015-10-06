@@ -48,13 +48,6 @@ class State(AbstractNode):
                     self.ciList.append( CI(c, [v,n]) )
 
 
-    def cost(self, node):
-        nodeID = node.getID()
-        if self.id == nodeID:
-            return 0
-        return 1
-
-
     def estimateDistance(self, goal):
         self.h = 0
         for v in self.viList:

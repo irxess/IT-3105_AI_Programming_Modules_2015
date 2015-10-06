@@ -152,15 +152,23 @@ class Astar_GAC(Graph):
         return nofColorLess
 
 
+    # def countUnsatisfiedConstraints(self, state):
+    #     unsatisfied = 0
+    #     varList = state.viList
+    #     for c in state.ciList:
+    #         for var in varList: 
+    #             if var in c.variables:
+    #                 if self.countInconsistentDomainValues(var, c) or not len(var.domain):
+    #                     unsatisfied += 1
+    #     return unsatisfied
+
     def countUnsatisfiedConstraints(self, state):
-        unsatisfied = 0
-        varList = state.viList
-        for c in state.ciList:
-            for var in varList: 
-                if var in c.variables:
-                    if self.countInconsistentDomainValues(var, c) or not len(var.domain):
-                        unsatisfied += 1
-        return unsatisfied
+           unsatisfied = 0
+           varList = state.viList
+           for var in varList: 
+               if len(var.domain) != 1:
+                   unsatisfied += 1
+           return unsatisfied
 
 
     # Needed for Graph

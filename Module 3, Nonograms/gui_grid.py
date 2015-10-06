@@ -13,7 +13,7 @@ class GUIGrid():
         self.cellwidth = self.width // self.columns
 
         self.celltype = {}
-        for i in ['white', 'gray', 'black']:
+        for i in ['white', 'black']:
             icon = pygame.image.load(i + '.png').convert()
             icon = pygame.transform.scale(icon, (self.cellwidth, self.cellheight))
             self.celltype[i] = icon
