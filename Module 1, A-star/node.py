@@ -9,17 +9,17 @@ class Node(AbstractNode):
         self.y = y
 
     def getID(self):
-        return (self.x, self.y, self.state)
+        return ((self.x, self.y), self.state)
 
 
-    def cost(self, node):
-        (nodeX,nodeY,s) = node.getID()
-        if self.x == nodeX and self.y == nodeY:
-            return 0 
-        return 1
+    # def cost(self, node):
+    #     (nodeX,nodeY,s) = node.getID()
+    #     if self.x == nodeX and self.y == nodeY:
+    #         return 0 
+    #     return 1
 
-    def tieBreaking(self):
-        (goalX,goalY,s) = goal.getID()
+    def tieBreaking(self, goal):
+        ((goalX,goalY),s) = goal.getID()
         return sqrt( pow((self.x - goalX), 2) + pow((self.y - goalY), 2) ) 
 
     def estimateDistance(self, goal):

@@ -23,7 +23,3 @@ class VI(AbstractVariable):
 
     def getPosition(self):
         return self.getID()
-
-
-    def isSatisfied(self, pair, n, constraint):
-        return constraint(pair[0], pair[1])

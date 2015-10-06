@@ -29,6 +29,8 @@ class AbstractVariable():
         pass
 
 
-    @abstractmethod
-    def isSatisfied(self, pair, n, constraint):
-        pass
+    def isSatisfied(self, args, n, constraint):
+        return constraint(*args)
+
+    # def isSatisfied(self, pair, n, constraint):
+        # return constraint(pair[0], pair[1])

@@ -44,9 +44,6 @@ class AbstractNode:
     def getState(self):
         return self.state
 
-    # def updateF(self, g, h):
-    #     self.f = g + h
-
 
     def setParent(self, parentNode):
         parentG = parentNode.getG()
@@ -80,9 +77,11 @@ class AbstractNode:
         pass
 
 
-    @abstractmethod
     def cost(self, node):
-        pass
+        nodeID = node.getID()
+        if self.getID() == nodeID:
+            return 0
+        return 1
 
 
     @abstractmethod

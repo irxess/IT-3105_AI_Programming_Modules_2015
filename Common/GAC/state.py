@@ -76,7 +76,7 @@ class State(AbstractNode):
         pass
 
 
-    def tieBreaking(self):
+    def tieBreaking(self, goal):
         countVarLowestDomainLength = 0
         for variable in self.viList:
             if len(variable.domain) == 1:
