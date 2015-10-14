@@ -1,4 +1,5 @@
 class BoardController():
+    
     def __init__(self):
         self.board = [0] * 4*4
         randomPosition = 4
