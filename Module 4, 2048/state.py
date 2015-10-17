@@ -4,14 +4,14 @@ class State():
     __metaclass__ = ABCMeta
 
     def __init__(self, grid):
-        self.grid = []
+        self.grid = grid
         calculateHeuristic()
         self.childNodes = []
 
 
 # use that method on stack overflow
     def calculateHeuristic(self):
-        heuristic = 0
+        self.heuristic = 0
 
 
     @abstractmethod
