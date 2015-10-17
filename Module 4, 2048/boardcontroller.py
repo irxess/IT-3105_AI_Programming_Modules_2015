@@ -31,12 +31,50 @@ class BoardController():
                 self.window.update_view( self.board )
 
 
-    def slide(self, direction):
+    def slide(self, direction, board):
         """
         Move all tiles as far in direction as possible.
         Use merge() if needed.
         """
-        pass
+        if direction == 'up':
+            self.slideUp(board)
+        elif direction == 'down':
+            self.slideDown(board)
+        elif direction == 'right':
+            self.slideRight(board)
+        elif direction == 'left':
+            self.slideLeft(board)
+        self.window.update_view( self.board )
+
+
+    def slideUp(self, board):
+        merged = [False] * 4*4
+        for i in range(3): # move as much as possible
+            for pos in range(4,16):
+                if board[pos-4] == 0:
+                    board[pos-4] = board[pos]
+                    board[pos] = 0
+                elif board[pos-4] == board[pos]:
+                    if not merged[pos]:
+                        # merge tiles
+                        board[pos-4] += 1
+                        board[pos] = 0
+                        merged[pos-4] = True
+
+
+    def slideDown(self, board):
+        merged = [False] * 4*4
+        for i in range(3):
+            for pos in range(11,-1,-1):
+                if board[pos+4] == 0:
+                    board[pos+4] = board[pos]
+                    board[pos] = 0
+                elif board[pos+4] == board[pos]:
+                    if not merged[pos]:
+                        # merge tiles
+                        board[pos+4] += 1
+                        board[pos] = 0
+                        merged[pos+4] = True
 
 
     def merge(self, position):
