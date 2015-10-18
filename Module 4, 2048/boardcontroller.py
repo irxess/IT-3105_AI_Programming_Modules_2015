@@ -1,7 +1,8 @@
 class BoardController():
     
-    def __init__(self):
-        self.board = [0] * 4*4
+    def __init__(self, board):
+        # self.board = [0] * 4*4
+        self.board = board
         randomPosition = 4
         randomValue = 2
         self.insertTile( randomPosition, randomValue )
@@ -13,8 +14,8 @@ class BoardController():
     Use merge() if needed.
     """
     def slide(self, direction):
-        pass
-
+        # return the slided and merged borad 
+        return self.board
 
     """
     Merge two tiles.
