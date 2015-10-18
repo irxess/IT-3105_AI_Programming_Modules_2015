@@ -6,10 +6,10 @@ class State():
     __metaclass__ = ABCMeta
 
     def __init__(self, grid):
+
         self.grid = []
         self.value = self.calculateHeuristic()
         self.successors = []
-
 
 # use that method on stack overflow
 # factors:
@@ -18,15 +18,13 @@ class State():
 # 3. ?
 # 4. ?
     def calculateHeuristic(self):
-        heuristic = 0
+        self.heuristic = 0
 
 
     @abstractmethod
     def generateSuccessors(self):
         pass
                 
-
-
 
 
 class MAX(State):
@@ -42,8 +40,9 @@ class MAX(State):
     def generateSuccessors(self):
         successors = []
         for direction in ['up', 'down', 'left', 'right']:
+
             bc = BC( deepcopy(self.grid) )
-            succ = bc.slide(direction)
+            succ = bc.slide(self.grid, direction)
             # if succ == parent means no move, no changes after sliding therfore don't append as successor
             if succ != self.grid:
                 successors.append(succ)
@@ -60,10 +59,6 @@ class CHANCE(State):
     tile in all possible locations.
     Maybe two tiles(2C), with values 2 and 4. Try with only C later
     """
-    def generateSuccessorsC(self):
-        # how to use biasStochastic? 
-        pass
-
 
     def generateSuccessors(self): #generates all successors
     # len(successors) = count(2C cases)
@@ -81,6 +76,9 @@ class CHANCE(State):
                 successors.append(succ2)
 
         return successors
+    def generateSuccessorsC(self):
+        # how to use biasStochastic? 
+        pass
 
     def biasStochastic(self):
         # calculate bias stochastic choice of 2 or 4 with p = {0.9, 0.1}
