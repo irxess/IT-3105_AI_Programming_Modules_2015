@@ -1,79 +1,71 @@
 from abc import ABCMeta, abstractmethod
-import boardcontroller as BC
-from copy import deepcopy
+import boardcontroller as bc
+from copy import deepcopy, copy
 
-class State():
-    __metaclass__ = ABCMeta
-
-    def __init__(self, grid):
-
-        self.grid = []
-        self.value = self.calculateHeuristic()
-        self.successors = []
 
 # use that method on stack overflow
 # factors:
 # 1. The location of the (current) largest tile on the board. Is it in a corner?
-# 2. The number of free cells ?
-# 3. ?
-# 4. ?
-    def calculateHeuristic(self):
-        self.heuristic = 0
+# 2. The number of free cells
+# 3. Are the high numbers in a "snake-pattern"
+# 4. How many merges occur in this move
+def calculateHeuristic(board):
+        heuristic = 0
+        return heuristic
 
-    @abstractmethod
-    def generateSuccessors(self):
-        pass
-
-
-class MAX(State):
-    def __init__(self, grid):
-        super(MAX, self).__init__(grid)
-        self.value = grid.calculateHeuristic() #Correct?
+def generateMAXSuccessors(board):
     """
     Generate the boards that happen
     when pressing arrow up, down, left, right.
     Do not insert a new tile, only merge.
     """
-    
-    def generateSuccessors(self):
-        successors = []
-        for direction in ['up', 'down', 'left', 'right']:
+    print 'max', board
+    successors = []
+    directions = ['up', 'down', 'left', 'right']
+    for direction in directions:
+        succ = copy(board)
+        print board, succ
+        succ, merges = bc.slide(direction, succ)
+        print board, succ
 
-            bc = BC( deepcopy(self.grid) )
-            succ = bc.slide(self.grid, direction)
-            # if succ == parent means no move, no changes after sliding therfore don't append as successor
-            if succ != self.grid:
-                successors.append(succ)
-        return successors
+        # if succ == parent means no move, no changes after sliding therfore don't append as successor
+        if succ != board:
+            successors.append(succ)
+    print 'max returned', successors
+    return (successors, ['up', 'down', 'left', 'right'])
 
 
-class CHANCE(State):
-    def __init__(self, grid):
-        super(CHANCE, self).__init__(grid)
-        self.expectedValue = 0.0
-
+def generateCHANCESuccessors(board):
     """
     Generate new boards by inserting a new
     tile in all possible locations.
     Maybe two tiles(2C), with values 2 and 4. Try with only C later
     """
+    print 'chance', board
 
-    def generateSuccessors(self): #generates all successors
-    # len(successors) = count(2C cases)
-        successors = []
+    successors = []
+    probabilities = []
 
-        for i in range( len(self.grid) ):
+    for i in range( len(board) ):
+        if board[i] == 0:
+            succ1 = deepcopy(board)
+            succ2 = deepcopy(board)
 
-            succ1 = deepcopy(self.grid)
-            succ2 = deepcopy(self.grid)
+            succ1[i] = 2
+            successors.append(succ1)
+            probabilities.append(0.9)
+            succ2[i] = 4
+            successors.append(succ2)
+            probabilities.append(0.1)
+    outcomes = len(probabilities)
+    # HVa betyr dette?
+    for i in range(outcomes):
+        probabilities[i] /= (outcomes/2)
 
-            if self.grid[i] == 0:
-                succ1[i] = 2
-                successors.append(succ1)
-                succ2[i] = 4
-                successors.append(succ2)
+    print 'chance returned', probabilities
+    return (successors, probabilities)
 
-        return successors
+
     def generateSuccessorsBiased(self):
         # Using biased stochastics
         successors = []
@@ -89,3 +81,4 @@ class CHANCE(State):
         if random.random() > 0.9 :
                 return 2
         return 4    
+
