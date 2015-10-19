@@ -14,7 +14,7 @@ def calculateHeuristic():
         return heuristic
 
 
-def generateMAXSuccessors():
+def generateMAXSuccessors(board):
     """
     Generate the boards that happen
     when pressing arrow up, down, left, right.
@@ -23,15 +23,15 @@ def generateMAXSuccessors():
     successors = []
     for direction in ['up', 'down', 'left', 'right']:
 
-        bc = BC( deepcopy(self.board) )
-        succ = bc.slide(self.board, direction)
+        bc = BC( deepcopy(board) )
+        succ = bc.slide(board, direction)
         # if succ == parent means no move, no changes after sliding therfore don't append as successor
-        if succ != self.board:
+        if succ != board:
             successors.append(succ)
     return successors
 
 
-def generateCHANCESuccessors():
+def generateCHANCESuccessors(board):
     """
     Generate new boards by inserting a new
     tile in all possible locations.
@@ -39,18 +39,24 @@ def generateCHANCESuccessors():
     """
 
     successors = []
+    probabilities = []
 
-    for i in range( len(self.board) ):
-        succ1 = deepcopy(self.board)
-        succ2 = deepcopy(self.board)
+    for i in range( len(board) ):
+        if board[i] == 0:
+            succ1 = deepcopy(board)
+            succ2 = deepcopy(board)
 
-        if self.board[i] == 0:
             succ1[i] = 2
             successors.append(succ1)
+            probabilities.append(0.9)
             succ2[i] = 4
             successors.append(succ2)
+            probabilities.append(0.1)
+    outcomes = len(probabilities)
+    for i in range(outcomes):
+        probabilities[i] /= (outcomes/2)
 
-    return successors
+    return (successors, probabilities)
 
 
 def generateSuccessorsC():

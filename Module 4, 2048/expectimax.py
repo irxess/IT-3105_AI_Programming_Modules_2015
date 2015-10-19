@@ -4,7 +4,6 @@ class Expectimax():
     def __init__(self):
         self.nextPlayer = 'ai'
         self.treeDepth = 6
-        # self.rootNode = MAX()
 
 
     def expectimax( self, node, depth ):
@@ -21,7 +20,7 @@ class Expectimax():
 
 
     def findBestSuccessor( self, node, depth ):
-       bestHeuristic = -float(inf)
+       bestHeuristic = float('-inf')
        successors = state.generateMAXSuccessors(node)
        if len(successors==0):
         return state.calculateHeuristic(node)
@@ -34,13 +33,13 @@ class Expectimax():
 
     def findBestAverageSuccessor( self, node, depth ):
         weightedAverage = 0
-        successors = state.generateCHANCEsuccessors(node)
+        successors, probabilities = state.generateCHANCEsuccessors(node)
         if len(successors==0):
          return state.calculateHeuristic(node)
 
-        for succ in successors:
-            weightedAverage += (succ.probability * expectimax( succ, depth-1 ))
-            if succ.probability == 0:
+        for i in range(len(successors)):
+            weightedAverage += (probabilities[i] * expectimax( successors[i], depth-1 ))
+            if probabilities[i] == 0:
                 print "forgot to init probability"
         return weightedAverage
 
