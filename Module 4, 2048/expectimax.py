@@ -1,47 +1,45 @@
 import state
 
-class Expectimax():
-    def __init__(self):
-        self.nextPlayer = 'ai'
-        self.treeDepth = 6
+# depth should be an odd number if player is 'ai', maybe?
+def expectimax( node, depth, nextPlayer ):
+    print 'expectimax', node
+    if depth == 0:
+        h = state.calculateHeuristic(node)
+        if h == 0:
+            print "forgot to implement heuristic?"
+        return h
+    # should check if nodetype is MAX or CHANCE instead
+    if nextPlayer == 'ai':
+        return findBestSuccessor( node, depth )
+    if nextPlayer == 'board':
+        return findBestAverageSuccessor( node, depth )
 
 
-    def expectimax( self, node, depth ):
-        if depth == 0:
-            h = state.calculateHeuristic(node)
-            if h == 0:
-                print "forgot to implement heuristic?"
-            return node.heuristic
-        # should check if nodetype is MAX or CHANCE instead
-        if self.nextPlayer == 'ai':
-            self.findBestSuccessor( node, depth )
-        if self.nextPlayer == 'board':
-            self.findBestAverageSuccessor( node, depth )
+def findBestSuccessor( node, depth ):
+   bestHeuristic = float('-inf')
+   successors, directions = state.generateMAXSuccessors(node)
+   if len(successors)==0:
+    return state.calculateHeuristic(node)
 
+   for i in range( len(successors) ):
+       succHeuristic = expectimax( successors[i], depth-1, 'board' )
+       if succHeuristic > bestHeuristic:
+           bestHeuristic = succHeuristic
+           bestDirection = directions[i]
+   return bestHeuristic, bestDirection
 
-    def findBestSuccessor( self, node, depth ):
-       bestHeuristic = float('-inf')
-       successors = state.generateMAXSuccessors(node)
-       if len(successors==0):
-        return state.calculateHeuristic(node)
+def findBestAverageSuccessor( node, depth ):
+    weightedAverage = 0
+    successors, probabilities = state.generateCHANCESuccessors(node)
+    if len(successors)==0:
+     return state.calculateHeuristic(node)
 
-       for succ in successors:
-           succHeuristic = expectimax( succ, depth-1 )
-           if succHeuristic > bestHeuristic:
-               bestHeuristic = succHeuristic
-       return bestHeuristic
-
-    def findBestAverageSuccessor( self, node, depth ):
-        weightedAverage = 0
-        successors, probabilities = state.generateCHANCEsuccessors(node)
-        if len(successors==0):
-         return state.calculateHeuristic(node)
-
-        for i in range(len(successors)):
-            weightedAverage += (probabilities[i] * expectimax( successors[i], depth-1 ))
-            if probabilities[i] == 0:
-                print "forgot to init probability"
-        return weightedAverage
+    for i in range(len(successors)):
+        successorH, move = expectimax( successors[i], depth-1, 'ai' )
+        weightedAverage += (probabilities[i] * successorH)
+        if probabilities[i] == 0:
+            print "forgot to init probability"
+    return weightedAverage
 
     # def maxValue(state):
     #     values = [ succ.value for succ in state.successors ]

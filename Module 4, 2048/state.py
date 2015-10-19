@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
-import boardcontroller as BC
-from copy import deepcopy
+import boardcontroller as bc
+from copy import deepcopy, copy
 
 
 # use that method on stack overflow
@@ -9,7 +9,7 @@ from copy import deepcopy
 # 2. The number of free cells
 # 3. Are the high numbers in a "snake-pattern"
 # 4. How many merges occur in this move
-def calculateHeuristic():
+def calculateHeuristic(board):
         heuristic = 0
         return heuristic
 
@@ -20,15 +20,20 @@ def generateMAXSuccessors(board):
     when pressing arrow up, down, left, right.
     Do not insert a new tile, only merge.
     """
+    print 'max', board
     successors = []
-    for direction in ['up', 'down', 'left', 'right']:
+    directions = ['up', 'down', 'left', 'right']
+    for direction in directions:
+        succ = copy(board)
+        print board, succ
+        succ, merges = bc.slide(direction, succ)
+        print board, succ
 
-        bc = BC( deepcopy(board) )
-        succ = bc.slide(board, direction)
         # if succ == parent means no move, no changes after sliding therfore don't append as successor
         if succ != board:
             successors.append(succ)
-    return successors
+    print 'max returned', successors
+    return (successors, ['up', 'down', 'left', 'right'])
 
 
 def generateCHANCESuccessors(board):
@@ -37,6 +42,7 @@ def generateCHANCESuccessors(board):
     tile in all possible locations.
     Maybe two tiles(2C), with values 2 and 4. Try with only C later
     """
+    print 'chance', board
 
     successors = []
     probabilities = []
@@ -56,6 +62,7 @@ def generateCHANCESuccessors(board):
     for i in range(outcomes):
         probabilities[i] /= (outcomes/2)
 
+    print 'chance returned', probabilities
     return (successors, probabilities)
 
 
