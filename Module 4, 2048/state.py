@@ -75,14 +75,17 @@ class CHANCE(State):
 
         return successors
     def generateSuccessorsBiased(self):
-        # how to use biasStochastic? 
+        # Using biased stochastics
+        successors = []
         for i in range( len(self.grid) ):
             succ1 = deepcopy(self.grid)
             if self.grid[i] == 0:
                 succ[i] = self.flip()
+                successors.append(succ)
+        return successors
 
     def flip(self):
-        # calculate bias stochastic choice of 2 or 4 with p = {0.9, 0.1}
+        # choice of 2 or 4 with p = {0.9, 0.1}
         if random.random() > 0.9 :
                 return 2
         return 4    
