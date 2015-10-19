@@ -20,11 +20,9 @@ class State():
     def calculateHeuristic(self):
         self.heuristic = 0
 
-
     @abstractmethod
     def generateSuccessors(self):
         pass
-                
 
 
 class MAX(State):
@@ -76,16 +74,15 @@ class CHANCE(State):
                 successors.append(succ2)
 
         return successors
-    def generateSuccessorsC(self):
+    def generateSuccessorsBiased(self):
         # how to use biasStochastic? 
-        pass
+        for i in range( len(self.grid) ):
+            succ1 = deepcopy(self.grid)
+            if self.grid[i] == 0:
+                succ[i] = self.flip()
 
-    def biasStochastic(self):
+    def flip(self):
         # calculate bias stochastic choice of 2 or 4 with p = {0.9, 0.1}
-        pass
-
-
-    
-    
-
-            
+        if random.random() > 0.9 :
+                return 2
+        return 4    
