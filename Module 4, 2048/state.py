@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 import boardcontroller as bc
 from copy import deepcopy, copy
+import random
 
 
 # use that method on stack overflow
@@ -13,6 +14,12 @@ def calculateHeuristic(board):
         heuristic = 0
         return heuristic
 
+def countOpenCells(board):
+    count = 0
+    for cell in board:
+            if cell == 0:
+                count += 1
+    return count
 def generateMAXSuccessors(board):
     """
     Generate the boards that happen
@@ -21,6 +28,7 @@ def generateMAXSuccessors(board):
     """
     print 'max', board
     successors = []
+    merges = []
     directions = ['up', 'down', 'left', 'right']
     for direction in directions:
         succ = copy(board)
@@ -66,12 +74,12 @@ def generateCHANCESuccessors(board):
     return (successors, probabilities)
 
 
-    def generateSuccessorsBiased(self):
+    def generateSuccessorsBiased(board):
         # Using biased stochastics
         successors = []
-        for i in range( len(self.grid) ):
-            succ1 = deepcopy(self.grid)
-            if self.grid[i] == 0:
+        for i in range( len(board) ):
+            succ1 = deepcopy(board)
+            if board[i] == 0:
                 succ[i] = self.flip()
                 successors.append(succ)
         return successors
