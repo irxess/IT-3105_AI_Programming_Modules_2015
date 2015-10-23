@@ -13,7 +13,7 @@ def calculateHeuristic(board, merges):
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-    heuristic = edgeScore(board) + openCellScore(board) + evalBestCorner(board) + \
+    heuristic = edgeScore(board) + bc.findEmptyTiles(board) + evalBestCorner(board) + \
     merges + consecutiveChain(board)    
     return heuristic
 
@@ -39,7 +39,7 @@ def generateMAXSuccessors(board):
             merges.append(nofMerges)
     print 'max returned', successors
     # return (successors, ['up', 'down', 'left', 'right'])
-    return (successors, ['up', 'down', 'left', 'right'], merges)
+    return successors, ['up', 'down', 'left', 'right'], merges
 
 
 def generateCHANCESuccessors(board):
@@ -65,7 +65,7 @@ def generateCHANCESuccessors(board):
             successors.append(succ2)
             probabilities.append(0.1)
     outcomes = len(probabilities)
-    # Hva betyr dette og hvorfor gjør du dette?
+    # Hva betyr dette og hvorfor gjoer du dette?
     for i in xrange(outcomes):
         probabilities[i] /= (outcomes/2)
 
@@ -197,8 +197,7 @@ def evalBestCorner(board):
     b = deepcopy(board)
     for i in xrange(4):
         score = monotonicityScore(b)
-        if  score > maxMonotScore :
-          maxMonotScore = score
+        maxMonotScore = max(score, maxMonotScore)
         b = rotateLeft(b)
     return maxMonotScore
 
@@ -211,7 +210,7 @@ def rotateLeft(board):
         l -= 1
     return rotated
 
-    # the for loop over does this: 
+    # the for-loop above does this: 
         # rotated.append( board[3:16:4] )
         # rotated.append( board[2:15:4] ) 
         # rotated.append( board[1:14:4] ) 
@@ -221,3 +220,8 @@ def rotateLeft(board):
 def rotateRight(board):
     rotated = []
     return rotated
+
+# // TODO
+def getNofMerges(board):
+    # return nof. merges.
+    pass
