@@ -141,7 +141,7 @@ def monotonicityScore(grid):
             i = last + y
             if grid[i] < grid[i+1] :
                 increasingRight += 1
-                scoreRight += increasingRight**2 + 4
+                scoreRight += increasingRight**2 #+ 4
             else:
                 scoreRight -= abs( grid[i] - grid[i+1] ) 
                 increasingRight = 0
@@ -152,7 +152,7 @@ def monotonicityScore(grid):
             i = last + y 
             if grid[i+1] < grid[i]:
                 increasingLeft += 1
-                scoreLeft += increasingLeft**2 + 4
+                scoreLeft += increasingLeft**2 #+ 4
             else :
                 scoreLeft -= abs( grid[i+1] - grid[i] ) 
                 increasingLeft = 0
@@ -169,7 +169,7 @@ def monotonicityScore(grid):
             i = last + x
             if grid[i] < grid[i+4] :
                 increasingDown += 1
-                scoreDown += increasingDown**2 + 4
+                scoreDown += increasingDown**2 #+ 4
             else:
                 scoreDown -= abs( grid[i] - grid[i+4] )
                 increasingDown = 0
@@ -180,7 +180,7 @@ def monotonicityScore(grid):
             i = x + last
             if grid[i+1] < grid[i]:
                 increasingUp += 1
-                scoreUp += increasingUp**2 + 4
+                scoreUp += increasingUp**2 #+ 4
             else :
                 scoreUp -= abs( grid[i+1] - grid[i] )
                 increasingUp = 0
