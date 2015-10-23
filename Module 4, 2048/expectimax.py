@@ -17,9 +17,9 @@ def expectimax( node, depth, nextPlayer ):
 
 def findBestSuccessor( node, depth ):
    bestHeuristic = float('-inf')
-   successors, directions = state.generateMAXSuccessors(node)
-   if len(successors)==0:
-    return state.calculateHeuristic(node)
+   successors, directions, merges = state.generateMAXSuccessors(node)
+   if len(successors) == 0:
+    return state.calculateHeuristic(node, merges)
 
    for i in range( len(successors) ):
        succHeuristic = expectimax( successors[i], depth-1, 'board' )
@@ -31,7 +31,7 @@ def findBestSuccessor( node, depth ):
 def findBestAverageSuccessor( node, depth ):
     weightedAverage = 0
     successors, probabilities = state.generateCHANCESuccessors(node)
-    if len(successors)==0:
+    if len(successors) == 0:
      return state.calculateHeuristic(node)
 
     for i in range(len(successors)):
