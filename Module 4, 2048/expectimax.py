@@ -1,7 +1,8 @@
 import state
 
 # depth should be an odd number if player is 'ai', maybe?
-def expectimax( node, depth, nextPlayer ):
+# The depth must be a fixed number not over 6, the AI has to stop searching when reaching depth=6
+def expectimax( node, depth=6, nextPlayer ):
     print 'expectimax', node
     if depth == 0:
         h = state.calculateHeuristic(node)
