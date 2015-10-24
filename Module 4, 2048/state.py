@@ -80,13 +80,14 @@ def generateSuccessorsBiased(board):
     # Using biased stochastics
     successors = []
     probabilities = []
-
     for i in xrange( len(board) ):
         succ = deepcopy(board)
         if board[i] == 0:
             succ[i] = flip()
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
+    nofFree = len(probabilities)
+    probabilities = [p*(1/nofFree) for p in probabilities]
     return successors, probabilities
 
 
