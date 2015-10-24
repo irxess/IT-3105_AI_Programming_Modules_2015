@@ -14,7 +14,9 @@ def calculateHeuristic(board, merges):
     5. Consecutive chain. If score diff. is a fixed value """
 
     heuristic = \
-         1 * bc.findEmptyTiles(board)\
+          1 * edgeScore(board) \
+        + 1 * openCellScore(board) \
+        + 1 * bc.findEmptyTiles(board)\
         + 1 * evalBestCorner(board) \
         + 1 * merges \
         + 1 * consecutiveChain(board)    
@@ -39,7 +41,6 @@ def generateMAXSuccessors(board):
             successors.append(succ)
             merges.append(nofMerges)
     print 'max returned', successors
-    # return (successors, ['up', 'down', 'left', 'right'])
     return successors, merges
 
 
@@ -79,7 +80,6 @@ def generateSuccessorsBiased(board):
     # Using biased stochastics
     successors = []
     probabilities = []
-
     for i in xrange( len(board) ):
         succ = deepcopy(board)
         if board[i] == 0:
@@ -87,8 +87,8 @@ def generateSuccessorsBiased(board):
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
 
-    for i in range(len(probabilities)):
-        probabilities[i] *= len(probabilities)
+    nofSuccs = len(probabilities)
+    probabilities = [p*(1/nofSuccs) for p in probabilities]
 
     return successors, probabilities
 
@@ -108,10 +108,10 @@ def edgeScore(grid):
     maxTile = max(grid)
     count = grid.count(maxTile) 
     #should I check if we have more than one maxTile?
-    if x == maxTile and grid.index(x) in corner:
+    if maxTile in grid and grid.index(maxTile) in corner:
         #should i score more?
         score += 2**4
-    elif x == maxTile and grid.index(x) in edge:
+    elif maxTile in grid and grid.index(maxTile) in edge:
         score += 2**2 
     return score
 
@@ -153,6 +153,7 @@ def monotonicityScore(grid):
     # d = d.rotate(4)
 
     for k in xrange(2):
+
         for y in xrange(3):
             i = last + y
             if grid[i] < grid[i+1] :
@@ -240,4 +241,4 @@ def rotateRight(board):
 # // TODO
 def getNofMerges(board):
     # return nof. merges.
-    pass
+    return 0

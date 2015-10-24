@@ -6,7 +6,6 @@ from copy import copy
 
 b = window()
 
-
 while True:
     bestHeuristic = 0
     bestDirection = 'none'

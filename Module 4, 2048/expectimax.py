@@ -1,6 +1,5 @@
 import state 
 
-
 def expectimax( node, depth, nextPlayer ):
     print 'expectimax', node
     merges = state.getNofMerges(node)
