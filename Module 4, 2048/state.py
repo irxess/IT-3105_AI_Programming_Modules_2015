@@ -5,21 +5,21 @@ import random
 # from collection import deque
 
 def calculateHeuristic(board, merges):
+
     """ Inspired by the method on stack overflow
     factors:
     1. The location of the (current) largest tile on the board. Is it in a corner/edge?
     2. The number of free cells
-    3. Are the high numbers in a "snake-pattern"
+    3. Are the high numbers in a "snake-pattern" 
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
     heuristic = \
           1 * edgeScore(board) \
         + 1 * openCellScore(board) \
-        + 1 * bc.findEmptyTiles(board)\
         + 1 * evalBestCorner(board) \
         + 1 * merges \
-        + 1 * consecutiveChain(board)    
+        # + 1 * consecutiveChain(board)    
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -60,10 +60,10 @@ def generateCHANCESuccessors(board):
             succ1 = deepcopy(board)
             succ2 = deepcopy(board)
 
-            succ1[i] = 2
+            succ1[i] = 1
             successors.append(succ1)
             probabilities.append(0.9)
-            succ2[i] = 4
+            succ2[i] = 2
             successors.append(succ2)
             probabilities.append(0.1)
     outcomes = len(probabilities)
@@ -84,25 +84,31 @@ def generateSuccessorsBiased(board):
         succ = deepcopy(board)
         if board[i] == 0:
             succ[i] = flip()
-            probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
+            probabilities.append( (succ[i] == 1) and 0.9 or 0.1 )
             successors.append(succ)
 
-    nofSuccs = len(probabilities)
-    probabilities = [p*(1/nofSuccs) for p in probabilities]
+    nofSuccs = float( len(probabilities) )
+
+    for i in xrange(len(probabilities)-1):
+        p = probabilities[i]
+        probabilities[i] = p * (1/nofSuccs)
+        
+    # probabilities = [(p*(1/nofSuccs)) for p in probabilities]
 
     return successors, probabilities
 
 
 def flip():
     # choice of 2 or 4 with p = {0.9, 0.1}
-    if random.random() > 0.9 :
-            return 2
-    return 4    
+    if random.random() < 0.9 :
+            return 1
+    return 2    
 
 
 def edgeScore(grid):
     scoreCorner = 0
     scoreEdge = 0
+    score = 0
     corner = set([0, 3, 12, 15])
     edge = set(grid).difference( set([5, 6, 9, 10]) )#edge cells = (all cells) - (center cells)
     maxTile = max(grid)
@@ -128,9 +134,9 @@ def consecutiveChain(grid):
     print 'consecutiveChain', grid
     score = 0
     pattern = 0
-    for i in xrange( len(grid) ):
+    for i in xrange( len(grid)-1 ):
         diff = abs( grid[i] - grid[i+1] )
-        if  diff == grid[i]/2 or diff == grid[i+1]/2:
+        if  (diff == (grid[i]-1)) or (diff == (grid[i+1]-1)):
             pattern += 1
             score += pattern**2 + 4
     return score
@@ -149,16 +155,13 @@ def monotonicityScore(grid):
     scoreDown = 0
     scoreUp = 0
 
-    # d = deque(grid)
-    # d = d.rotate(4)
-
     for k in xrange(2):
 
         for y in xrange(3):
             i = last + y
             if grid[i] < grid[i+1] :
                 increasingRight += 1
-                scoreRight += increasingRight**2 #+ 4
+                scoreRight += increasingRight**2 # + 4
             else:
                 scoreRight -= abs( grid[i] - grid[i+1] ) 
                 increasingRight = 0
@@ -223,7 +226,7 @@ def rotateLeft(board):
     rotated = []
     l = 16
     for i in range(3, -1, -1):
-        rotated.append( board[i:l:4] )
+        rotated.extend( board[i:l:4] )
         l -= 1
     return rotated
 

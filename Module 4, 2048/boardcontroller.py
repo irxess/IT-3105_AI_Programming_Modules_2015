@@ -18,7 +18,7 @@ class BoardController():
         Update GUI
         """
         slide(direction, self.board)
-        self.spawnRandomTile()
+        spawnRandomTile(self.board)
         self.window.update_view(self.board)
 
 

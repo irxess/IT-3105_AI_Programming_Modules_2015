@@ -1,6 +1,8 @@
 import state 
+import pdb
 
 def expectimax( node, depth, nextPlayer ):
+    # pdb.set_trace()
     print 'expectimax', node
     merges = state.getNofMerges(node)
     if depth == 0:
@@ -38,7 +40,7 @@ def findBestAverageSuccessor( node, depth ):
      return state.calculateHeuristic(node)
 
     for i in range(len(successors)):
-        successorH, move = expectimax( successors[i], depth-1, 'ai' )
+        successorH = expectimax( successors[i], depth-1, 'ai' )
         weightedAverage += (probabilities[i] * successorH)
         if probabilities[i] == 0:
             print "forgot to init probability"

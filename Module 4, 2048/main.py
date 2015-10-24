@@ -1,10 +1,10 @@
-from boardcontroller import BoardController as window
+# from boardcontroller import BoardController as window
 import boardcontroller as bc
 from expectimax import *
 from copy import copy
 
 
-b = window()
+b = bc.BoardController()
 
 while True:
     bestHeuristic = 0
@@ -17,10 +17,11 @@ while True:
             heuristic = expectimax( nextBoard, 5, 'board')
             print 'Heuristic: ', heuristic
             if heuristic > bestHeuristic:
-                heuristic = bestHeuristic
+                bestHeuristic = heuristic
                 bestDirection = direction
     if bestHeuristic != 0:
         b.move(bestDirection)
+
     else:
         print 'game over'
         while True:
