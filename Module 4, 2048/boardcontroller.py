@@ -10,7 +10,7 @@ class BoardController():
         self.window = visuals.GameWindow()
         spawnRandomTile(self.board)
         self.window.update_view(self.board)
-        
+
 
     def move(self, direction):
         """
@@ -48,7 +48,6 @@ def slide(direction, board):
     Move all tiles as far in direction as possible.
     Use merge() if needed.
     """
-    print 'slide', board
     if direction == 'up':
         return slideUp(board)
     elif direction == 'down':
@@ -60,7 +59,6 @@ def slide(direction, board):
 
 
 def slideUp(board):
-    print 'up', board
     merged = [False] * 4*4
     mergeCount = 0
 
@@ -76,7 +74,6 @@ def slideUp(board):
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos-4] = True
-    print 'up', board
 
     return board, mergeCount
 

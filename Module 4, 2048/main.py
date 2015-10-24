@@ -1,6 +1,7 @@
 from boardcontroller import BoardController as window
 import boardcontroller as bc
 from expectimax import *
+from copy import copy
 
 
 b = window()
@@ -10,9 +11,12 @@ while True:
     bestHeuristic = 0
     bestDirection = 'none'
     for direction in ['up', 'down', 'left', 'right']:
-        nextBoard, mergeCount = bc.slide(direction, b.board)
+        nextBoard, mergeCount = bc.slide(direction, copy(b.board) )
+        print b.board
+        print nextBoard
         if nextBoard != b.board:
             heuristic = expectimax( nextBoard, 5, 'board')
+            print 'Heuristic: ', heuristic
             if heuristic > bestHeuristic:
                 heuristic = bestHeuristic
                 bestDirection = direction
@@ -21,4 +25,4 @@ while True:
     else:
         print 'game over'
         while True:
-            pass
+            b.window.update_view(b.board)

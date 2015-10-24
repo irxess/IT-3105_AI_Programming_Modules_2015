@@ -13,12 +13,11 @@ def calculateHeuristic(board, merges):
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-    heuristic \
-        = 50 * edgeScore(board) \
-        + 30 * bc.findEmptyTiles(board)\
-        + 10 * evalBestCorner(board) \
-        +  5 * merges \
-        +  5 * consecutiveChain(board)    
+    heuristic = \
+         1 * bc.findEmptyTiles(board)\
+        + 1 * evalBestCorner(board) \
+        + 1 * merges \
+        + 1 * consecutiveChain(board)    
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -33,9 +32,7 @@ def generateMAXSuccessors(board):
     directions = ['up', 'down', 'left', 'right']
     for direction in directions:
         succ = deepcopy(board)
-        print board, succ
         succ, nofMerges = bc.slide(direction, succ)
-        print board, succ
 
         # if succ == parent means no move, no changes after sliding therfore don't append as successor
         if succ != board:
@@ -78,6 +75,7 @@ def generateCHANCESuccessors(board):
 
 
 def generateSuccessorsBiased(board):
+    print 'generateSuccessorsBiased', board
     # Using biased stochastics
     successors = []
     probabilities = []
@@ -88,6 +86,10 @@ def generateSuccessorsBiased(board):
             succ[i] = flip()
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
+
+    for i in range(len(probabilities)):
+        probabilities[i] *= len(probabilities)
+
     return successors, probabilities
 
 
@@ -101,8 +103,8 @@ def flip():
 def edgeScore(grid):
     scoreCorner = 0
     scoreEdge = 0
-    corner = set(0, 3, 12, 15)
-    edge = set(grid).difference( set(5, 6, 9, 10) )#edge cells = (all cells) - (center cells)
+    corner = set([0, 3, 12, 15])
+    edge = set(grid).difference( set([5, 6, 9, 10]) )#edge cells = (all cells) - (center cells)
     maxTile = max(grid)
     count = grid.count(maxTile) 
     #should I check if we have more than one maxTile?
@@ -123,6 +125,7 @@ def openCellScore(board):
 
 
 def consecutiveChain(grid):
+    print 'consecutiveChain', grid
     score = 0
     pattern = 0
     for i in xrange( len(grid) ):
@@ -134,12 +137,17 @@ def consecutiveChain(grid):
 
 
 def monotonicityScore(grid):
+    print 'monotonicityScore', grid
     # snake pattern, starts from 1 corner 
 
     #left & right
     increasingRight = 0
-    inreasingLeft = 0
+    increasingLeft = 0
     last = 0
+    scoreRight = 0
+    scoreLeft = 0
+    scoreDown = 0
+    scoreUp = 0
 
     # d = deque(grid)
     # d = d.rotate(4)
