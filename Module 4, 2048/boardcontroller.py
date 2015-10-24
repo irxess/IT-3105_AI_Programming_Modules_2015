@@ -1,9 +1,10 @@
 import visuals
 import random
+from copy import copy
+from expectimax import *
+
 
 class BoardController():
-
-
     def __init__(self):
         random.seed()
         self.board = [0] * 4*4

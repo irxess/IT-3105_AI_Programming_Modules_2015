@@ -82,4 +82,5 @@ class GameWindow(Frame):
                                                 bg   = BACKGROUND_COLOR_DICT[ digit ],
                                                 fg   = foreground_color )
         self.update_idletasks()
+        self.update()
 #endclass
