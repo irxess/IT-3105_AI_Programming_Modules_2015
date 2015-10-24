@@ -13,7 +13,7 @@ def calculateHeuristic(board, merges):
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-    heuristic = edgeScore(board) + bc.findEmptyTiles(board) + evalBestCorner(board) + \
+    heuristic = edgeScore(board) + openCellScore(board) + evalBestCorner(board) + \
     merges + consecutiveChain(board)    
     return heuristic
 
@@ -39,7 +39,7 @@ def generateMAXSuccessors(board):
             merges.append(nofMerges)
     print 'max returned', successors
     # return (successors, ['up', 'down', 'left', 'right'])
-    return successors, ['up', 'down', 'left', 'right'], merges
+    return successors, merges
 
 
 def generateCHANCESuccessors(board):
@@ -79,12 +79,12 @@ def generateSuccessorsBiased(board):
     probabilities = []
 
     for i in xrange( len(board) ):
-        succ1 = deepcopy(board)
+        succ = deepcopy(board)
         if board[i] == 0:
             succ[i] = flip()
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
-    return (successors, probabilities)
+    return successors, probabilities
 
 def flip():
     # choice of 2 or 4 with p = {0.9, 0.1}
@@ -137,6 +137,7 @@ def monotonicityScore(grid):
     # d = d.rotate(4)
 
     for k in xrange(2):
+
         for y in xrange(3):
             i = last + y
             if grid[i] < grid[i+1] :

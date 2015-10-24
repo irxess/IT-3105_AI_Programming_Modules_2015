@@ -2,7 +2,7 @@ import state
 
 # depth should be an odd number if player is 'ai', maybe?
 # The depth must be a fixed number not over 6, the AI has to stop searching when reaching depth=6
-def expectimax( node, depth=6, nextPlayer ):
+def expectimax( node, depth, nextPlayer ):
     print 'expectimax', node
     merges = state.getNofMerges(node)
     if depth == 0:
@@ -19,7 +19,7 @@ def expectimax( node, depth=6, nextPlayer ):
 
 def findBestSuccessor( node, depth ):
    bestHeuristic = float('-inf')
-   successors, directions, merges = state.generateMAXSuccessors(node) 
+   successors, merges = state.generateMAXSuccessors(node) 
    if len(successors) == 0:
     return state.calculateHeuristic(node, merges)
 
@@ -27,8 +27,8 @@ def findBestSuccessor( node, depth ):
        succHeuristic = expectimax( successors[i], depth-1, 'board' )
        if succHeuristic > bestHeuristic:
            bestHeuristic = succHeuristic
-           bestDirection = directions[i]
-   return bestHeuristic, bestDirection
+           # bestDirection = directions[i]
+   return bestHeuristic
 
 def findBestAverageSuccessor( node, depth ):
     weightedAverage = 0
