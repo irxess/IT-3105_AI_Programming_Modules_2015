@@ -13,17 +13,12 @@ def calculateHeuristic(board, merges):
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-<<<<<<< HEAD
-    heuristic = edgeScore(board) + openCellScore(board) + evalBestCorner(board) + \
-    merges + consecutiveChain(board)    
-=======
     heuristic \
         = 50 * edgeScore(board) \
-        + 30 * bc.findEmptyTiles(board)\
+        + 30 * openCellScore(board)(board)\
         + 10 * evalBestCorner(board) \
         +  5 * merges \
         +  5 * consecutiveChain(board)    
->>>>>>> 448a5240d8fe57fe2d4fd436388febab824df7ac
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -47,7 +42,6 @@ def generateMAXSuccessors(board):
             successors.append(succ)
             merges.append(nofMerges)
     print 'max returned', successors
-    # return (successors, ['up', 'down', 'left', 'right'])
     return successors, merges
 
 
@@ -94,10 +88,7 @@ def generateSuccessorsBiased(board):
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
     return successors, probabilities
-<<<<<<< HEAD
-=======
 
->>>>>>> 448a5240d8fe57fe2d4fd436388febab824df7ac
 
 def flip():
     # choice of 2 or 4 with p = {0.9, 0.1}
@@ -114,10 +105,10 @@ def edgeScore(grid):
     maxTile = max(grid)
     count = grid.count(maxTile) 
     #should I check if we have more than one maxTile?
-    if x == maxTile and grid.index(x) in corner:
+    if maxTile in grid and grid.index(maxTile) in corner:
         #should i score more?
         score += 2**4
-    elif x == maxTile and grid.index(x) in edge:
+    elif maxTile in grid and grid.index(maxTile) in edge:
         score += 2**2 
     return score
 

@@ -5,7 +5,6 @@ from expectimax import *
 
 b = window()
 
-
 while True:
     bestHeuristic = 0
     bestDirection = 'none'
