@@ -5,8 +5,10 @@ from copy import copy
 
 
 b = window()
+b.window.update_view(b.board)
 
-while True:
+
+def logic():
     bestHeuristic = 0
     bestDirection = 'none'
     for direction in ['up', 'down', 'left', 'right']:
@@ -25,3 +27,7 @@ while True:
         print 'game over'
         while True:
             b.window.update_view(b.board)
+
+
+while True:
+    logic()
