@@ -8,7 +8,9 @@ class BoardController():
         random.seed()
         self.board = [0] * 4*4
         self.window = visuals.GameWindow()
-        self.spawnRandomTile()
+        spawnRandomTile(self.board)
+        self.window.update_view(self.board)
+        
 
     def move(self, direction):
         """

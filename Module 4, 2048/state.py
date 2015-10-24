@@ -13,8 +13,12 @@ def calculateHeuristic(board, merges):
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-    heuristic = edgeScore(board) + bc.findEmptyTiles(board) + evalBestCorner(board) + \
-    merges + consecutiveChain(board)    
+    heuristic \
+        = 50 * edgeScore(board) \
+        + 30 * bc.findEmptyTiles(board)\
+        + 10 * evalBestCorner(board) \
+        +  5 * merges \
+        +  5 * consecutiveChain(board)    
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -39,7 +43,7 @@ def generateMAXSuccessors(board):
             merges.append(nofMerges)
     print 'max returned', successors
     # return (successors, ['up', 'down', 'left', 'right'])
-    return successors, ['up', 'down', 'left', 'right'], merges
+    return successors, merges
 
 
 def generateCHANCESuccessors(board):
@@ -70,7 +74,7 @@ def generateCHANCESuccessors(board):
         probabilities[i] /= (outcomes/2)
 
     print 'chance returned', probabilities
-    return (successors, probabilities)
+    return successors, probabilities
 
 
 def generateSuccessorsBiased(board):
@@ -79,19 +83,20 @@ def generateSuccessorsBiased(board):
     probabilities = []
 
     for i in xrange( len(board) ):
-        succ1 = deepcopy(board)
+        succ = deepcopy(board)
         if board[i] == 0:
             succ[i] = flip()
             probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
             successors.append(succ)
-    return (successors, probabilities)
+    return successors, probabilities
+
 
 def flip():
     # choice of 2 or 4 with p = {0.9, 0.1}
     if random.random() > 0.9 :
             return 2
     return 4    
-    
+
 
 def edgeScore(grid):
     scoreCorner = 0
@@ -100,7 +105,7 @@ def edgeScore(grid):
     edge = set(grid).difference( set(5, 6, 9, 10) )#edge cells = (all cells) - (center cells)
     maxTile = max(grid)
     count = grid.count(maxTile) 
-#should I check if we have more than one maxTile?
+    #should I check if we have more than one maxTile?
     if x == maxTile and grid.index(x) in corner:
         #should i score more?
         score += 2**4
@@ -108,12 +113,14 @@ def edgeScore(grid):
         score += 2**2 
     return score
 
+
 def openCellScore(board):
     count = 0
     for cell in board:
             if cell == 0:
                 count += 1
     return count
+
 
 def consecutiveChain(grid):
     score = 0
@@ -124,6 +131,7 @@ def consecutiveChain(grid):
             pattern += 1
             score += pattern**2 + 4
     return score
+
 
 def monotonicityScore(grid):
     # snake pattern, starts from 1 corner 
