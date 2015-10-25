@@ -3,6 +3,7 @@ import boardcontroller as bc
 from copy import deepcopy, copy
 import random
 from math import *
+import settings as s
 # from collection import deque
 
 def calculateHeuristic(board, nofMerges):
@@ -15,16 +16,23 @@ def calculateHeuristic(board, nofMerges):
     5. Consecutive chain. If score diff. is a fixed value """
 
     heuristic = 0
+    # global snakeWeight
+    # global smoothnessWeigth
+    # global mergeWeight
+    # global gradientWeight
+    # global edgeWeight
+    # global openCellWeigth
 
-    heuristic += 0.15 * edgeScore(board) # 1.
-    heuristic += 0.05 * openCellScore(board) # 2.
-    heuristic += 0.25 * snake(board) # 3.
-    heuristic += 0.15 * mergeScore(nofMerges) # 4.
-    heuristic += 0.15 * gradient(board)
-    heuristic += 0.25 * smoothness(board)
+    heuristic += s.edgeWeight * edgeScore(board) # 1.
+    heuristic += s.openCellWeigth * openCellScore(board) # 2.
+    heuristic += s.snakeWeight * snake(board) # 3.
+    heuristic += s.mergeWeight * mergeScore(nofMerges) # 4.
+    heuristic += s.gradientWeight * gradient(board)
+    heuristic += s.smoothnessWeigth * smoothness(board)
 
     # spaceAround2Tiles()
     # edge around highest
+    # distance between two largest tiles
 
     return heuristic
 
