@@ -4,21 +4,27 @@ from copy import deepcopy, copy
 import random
 # from collection import deque
 
-def calculateHeuristic(board, merges):
+def calculateHeuristic(board, nofMerges):
+
     """ Inspired by the method on stack overflow
     factors:
     1. The location of the (current) largest tile on the board. Is it in a corner/edge?
     2. The number of free cells
-    3. Are the high numbers in a "snake-pattern"
+    3. Are the high numbers in a "snake-pattern" 
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
 
-    heuristic = \
-          1 * edgeScore(board) \
-        + 1 * openCellScore(board) \
-        + 1 * evalBestCorner(board) \
-        + 1 * merges 
-        # + 1 * consecutiveChain(board)    
+    heuristic = 0
+    if nofMerges == 0:
+        heuristic -= 16
+    heuristic += nofMerges + gradient(board) + smoothness(board) + openCellScore(board) 
+    # \
+    #       1 * edgeScore(board) \
+    #     + 1 * openCellScore(board) \
+    #     + 1 * evalBestCorner(board) \
+    #     + 1 * nofMerges \
+    #     + 1 * consecutiveChain(board)    
+
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -59,10 +65,10 @@ def generateCHANCESuccessors(board):
             succ1 = deepcopy(board)
             succ2 = deepcopy(board)
 
-            succ1[i] = 2
+            succ1[i] = 1
             successors.append(succ1)
             probabilities.append(0.9)
-            succ2[i] = 4
+            succ2[i] = 2
             successors.append(succ2)
             probabilities.append(0.1)
     outcomes = len(probabilities)
@@ -82,20 +88,25 @@ def generateSuccessorsBiased(board):
         succ = deepcopy(board)
         if board[i] == 0:
             succ[i] = flip()
-            probabilities.append( (succ[i] == 2) and 0.9 or 0.1 )
+            probabilities.append( (succ[i] == 1) and 0.9 or 0.1 )
             successors.append(succ)
 
-    nofSuccs = len(probabilities)
-    probabilities = [p*(1/nofSuccs) for p in probabilities]
+    nofSuccs = float( len(probabilities) )
+
+    for i in xrange(len(probabilities)-1):
+        p = probabilities[i]
+        probabilities[i] = p * (1/nofSuccs)
+        
+    # probabilities = [(p*(1/nofSuccs)) for p in probabilities]
 
     return successors, probabilities
 
 
 def flip():
     # choice of 2 or 4 with p = {0.9, 0.1}
-    if random.random() > 0.9 :
-            return 2
-    return 4    
+    if random.random() < 0.9 :
+            return 1
+    return 2    
 
 
 def edgeScore(grid):
@@ -104,23 +115,29 @@ def edgeScore(grid):
     scoreEdge = 0
     score = 0
     corner = set([0, 3, 12, 15])
-    edge = set(grid).difference( set([5, 6, 9, 10]) )#edge cells = (all cells) - (center cells)
+    center = set([5, 6, 9, 10])
+    edge = set(grid).difference(center)#edge cells = (all cells) - (center cells)
+    # edgeElements = [ grid[i] for i in edge]
+    score += sum(grid[i]*2 for i in edge)
+    # score -= sum(grid[i]*2 for i in center)
     maxTile = max(grid)
-    count = grid.count(maxTile) 
-    #should I check if we have more than one maxTile?
+    # count = grid.count(maxTile) 
+    # #should I check if we have more than one maxTile?
     if maxTile in grid and grid.index(maxTile) in corner:
         #should i score more?
-        score += 2**4
-    elif maxTile in grid and grid.index(maxTile) in edge:
-        score += 2**2 
+        score += maxTile*2
+    # elif maxTile in center:
+    #     score -= maxTile*2
+    # elif maxTile in grid and grid.index(maxTile) in edge:
+    #     score += 2**2 
     return score
 
 
 def openCellScore(board):
     count = 0
     for cell in board:
-            if cell == 0:
-                count += 1
+        if cell == 0:
+            count += 1
     return count
 
 
@@ -130,11 +147,43 @@ def consecutiveChain(grid):
     pattern = 0
     for i in xrange( len(grid)-1 ):
         diff = abs( grid[i] - grid[i+1] )
-        if  diff == grid[i]/2 or diff == grid[i+1]/2:
+        if  (diff == (grid[i]-1)) or (diff == (grid[i+1]-1)):
             pattern += 1
             score += pattern**2 + 4
     return score
 
+def gradient(board):
+    b = copy(board)
+    maxScore = 0
+    grad = [10, 9, 8, 7, 9, 6, 5, 4, 8, 5, 3, 2, 7, 4, 2, 1]
+    for j in xrange(4):
+
+        for i in xrange( len(board)-1 ):
+            b[i] =  grad[i] * b[i]
+        maxScore = max(sum(b), maxScore)
+        b = rotateLeft(b)
+    return maxScore
+
+
+def smoothness(board):
+    score = 0
+    for i in xrange( len(board) -1 ):
+        score -= ( abs(board[i] - board[i+1])**2 )
+    return score
+
+
+def snake(board):
+    b = copy(board)
+    maxScore = 0
+    pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
+    for j in xrange(4):
+        for i in xrange( len(board)-1 ):
+            b[i] =  pattern[i] * b[i]
+        # maxScore = max(sum(x for x in b), maxScore)
+        maxScore = max(sum(b), maxScore)
+        b = rotateLeft(b)
+    return maxScore
 
 def monotonicityScore(grid):
     print 'monotonicityScore', grid
@@ -149,16 +198,13 @@ def monotonicityScore(grid):
     scoreDown = 0
     scoreUp = 0
 
-    # d = deque(grid)
-    # d = d.rotate(4)
-
     for k in xrange(2):
 
         for y in xrange(3):
             i = last + y
             if grid[i] < grid[i+1] :
                 increasingRight += 1
-                scoreRight += increasingRight**2 #+ 4
+                scoreRight += increasingRight**2 # + 4
             else:
                 scoreRight -= abs( grid[i] - grid[i+1] ) 
                 increasingRight = 0

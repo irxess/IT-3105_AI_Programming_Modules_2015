@@ -3,7 +3,6 @@ import random
 from copy import copy
 from expectimax import *
 
-
 class BoardController():
     def __init__(self):
         random.seed()
@@ -75,7 +74,6 @@ def slideUp(board):
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos-4] = True
-
     return board, mergeCount
 
 
