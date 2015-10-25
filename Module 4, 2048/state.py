@@ -16,19 +16,15 @@ def calculateHeuristic(board, nofMerges):
 
     heuristic = 0
 
-    heuristic += 0.30 * edgeScore(board) # 1.
-    heuristic += 0.15 * openCellScore(board) # 2.
-    heuristic += 0.25 * mergeScore(nofMerges) # 4.
-    heuristic += 0.30 * gradient(board)
-    heuristic += 0.21 * smoothness(board)
+    heuristic += 0.15 * edgeScore(board) # 1.
+    heuristic += 0.05 * openCellScore(board) # 2.
+    heuristic += 0.25 * snake(board) # 3.
+    heuristic += 0.15 * mergeScore(nofMerges) # 4.
+    heuristic += 0.15 * gradient(board)
+    heuristic += 0.25 * smoothness(board)
 
     # spaceAround2Tiles()
     # edge around highest
-    #       1 * edgeScore(board) \
-    #     + 1 * openCellScore(board) \
-    #     + 1 * evalBestCorner(board) \
-    #     + 1 * nofMerges \
-    #     + 1 * consecutiveChain(board)    
 
     return heuristic
 
@@ -152,6 +148,7 @@ def consecutiveChain(grid):
             score += pattern**2 + 4
     return score
 
+
 def gradient(board):
     b = copy(board)
     maxScore = 0
@@ -187,15 +184,39 @@ def smoothness(board):
 def snake(board):
     b = copy(board)
     maxScore = 0
-    pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
+
     for j in xrange(4):
-        for i in xrange( len(board)-1 ):
-            b[i] =  pattern[i] * b[i]
-        # maxScore = max(sum(x for x in b), maxScore)
-        maxScore = max(sum(b), maxScore)
+
+        # left to right snake pattern
+        score = 0
+        importance = 256
+        for i in [0,1,2]:
+            if b[i] >= b[i+1]:
+                score += importance
+            importance /= 2
+        for i in [7,6,5]:
+            if b[i] >= b[i-1]:
+                score += importance
+            importance /= 2
+        maxScore = max(score, maxScore)
+
+        # up-down snake pattern
+        score = 0
+        importance = 256
+        for i in [0,4,8]:
+            if b[i] >= b[i+4]:
+                score += importance
+            importance /= 2
+        for i in [13,9,5]:
+            if b[i] >= b[i-4]:
+                score += importance
+            importance /= 2
+        maxScore = max(score, maxScore)
+
         b = rotateLeft(b)
-    return maxScore
+
+    x =  maxScore/504.0 # 504 is the max score possible
+    return 2**x - 1
 
 
 def monotonicityScore(grid):
