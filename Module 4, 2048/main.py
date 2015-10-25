@@ -17,16 +17,16 @@ b.window.update_view(b.board)
 def logic():
     bestHeuristic = 0
     bestDirection = 'none'
+
     for direction in ['up', 'down', 'left', 'right']:
         nextBoard, nofMerges = bc.slide( direction, copy(b.board) )
-        # print b.board
-        # print nextBoard
         if nextBoard != b.board:
+
             heuristic = expectimax( nextBoard, 5, 'board', nofMerges)
-            print 'Heuristic: ', heuristic
             if heuristic > bestHeuristic:
                 bestHeuristic = heuristic
                 bestDirection = direction
+
     if bestHeuristic != 0:
         b.move(bestDirection)
     else:
@@ -37,6 +37,7 @@ def logic():
         print 'Running time: ', time.clock()
         while True:
             b.window.update_view(b.board)
+
 while True:
     logic()
 

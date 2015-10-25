@@ -2,12 +2,12 @@ from abc import ABCMeta, abstractmethod
 import boardcontroller as bc
 from copy import deepcopy, copy
 import random
+from math import *
 # from collection import deque
 
 def calculateHeuristic(board, nofMerges):
 
-    """ Inspired by the method on stack overflow
-    factors:
+    """ Inspired by the method on stack overflow factors:
     1. The location of the (current) largest tile on the board. Is it in a corner/edge?
     2. The number of free cells
     3. Are the high numbers in a "snake-pattern" 
@@ -15,9 +15,12 @@ def calculateHeuristic(board, nofMerges):
     5. Consecutive chain. If score diff. is a fixed value """
 
     heuristic = 0
-    if nofMerges == 0:
-        heuristic -= 16
-    heuristic += nofMerges + gradient(board) + smoothness(board) + openCellScore(board) 
+
+    heuristic += 0.35 * edgeScore(board) # 1.
+    heuristic += 0.15 * openCellScore(board) # 2.
+    heuristic += 0.20 * mergeScore(nofMerges) # 4.
+    heuristic += 0.30 * gradient(board)
+    # heuristic += smoothness(board)
     # \
     #       1 * edgeScore(board) \
     #     + 1 * openCellScore(board) \
@@ -33,7 +36,7 @@ def generateMAXSuccessors(board):
     when pressing arrow up, down, left, right.
     Do not insert a new tile, only merge.
     """
-    print 'max', board
+
     successors = []
     merges = []
     directions = ['up', 'down', 'left', 'right']
@@ -55,7 +58,6 @@ def generateCHANCESuccessors(board):
     tile in all possible locations.
     Maybe two tiles(2C), with values 2 and 4. Try with only C later
     """
-    print 'chance', board
 
     successors = []
     probabilities = []
@@ -80,7 +82,6 @@ def generateCHANCESuccessors(board):
 
 
 def generateSuccessorsBiased(board):
-    print 'generateSuccessorsBiased', board
     # Using biased stochastics
     successors = []
     probabilities = []
@@ -110,27 +111,25 @@ def flip():
 
 
 def edgeScore(grid):
-    print 'edgeScore', grid
     scoreCorner = 0
     scoreEdge = 0
     score = 0
     corner = set([0, 3, 12, 15])
     center = set([5, 6, 9, 10])
-    edge = set(grid).difference(center)#edge cells = (all cells) - (center cells)
-    # edgeElements = [ grid[i] for i in edge]
-    score += sum(grid[i]*2 for i in edge)
-    # score -= sum(grid[i]*2 for i in center)
+    edge = set(grid).difference(center) #edge cells = (all cells) - (center cells)
     maxTile = max(grid)
-    # count = grid.count(maxTile) 
-    # #should I check if we have more than one maxTile?
-    if maxTile in grid and grid.index(maxTile) in corner:
-        #should i score more?
-        score += maxTile*2
-    # elif maxTile in center:
-    #     score -= maxTile*2
-    # elif maxTile in grid and grid.index(maxTile) in edge:
-    #     score += 2**2 
-    return score
+    if maxTile in (grid[i] for i in corner):
+        return 1 # highest tile in corner is good
+    if maxTile in (grid[i] for i in edge):
+        return 0.5 #highest tile on edge is not that bad
+    else:
+        return 0
+
+
+def mergeScore(nofMerges):
+    x = nofMerges / 8.0 # max 8 merges possible
+    return sin(x*5/pi)
+    # return log(x)/4 + 1
 
 
 def openCellScore(board):
@@ -138,11 +137,10 @@ def openCellScore(board):
     for cell in board:
         if cell == 0:
             count += 1
-    return count
+    return count/16.0
 
 
 def consecutiveChain(grid):
-    print 'consecutiveChain', grid
     score = 0
     pattern = 0
     for i in xrange( len(grid)-1 ):
@@ -155,14 +153,18 @@ def consecutiveChain(grid):
 def gradient(board):
     b = copy(board)
     maxScore = 0
-    grad = [10, 9, 8, 7, 9, 6, 5, 4, 8, 5, 3, 2, 7, 4, 2, 1]
+    # grad = [10, 9, 8, 7, 9, 6, 5, 4, 8, 5, 3, 2, 7, 4, 2, 1]
+    grad = [8, 5, 2, 1, 5, 3, -1, -2, 2, -1, -3, -5, 1, -2, -5, -8]
+    grad[:] = [x / 8.0 for x in grad]
+    maxTile = max(board)
     for j in xrange(4):
-
         for i in xrange( len(board)-1 ):
-            b[i] =  grad[i] * b[i]
+            b[i] =  grad[i] * b[i] / maxTile
         maxScore = max(sum(b), maxScore)
         b = rotateLeft(b)
-    return maxScore
+
+    # 2.6 is awesome, 1 is bad
+    return maxScore/2.8
 
 
 def smoothness(board):
@@ -186,7 +188,6 @@ def snake(board):
     return maxScore
 
 def monotonicityScore(grid):
-    print 'monotonicityScore', grid
     # snake pattern, starts from 1 corner 
 
     #left & right
