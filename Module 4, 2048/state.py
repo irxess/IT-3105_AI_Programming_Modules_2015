@@ -16,12 +16,14 @@ def calculateHeuristic(board, nofMerges):
 
     heuristic = 0
 
-    heuristic += 0.35 * edgeScore(board) # 1.
+    heuristic += 0.30 * edgeScore(board) # 1.
     heuristic += 0.15 * openCellScore(board) # 2.
-    heuristic += 0.20 * mergeScore(nofMerges) # 4.
+    heuristic += 0.25 * mergeScore(nofMerges) # 4.
     heuristic += 0.30 * gradient(board)
-    # heuristic += smoothness(board)
-    # \
+    heuristic += 0.21 * smoothness(board)
+
+    # spaceAround2Tiles()
+    # edge around highest
     #       1 * edgeScore(board) \
     #     + 1 * openCellScore(board) \
     #     + 1 * evalBestCorner(board) \
@@ -169,9 +171,17 @@ def gradient(board):
 
 def smoothness(board):
     score = 0
-    for i in xrange( len(board) -1 ):
-        score -= ( abs(board[i] - board[i+1])**2 )
-    return score
+    for rotation in range(2):
+        for i in range(4):
+            for j in range(3):
+                val1 = board[4*i + j]
+                val2 = board[4*i + j+1]
+                diff = (abs(val1 - val2) )
+                if diff > 1:
+                    score -= diff
+        board = rotateLeft(board)
+    scoreInRange = 1 + (score/100.0)
+    return scoreInRange
 
 
 def snake(board):
@@ -186,6 +196,7 @@ def snake(board):
         maxScore = max(sum(b), maxScore)
         b = rotateLeft(b)
     return maxScore
+
 
 def monotonicityScore(grid):
     # snake pattern, starts from 1 corner 
