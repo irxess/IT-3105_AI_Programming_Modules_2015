@@ -16,10 +16,9 @@ def calculateHeuristic(board, merges):
     heuristic = \
           1 * edgeScore(board) \
         + 1 * openCellScore(board) \
-        + 1 * bc.findEmptyTiles(board)\
         + 1 * evalBestCorner(board) \
-        + 1 * merges \
-        + 1 * consecutiveChain(board)    
+        + 1 * merges 
+        # + 1 * consecutiveChain(board)    
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -40,7 +39,7 @@ def generateMAXSuccessors(board):
         if succ != board:
             successors.append(succ)
             merges.append(nofMerges)
-    print 'max returned', successors
+
     return successors, merges
 
 
@@ -67,11 +66,10 @@ def generateCHANCESuccessors(board):
             successors.append(succ2)
             probabilities.append(0.1)
     outcomes = len(probabilities)
-    # Hva betyr dette og hvorfor gjoer du dette?
+
     for i in xrange(outcomes):
         probabilities[i] /= (outcomes/2)
 
-    print 'chance returned', probabilities
     return successors, probabilities
 
 
@@ -101,8 +99,10 @@ def flip():
 
 
 def edgeScore(grid):
+    print 'edgeScore', grid
     scoreCorner = 0
     scoreEdge = 0
+    score = 0
     corner = set([0, 3, 12, 15])
     edge = set(grid).difference( set([5, 6, 9, 10]) )#edge cells = (all cells) - (center cells)
     maxTile = max(grid)
@@ -128,7 +128,7 @@ def consecutiveChain(grid):
     print 'consecutiveChain', grid
     score = 0
     pattern = 0
-    for i in xrange( len(grid) ):
+    for i in xrange( len(grid)-1 ):
         diff = abs( grid[i] - grid[i+1] )
         if  diff == grid[i]/2 or diff == grid[i+1]/2:
             pattern += 1
@@ -223,7 +223,7 @@ def rotateLeft(board):
     rotated = []
     l = 16
     for i in range(3, -1, -1):
-        rotated.append( board[i:l:4] )
+        rotated.extend( board[i:l:4] )
         l -= 1
     return rotated
 
@@ -233,12 +233,3 @@ def rotateLeft(board):
         # rotated.append( board[1:14:4] ) 
         # rotated.append( board[0:13:4] ) 
 
-# do i need to rotate i diff. directions at all? Maybe rotating left is sufficient!
-def rotateRight(board):
-    rotated = []
-    return rotated
-
-# // TODO
-def getNofMerges(board):
-    # return nof. merges.
-    return 0

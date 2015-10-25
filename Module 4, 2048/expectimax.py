@@ -1,4 +1,4 @@
-import state 
+import state
 
 def expectimax( node, depth, nextPlayer ):
     print 'expectimax', node
@@ -29,19 +29,21 @@ def findBestSuccessor( node, depth ):
            bestHeuristic = succHeuristic
    return bestHeuristic
 
+
 def findBestAverageSuccessor( node, depth ):
     print 'finding best average'
     weightedAverage = 0
-    successors, probabilities = state.generateSuccessorsBiased(node) #C
-    # successors, probabilities = state.generateCHANCESuccessors(node) #2C
+    # successors, probabilities = state.generateSuccessorsBiased(node) #C
+    successors, probabilities = state.generateCHANCESuccessors(node) #2C
     if len(successors) == 0:
      return state.calculateHeuristic(node)
 
     for i in range(len(successors)):
-        successorH, move = expectimax( successors[i], depth-1, 'ai' )
+        successorH = expectimax( successors[i], depth-1, 'ai' )
         weightedAverage += (probabilities[i] * successorH)
         if probabilities[i] == 0:
             print "forgot to init probability"
+            print probabilities
     return weightedAverage
 
     # def maxValue(state):
