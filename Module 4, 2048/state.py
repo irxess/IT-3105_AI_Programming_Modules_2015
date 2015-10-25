@@ -4,6 +4,7 @@ from copy import deepcopy, copy
 import random
 from math import *
 import settings as s
+import operator
 # from collection import deque
 
 def calculateHeuristic(board, nofMerges):
@@ -25,10 +26,11 @@ def calculateHeuristic(board, nofMerges):
 
     heuristic += s.edgeWeight * edgeScore(board) # 1.
     heuristic += s.openCellWeigth * openCellScore(board) # 2.
-    heuristic += s.snakeWeight * snake(board) # 3.
+    # heuristic += s.snakeWeight * snake(board) # 3.
     heuristic += s.mergeWeight * mergeScore(nofMerges) # 4.
     heuristic += s.gradientWeight * gradient(board)
     heuristic += s.smoothnessWeigth * smoothness(board)
+    heuristic += s.snakeWeight * nearness(board)
 
     # spaceAround2Tiles()
     # edge around highest
@@ -133,8 +135,10 @@ def edgeScore(grid):
 
 
 def mergeScore(nofMerges):
-    x = nofMerges / 8.0 # max 8 merges possible
-    return sin(x*5/pi)
+    x = nofMerges / 4.0 # max 8 merges possible
+    if x > 1:
+        return 1
+    return x
     # return log(x)/4 + 1
 
 
@@ -227,74 +231,6 @@ def snake(board):
     return 2**x - 1
 
 
-def monotonicityScore(grid):
-    # snake pattern, starts from 1 corner 
-
-    #left & right
-    increasingRight = 0
-    increasingLeft = 0
-    last = 0
-    scoreRight = 0
-    scoreLeft = 0
-    scoreDown = 0
-    scoreUp = 0
-
-    for k in xrange(2):
-
-        for y in xrange(3):
-            i = last + y
-            if grid[i] < grid[i+1] :
-                increasingRight += 1
-                scoreRight += increasingRight**2 # + 4
-            else:
-                scoreRight -= abs( grid[i] - grid[i+1] ) 
-                increasingRight = 0
-
-        last = y
-        i = 0
-        for y in xrange(3):
-            i = last + y 
-            if grid[i+1] < grid[i]:
-                increasingLeft += 1
-                scoreLeft += increasingLeft**2 #+ 4
-            else :
-                scoreLeft -= abs( grid[i+1] - grid[i] ) 
-                increasingLeft = 0
-    last = i      
-        
-    #Up and down 
-    increasingUp = 0
-    increasingDown = 0
-    last = 0  
-
-    for j in xrange(2):
-
-        for x in xrange(3):
-            i = last + x
-            if grid[i] < grid[i+4] :
-                increasingDown += 1
-                scoreDown += increasingDown**2 #+ 4
-            else:
-                scoreDown -= abs( grid[i] - grid[i+4] )
-                increasingDown = 0
-
-        last = x
-        i = 0
-        for x in xrange(3):
-            i = x + last
-            if grid[i+1] < grid[i]:
-                increasingUp += 1
-                scoreUp += increasingUp**2 #+ 4
-            else :
-                scoreUp -= abs( grid[i+1] - grid[i] )
-                increasingUp = 0
-
-    leftRight = max( scoreLeft, scoreRight)
-    upDown = max( scoreUp, scoreDown)
-
-    return leftRight + upDown
-
-
 def evalBestCorner(board):
     # i: corner0, corner1, corner2, corner3
     maxMonotScore = 0
@@ -314,9 +250,29 @@ def rotateLeft(board):
         l -= 1
     return rotated
 
-    # the for-loop above does this: 
-        # rotated.append( board[3:16:4] )
-        # rotated.append( board[2:15:4] ) 
-        # rotated.append( board[1:14:4] ) 
-        # rotated.append( board[0:13:4] ) 
+def nearness(board):
+    # positions with two larges tiles
+    largest, secLargest = second_largest(board)
+    lX = largest % 4
+    lY = largest / 4
+    sX = secLargest % 4
+    sY = secLargest / 4
+    distance = abs(lX - sX) + abs(lY - sY)
+    return 1 - distance/6.0
 
+
+
+def second_largest(numbers):
+    count = 0
+    m1 = m2 = float('-inf')
+    p1 = p2 = 0
+    for x in numbers:
+        count += 1
+        if x > m2:
+            if x >= m1:
+                m1, m2 = x, m1
+                p1, p2 = count-1, p1
+            else:
+                m2 = x
+                p2 = count-1
+    return p1, p2 if count >= 2 else None
