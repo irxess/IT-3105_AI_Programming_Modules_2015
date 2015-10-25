@@ -2,7 +2,12 @@ from boardcontroller import BoardController as window
 import boardcontroller as bc
 from expectimax import *
 from copy import copy
+import time, timeit
 
+
+# measure process time
+t0 = time.clock()
+stop = minutes = seconds = 0
 
 # b = bc.BoardController()
 b = window()
@@ -13,23 +18,26 @@ def logic():
     bestHeuristic = 0
     bestDirection = 'none'
     for direction in ['up', 'down', 'left', 'right']:
-        nextBoard, mergeCount = bc.slide(direction, copy(b.board) )
-        print b.board
-        print nextBoard
+        nextBoard, nofMerges = bc.slide( direction, copy(b.board) )
+        # print b.board
+        # print nextBoard
         if nextBoard != b.board:
-            heuristic = expectimax( nextBoard, 5, 'board')
+            heuristic = expectimax( nextBoard, 5, 'board', nofMerges)
             print 'Heuristic: ', heuristic
             if heuristic > bestHeuristic:
                 bestHeuristic = heuristic
                 bestDirection = direction
     if bestHeuristic != 0:
         b.move(bestDirection)
-
     else:
         print 'game over'
+        stop =  float(time.clock())
+        # minutes = (stop - t0)/60
+        # seconds = (stop - t0)%60
+        print 'Running time: ', time.clock()
         while True:
             b.window.update_view(b.board)
-
-
 while True:
     logic()
+
+

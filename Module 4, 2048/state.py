@@ -4,7 +4,7 @@ from copy import deepcopy, copy
 import random
 # from collection import deque
 
-def calculateHeuristic(board, merges):
+def calculateHeuristic(board, nofMerges):
 
     """ Inspired by the method on stack overflow
     factors:
@@ -13,13 +13,16 @@ def calculateHeuristic(board, merges):
     3. Are the high numbers in a "snake-pattern" 
     4. How many merges occur in this move
     5. Consecutive chain. If score diff. is a fixed value """
-
-    heuristic = \
-          1 * edgeScore(board) \
-        + 1 * openCellScore(board) \
-        + 1 * evalBestCorner(board) \
-        + 1 * merges \
-        # + 1 * consecutiveChain(board)    
+    heuristic = 0
+    if nofMerges == 0:
+        heuristic -= 16
+    heuristic += nofMerges + gradient(board) + smoothness(board) + openCellScore(board) 
+    # \
+    #       1 * edgeScore(board) \
+    #     + 1 * openCellScore(board) \
+    #     + 1 * evalBestCorner(board) \
+    #     + 1 * nofMerges \
+    #     + 1 * consecutiveChain(board)    
     return heuristic
 
 def generateMAXSuccessors(board):
@@ -40,7 +43,7 @@ def generateMAXSuccessors(board):
         if succ != board:
             successors.append(succ)
             merges.append(nofMerges)
-    print 'max returned', successors
+    # print 'max returned', successors
     return successors, merges
 
 
@@ -71,7 +74,7 @@ def generateCHANCESuccessors(board):
     for i in xrange(outcomes):
         probabilities[i] /= (outcomes/2)
 
-    print 'chance returned', probabilities
+    # print 'chance returned', probabilities
     return successors, probabilities
 
 
@@ -110,23 +113,29 @@ def edgeScore(grid):
     scoreEdge = 0
     score = 0
     corner = set([0, 3, 12, 15])
-    edge = set(grid).difference( set([5, 6, 9, 10]) )#edge cells = (all cells) - (center cells)
+    center = set([5, 6, 9, 10])
+    edge = set(grid).difference(center)#edge cells = (all cells) - (center cells)
+    # edgeElements = [ grid[i] for i in edge]
+    score += sum(grid[i]*2 for i in edge)
+    # score -= sum(grid[i]*2 for i in center)
     maxTile = max(grid)
-    count = grid.count(maxTile) 
-    #should I check if we have more than one maxTile?
+    # count = grid.count(maxTile) 
+    # #should I check if we have more than one maxTile?
     if maxTile in grid and grid.index(maxTile) in corner:
         #should i score more?
-        score += 2**4
-    elif maxTile in grid and grid.index(maxTile) in edge:
-        score += 2**2 
+        score += maxTile*2
+    # elif maxTile in center:
+    #     score -= maxTile*2
+    # elif maxTile in grid and grid.index(maxTile) in edge:
+    #     score += 2**2 
     return score
 
 
 def openCellScore(board):
     count = 0
     for cell in board:
-            if cell == 0:
-                count += 1
+        if cell == 0:
+            count += 1
     return count
 
 
@@ -141,6 +150,37 @@ def consecutiveChain(grid):
             score += pattern**2 + 4
     return score
 
+def gradient(board):
+    b = copy(board)
+    maxScore = 0
+    grad = [10, 9, 8, 7, 9, 6, 5, 4, 8, 5, 3, 2, 7, 4, 2, 1]
+    for j in xrange(4):
+
+        for i in xrange( len(board)-1 ):
+            b[i] =  grad[i] * b[i]
+        maxScore = max(sum(b), maxScore)
+        b = rotateLeft(b)
+    return maxScore
+
+def smoothness(board):
+    score = 0
+    for i in xrange( len(board) -1 ):
+        score -= ( abs(board[i] - board[i+1])**2 )
+    return score
+
+
+def snake(board):
+    b = copy(board)
+    maxScore = 0
+    pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
+    for j in xrange(4):
+        for i in xrange( len(board)-1 ):
+            b[i] =  pattern[i] * b[i]
+        # maxScore = max(sum(x for x in b), maxScore)
+        maxScore = max(sum(b), maxScore)
+        b = rotateLeft(b)
+    return maxScore
 
 def monotonicityScore(grid):
     print 'monotonicityScore', grid
