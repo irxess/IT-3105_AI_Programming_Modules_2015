@@ -3,12 +3,10 @@ import boardcontroller as bc
 from copy import deepcopy, copy
 import random
 from math import *
-<<<<<<< HEAD
 import numpy as np
-=======
 import settings as s
 import operator
->>>>>>> 8d68d5785729b10c21756ee10ab40e64ad763701
+
 # from collection import deque
 
 def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
@@ -146,7 +144,7 @@ def edgeScore(grid):
 
 def mergeScore(nofMerges, maxMerging, highestMerg, maxTile):
     x = nofMerges / 4.0 # max 8 merges possible
-    m = maxMerging/ 8.0
+    m = maxMerging/ 4.0
     t = maxTile/8.0
     # h = highestMerg/float(maxTile)
     h = highestMerg/8.0
