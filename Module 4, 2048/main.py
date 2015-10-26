@@ -12,7 +12,15 @@ stop = minutes = seconds = 0
 
 
 # settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
-settings.init(0.05, 0.2, 0.2, 0.05, 0, 0.5)
+
+nearness = 0.00
+smooth   = 0.00
+merge    = 0.25
+gradient = 0.00
+edge     = 0.25
+opencell = 0.50
+
+settings.init( nearness, smooth, merge, gradient, edge, opencell )
 
 # b = bc.BoardController()
 b = window()
@@ -35,14 +43,14 @@ def logic():
         nextBoard, nofMerges, maxMerging, highestMerg = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
 
-            heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
-            # nofEmpty = emptyTiles(nextBoard)
-            # if nofEmpty > 10:
-            #     heuristic = expectimax( nextBoard, 2, 'board', nofMerges)
-            # elif nofEmpty > 5:
-            #     heuristic = expectimax( nextBoard, 4, 'board', nofMerges)
-            # else:
-            #     heuristic = expectimax( nextBoard, 6, 'board', nofMerges)
+            # heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
+            nofEmpty = emptyTiles(nextBoard)
+            if nofEmpty >= 10:
+                heuristic = expectimax( nextBoard, 3, 'board', nofMerges, maxMerging, highestMerg)
+            elif nofEmpty >= 5:
+                heuristic = expectimax( nextBoard, 4, 'board', nofMerges, maxMerging, highestMerg)
+            else:
+                heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
             if heuristic > bestHeuristic:
                 bestHeuristic = heuristic
                 bestDirection = direction
@@ -56,6 +64,7 @@ def logic():
         # seconds = (stop - t0)%60
         print 'Running time: ', time.clock()
         print 2**max(b.board)
+        print nearness, smooth, merge, gradient, edge, opencell
         while True:
             b.window.update_view(b.board)
         # sys.exit(0)

@@ -20,20 +20,13 @@ def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
 
     heuristic = 0
 
-    # heuristic += 0.20 * edgeScore(board) # 1.
-    # heuristic += 0.20 * openCellScore(board) # 2.
-    # heuristic += 0.30 * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
-    # heuristic += 0.50 * gradient(board)
-    # heuristic += 0.25 * snake(board)
-    # heuristic += 0.10 * smoothness(board)
-
     heuristic += s.edgeWeight * edgeScore(board) # 1.
     heuristic += s.openCellWeigth * openCellScore(board) # 2.
-    # heuristic += s.snakeWeight * snake(board) # 3.
-    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
-    heuristic += s.gradientWeight * gradient(board)
+    # heuristic += s.snakeWeight * snake(board) # Don't use
+    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 
+    heuristic += s.gradientWeight * gradient(board) # has a few issues
     heuristic += s.smoothnessWeigth * smoothness(board)
-    heuristic += s.snakeWeight * nearness(board)
+    heuristic += s.nearWeight * nearness(board)
 
     # spaceAround2Tiles()
     # edge around highest
@@ -142,16 +135,19 @@ def edgeScore(grid):
         return 0
 
 
-def mergeScore(nofMerges, maxMerging, highestMerg, maxTile):
-    x = nofMerges / 4.0 # max 8 merges possible
-    m = maxMerging/ 4.0
-    t = maxTile/8.0
-    # h = highestMerg/float(maxTile)
-    h = highestMerg/8.0
-    tot = x + m + t + h
-    if tot > 1:
-        return 1
-    return tot
+def mergeScore(nofMerges, maxMerging, highestMerge, maxTile):
+    if maxMerging > 0:
+        return 1 # we always want to merge the highest tile
+    if highestMerge + 2>= maxTile:
+        return 0.9
+
+    x = nofMerges / 8.0 # max 8 merges possible
+    bestMergeScore = highestMerge / float(maxTile)
+
+    h = x * bestMergeScore 
+    if h < 0.9:
+        return h
+    return 0.9
     # return sin(x*5/pi)
     # return log(x)/4 + 1
 
@@ -175,7 +171,7 @@ def gradient(board):
   #   2, -1, -3, -5,
   #   1, -2, -5, -8 ]
 
-    grad[:] = [x / 10.0 for x in grad]
+    grad[:] = [x / 8.0 for x in grad]
     maxTile = max(board)
     for j in xrange(4):
         for i in xrange( len(board)-1 ):
@@ -184,8 +180,8 @@ def gradient(board):
         b = rotateLeft(b)
 
     # 2.6 is awesome, 1 is bad
-    # return maxScore/2.8
-    return maxScore
+    return maxScore/2.8
+    # return maxScore
 
 
 def smoothness(board):
