@@ -20,11 +20,11 @@ def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
 
     heuristic = 0
 
-    heuristic += s.edgeWeight * edgeScore(board) # 1.
-    heuristic += s.openCellWeigth * openCellScore(board) # 2.
-    # heuristic += s.snakeWeight * snake(board) # Don't use
-    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 
-    heuristic += s.gradientWeight * gradient(board) # has a few issues
+    heuristic += s.edgeWeight * edgeScore(board)
+    heuristic += s.openCellWeigth * openCellScore(board) 
+    heuristic += s.snakeWeight * snake(board) 
+    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board))
+    heuristic += s.gradientWeight * gradient(board) 
     heuristic += s.smoothnessWeigth * smoothness(board)
     heuristic += s.nearWeight * nearness(board)
 
@@ -151,13 +151,13 @@ def mergeScore(nofMerges, maxMerging, highestMerge, maxTile):
     # return sin(x*5/pi)
     # return log(x)/4 + 1
 
+
 def openCellScore(board):
     count = 0
     for cell in board:
         if cell == 0:
             count += 1
     return count/16.0
-
 
 
 def gradient(board):
@@ -208,27 +208,41 @@ def snake(board):
         # left to right snake pattern
         score = 0
         importance = 256
+        broke = False
         for i in [0,1,2]:
             if b[i] >= b[i+1]:
                 score += importance
+            else:
+                broke = True
+                break
             importance /= 2
-        for i in [7,6,5]:
-            if b[i] >= b[i-1]:
-                score += importance
-            importance /= 2
+        if broke == False:
+            for i in [7,6,5]:
+                if b[i] >= b[i-1]:
+                    score += importance
+                else:
+                    break
+                importance /= 2
         maxScore = max(score, maxScore)
 
         # up-down snake pattern
         score = 0
         importance = 256
+        broke = False
         for i in [0,4,8]:
             if b[i] >= b[i+4]:
                 score += importance
+            else:
+                broke = True
+                break
             importance /= 2
-        for i in [13,9,5]:
-            if b[i] >= b[i-4]:
-                score += importance
-            importance /= 2
+        if broke == False:
+            for i in [13,9,5]:
+                if b[i] >= b[i-4]:
+                    score += importance
+                else:
+                    break
+                importance /= 2
         maxScore = max(score, maxScore)
 
         b = rotateLeft(b)
@@ -256,6 +270,7 @@ def rotateLeft(board):
         l -= 1
     return rotated
 
+
 def nearness(board):
     # positions with two larges tiles
     largest, secLargest = second_largest(board)
@@ -265,7 +280,6 @@ def nearness(board):
     sY = secLargest / 4
     distance = abs(lX - sX) + abs(lY - sY)
     return 1 - distance/6.0
-
 
 
 def second_largest(numbers):
@@ -282,6 +296,7 @@ def second_largest(numbers):
                 m2 = x
                 p2 = count-1
     return p1, p2 if count >= 2 else None
+
 # def smoothness(board):
 #     score = 0
 #     highestDiff = 0.0
