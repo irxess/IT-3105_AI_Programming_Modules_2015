@@ -13,14 +13,15 @@ stop = minutes = seconds = 0
 
 # settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
 
-nearness = 0.00
-smooth   = 0.00
-merge    = 0.25
+nearness = 0.10
+smooth   = 0.10
+merge    = 0.10
 gradient = 0.00
-edge     = 0.25
+edge     = 0.00
 opencell = 0.50
+snake    = 0.20
 
-settings.init( nearness, smooth, merge, gradient, edge, opencell )
+settings.init( nearness, smooth, merge, gradient, edge, opencell, snake )
 
 # b = bc.BoardController()
 b = window()
@@ -36,7 +37,7 @@ def emptyTiles(board):
 
 
 def logic():
-    bestHeuristic = 0
+    bestHeuristic = -1
     bestDirection = 'none'
 
     for direction in ['up', 'down', 'left', 'right']:
@@ -55,7 +56,7 @@ def logic():
                 bestHeuristic = heuristic
                 bestDirection = direction
 
-    if bestHeuristic != 0:
+    if bestHeuristic != -1:
         b.move(bestDirection)
     else:
         print 'game over'
@@ -64,7 +65,7 @@ def logic():
         # seconds = (stop - t0)%60
         print 'Running time: ', time.clock()
         print 2**max(b.board)
-        print nearness, smooth, merge, gradient, edge, opencell
+        print nearness, smooth, merge, gradient, edge, opencell, snake
         while True:
             b.window.update_view(b.board)
         # sys.exit(0)

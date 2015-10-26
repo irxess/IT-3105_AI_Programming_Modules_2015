@@ -1,10 +1,11 @@
-def init(near, smooth, merge, grad, edge, op):
+def init(near, smooth, merge, grad, edge, op, snake):
     global nearWeight
     global smoothnessWeigth
     global mergeWeight
     global gradientWeight
     global edgeWeight
     global openCellWeigth
+    global snakeWeight
 
     nearWeight = float(near)
     smoothnessWeigth = float(smooth)
@@ -12,3 +13,4 @@ def init(near, smooth, merge, grad, edge, op):
     gradientWeight = float(grad)
     edgeWeight = float(edge)
     openCellWeigth = float(op)
+    snakeWeight = float(snake)
