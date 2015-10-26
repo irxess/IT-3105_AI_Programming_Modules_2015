@@ -8,16 +8,7 @@ def expectimax( node, depth, nextPlayer, nofMerges, maxMerging, highestMerg ):
         if h == 0:
             print "forgot to implement heuristic?"
         return h
-    # c = 0
-    # for x in node:
-    #   if x == 0:
-    #     c+=1
-    # if c >= 10:
-    #   depth = min(depth, 3)
-    # elif c >= 6:
-    #   depth = min(depth, 4)
-    # else:
-    #   depth = 6
+
     if nextPlayer == 'ai':
         return findBestSuccessor( node, depth, nofMerges, maxMerging, highestMerg)
     if nextPlayer == 'board':
