@@ -3,7 +3,12 @@ import boardcontroller as bc
 from copy import deepcopy, copy
 import random
 from math import *
+<<<<<<< HEAD
 import numpy as np
+=======
+import settings as s
+import operator
+>>>>>>> 8d68d5785729b10c21756ee10ab40e64ad763701
 # from collection import deque
 
 def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
@@ -17,20 +22,24 @@ def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
 
     heuristic = 0
 
-    heuristic += 0.20 * edgeScore(board) # 1.
-    heuristic += 0.20 * openCellScore(board) # 2.
-    heuristic += 0.30 * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
-    heuristic += 0.50 * gradient(board)
-    heuristic += 0.25 * snake(board)
+    # heuristic += 0.20 * edgeScore(board) # 1.
+    # heuristic += 0.20 * openCellScore(board) # 2.
+    # heuristic += 0.30 * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
+    # heuristic += 0.50 * gradient(board)
+    # heuristic += 0.25 * snake(board)
     # heuristic += 0.10 * smoothness(board)
+
+    heuristic += s.edgeWeight * edgeScore(board) # 1.
+    heuristic += s.openCellWeigth * openCellScore(board) # 2.
+    # heuristic += s.snakeWeight * snake(board) # 3.
+    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
+    heuristic += s.gradientWeight * gradient(board)
+    heuristic += s.smoothnessWeigth * smoothness(board)
+    heuristic += s.snakeWeight * nearness(board)
 
     # spaceAround2Tiles()
     # edge around highest
-    #       1 * edgeScore(board) \
-    #     + 1 * openCellScore(board) \
-    #     + 1 * evalBestCorner(board) \
-    #     + 1 * nofMerges \
-    #     + 1 * consecutiveChain(board)    
+    # distance between two largest tiles
 
     return heuristic
 
@@ -136,16 +145,17 @@ def edgeScore(grid):
 
 
 def mergeScore(nofMerges, maxMerging, highestMerg, maxTile):
-    x = nofMerges / 8.0 # max 8 merges possible
+    x = nofMerges / 4.0 # max 8 merges possible
     m = maxMerging/ 8.0
     t = maxTile/8.0
     # h = highestMerg/float(maxTile)
     h = highestMerg/8.0
-
+    tot = x + m + t + h
+    if tot > 1:
+        return 1
+    return tot
     # return sin(x*5/pi)
     # return log(x)/4 + 1
-    tot = 2*x + m  +t +h
-    return tot
 
 def openCellScore(board):
     count = 0
@@ -179,14 +189,6 @@ def gradient(board):
     # return maxScore/2.8
     return maxScore
 
-# def smoothness(board):
-#     score = 0
-#     highestDiff = 0.0
-#     for i in xrange( len(board) -1 ):
-#         difference = abs(board[i] - board[i+1])
-#         score -= ( difference )
-#         highestDiff = max(highestDiff, difference)
-#     return score/highestDiff
 
 def smoothness(board):
     score = 0
@@ -202,22 +204,6 @@ def smoothness(board):
     scoreInRange = 1 + (score/100.0)
     return scoreInRange
 
-
-# def snake(board):
-#     b = copy(board)
-#     maxScore = 0
-#     maxTile = max(board)
-
-#     pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-#     # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
-#     pattern[:] = [x / 16.0 for x in pattern]
-#     for j in xrange(4):
-#         for i in xrange( len(board)-1 ):
-#             b[i] =  pattern[i] * b[i] / maxTile
-#         # maxScore = max(sum(x for x in b), maxScore)
-#         maxScore = max(sum(b), maxScore)
-#         b = rotateLeft(b)
-#     return maxScore
     
 def snake(board):
     b = copy(board)
@@ -256,83 +242,6 @@ def snake(board):
     x =  maxScore/504.0 # 504 is the max score possible
     return 2**x - 1
 
-def consecutiveChain(grid):
-    score = 0
-    pattern = 0
-    for i in xrange( len(grid)-1 ):
-        diff = abs( grid[i] - grid[i+1] )
-        if  (diff == (grid[i]-1)) or (diff == (grid[i+1]-1)):
-            pattern += 1
-            score += pattern**2 + 4
-    return score
-
-def monotonicityScore(grid):
-    # snake pattern, starts from 1 corner 
-
-    #left & right
-    increasingRight = 0
-    increasingLeft = 0
-    last = 0
-    scoreRight = 0
-    scoreLeft = 0
-    scoreDown = 0
-    scoreUp = 0
-
-    for k in xrange(2):
-
-        for y in xrange(3):
-            i = last + y
-            if grid[i] < grid[i+1] :
-                increasingRight += 1
-                scoreRight += increasingRight**2 # + 4
-            else:
-                scoreRight -= abs( grid[i] - grid[i+1] ) 
-                increasingRight = 0
-
-        last = y
-        i = 0
-        for y in xrange(3):
-            i = last + y 
-            if grid[i+1] < grid[i]:
-                increasingLeft += 1
-                scoreLeft += increasingLeft**2 #+ 4
-            else :
-                scoreLeft -= abs( grid[i+1] - grid[i] ) 
-                increasingLeft = 0
-    last = i      
-        
-    #Up and down 
-    increasingUp = 0
-    increasingDown = 0
-    last = 0  
-
-    for j in xrange(2):
-
-        for x in xrange(3):
-            i = last + x
-            if grid[i] < grid[i+4] :
-                increasingDown += 1
-                scoreDown += increasingDown**2 #+ 4
-            else:
-                scoreDown -= abs( grid[i] - grid[i+4] )
-                increasingDown = 0
-
-        last = x
-        i = 0
-        for x in xrange(3):
-            i = x + last
-            if grid[i+1] < grid[i]:
-                increasingUp += 1
-                scoreUp += increasingUp**2 #+ 4
-            else :
-                scoreUp -= abs( grid[i+1] - grid[i] )
-                increasingUp = 0
-
-    leftRight = max( scoreLeft, scoreRight)
-    upDown = max( scoreUp, scoreDown)
-
-    return leftRight + upDown
-
 
 def evalBestCorner(board):
     # i: corner0, corner1, corner2, corner3
@@ -353,9 +262,53 @@ def rotateLeft(board):
         l -= 1
     return rotated
 
-    # the for-loop above does this: 
-        # rotated.append( board[3:16:4] )
-        # rotated.append( board[2:15:4] ) 
-        # rotated.append( board[1:14:4] ) 
-        # rotated.append( board[0:13:4] ) 
+def nearness(board):
+    # positions with two larges tiles
+    largest, secLargest = second_largest(board)
+    lX = largest % 4
+    lY = largest / 4
+    sX = secLargest % 4
+    sY = secLargest / 4
+    distance = abs(lX - sX) + abs(lY - sY)
+    return 1 - distance/6.0
 
+
+
+def second_largest(numbers):
+    count = 0
+    m1 = m2 = float('-inf')
+    p1 = p2 = 0
+    for x in numbers:
+        count += 1
+        if x > m2:
+            if x >= m1:
+                m1, m2 = x, m1
+                p1, p2 = count-1, p1
+            else:
+                m2 = x
+                p2 = count-1
+    return p1, p2 if count >= 2 else None
+# def smoothness(board):
+#     score = 0
+#     highestDiff = 0.0
+#     for i in xrange( len(board) -1 ):
+#         difference = abs(board[i] - board[i+1])
+#         score -= ( difference )
+#         highestDiff = max(highestDiff, difference)
+#     return score/highestDiff
+
+# def snake(board):
+#     b = copy(board)
+#     maxScore = 0
+#     maxTile = max(board)
+
+#     pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+#     # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
+#     pattern[:] = [x / 16.0 for x in pattern]
+#     for j in xrange(4):
+#         for i in xrange( len(board)-1 ):
+#             b[i] =  pattern[i] * b[i] / maxTile
+#         # maxScore = max(sum(x for x in b), maxScore)
+#         maxScore = max(sum(b), maxScore)
+#         b = rotateLeft(b)
+#     return maxScore
