@@ -2,7 +2,7 @@ from boardcontroller import BoardController as window
 import boardcontroller as bc
 from expectimax import *
 from copy import copy
-import time, timeit
+import time
 
 
 # measure process time
@@ -19,10 +19,10 @@ def logic():
     bestDirection = 'none'
 
     for direction in ['up', 'down', 'left', 'right']:
-        nextBoard, nofMerges = bc.slide( direction, copy(b.board) )
+        nextBoard, nofMerges, maxMerging, highestMerg = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
 
-            heuristic = expectimax( nextBoard, 5, 'board', nofMerges)
+            heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
             if heuristic > bestHeuristic:
                 bestHeuristic = heuristic
                 bestDirection = direction
@@ -40,5 +40,3 @@ def logic():
 
 while True:
     logic()
-
-

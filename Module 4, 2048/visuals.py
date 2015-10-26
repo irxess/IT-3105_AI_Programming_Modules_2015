@@ -69,6 +69,8 @@ class GameWindow(Frame):
         for i in xrange( GRID_LEN ):
             for j in xrange( GRID_LEN ):
                 digit = board[i*4+j]
+                #digit = board[i, j]
+
                 if digit == 0:
                     self.grid_cells[i][j].configure(
                                                 text = "",
