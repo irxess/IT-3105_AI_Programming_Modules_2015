@@ -8,16 +8,6 @@ def expectimax( node, depth, nextPlayer, nofMerges, maxMerging, highestMerg ):
         if h == 0:
             print "forgot to implement heuristic?"
         return h
-    # c = 0
-    # for x in node:
-    #   if x == 0:
-    #     c+=1
-    # if c >= 10:
-    #   depth = min(depth, 3)
-    # elif c >= 6:
-    #   depth = min(depth, 4)
-    # else:
-    #   depth = 6
     if nextPlayer == 'ai':
         return findBestSuccessor( node, depth, nofMerges, maxMerging, highestMerg)
     if nextPlayer == 'board':
@@ -39,8 +29,8 @@ def findBestSuccessor( node, depth, nofMerges, maxMerging, highestMerg):
 
 def findBestAverageSuccessor( node, depth, nofMerges, maxMerging, highestMerg):
     weightedAverage = 0
-    successors, probabilities = state.generateSuccessorsBiased(node) #C
-    # successors, probabilities = state.generateCHANCESuccessors(node) #2C
+    # successors, probabilities = state.generateSuccessorsBiased(node) #C
+    successors, probabilities = state.generateCHANCESuccessors(node) #2C
     if len(successors) == 0:
      return state.calculateHeuristic(node, nofMerges, maxMerging, highestMerg)
 

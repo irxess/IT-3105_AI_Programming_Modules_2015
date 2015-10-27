@@ -10,18 +10,16 @@ import settings, sys
 t0 = time.clock()
 stop = minutes = seconds = 0
 
+nearness = 0.0
+smooth   = 0.0
+merge    = 0.4
+gradient = 0.1
+edge     = 0.0
+opencell = 0.5
+snake    = 0.0
 
-# settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
-
-nearness = 0.10
-smooth   = 0.10
-merge    = 0.10
-gradient = 0.00
-edge     = 0.00
-opencell = 0.50
-snake    = 0.20
-
-settings.init( nearness, smooth, merge, gradient, edge, opencell, snake )
+# settings.init( nearness, smooth, merge, gradient, edge, opencell, snake )
+settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
 
 # b = bc.BoardController()
 b = window()
@@ -41,17 +39,18 @@ def logic():
     bestDirection = 'none'
 
     for direction in ['up', 'down', 'left', 'right']:
+    # for direction in ['down', 'left', 'right']:
         nextBoard, nofMerges, maxMerging, highestMerg = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
 
             # heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
             nofEmpty = emptyTiles(nextBoard)
             if nofEmpty >= 10:
-                heuristic = expectimax( nextBoard, 3, 'board', nofMerges, maxMerging, highestMerg)
-            elif nofEmpty >= 5:
                 heuristic = expectimax( nextBoard, 4, 'board', nofMerges, maxMerging, highestMerg)
+            elif nofEmpty >= 5:
+                heuristic = expectimax( nextBoard, 5, 'board', nofMerges, maxMerging, highestMerg)
             else:
-                heuristic = expectimax( nextBoard, 6, 'board', nofMerges, maxMerging, highestMerg)
+                heuristic = expectimax( nextBoard, 5, 'board', nofMerges, maxMerging, highestMerg)
             if heuristic > bestHeuristic:
                 bestHeuristic = heuristic
                 bestDirection = direction
@@ -59,16 +58,21 @@ def logic():
     if bestHeuristic != -1:
         b.move(bestDirection)
     else:
-        print 'game over'
-        # stop =  float(time.clock())
-        # minutes = (stop - t0)/60
-        # seconds = (stop - t0)%60
-        print 'Running time: ', time.clock()
-        print 2**max(b.board)
-        print nearness, smooth, merge, gradient, edge, opencell, snake
-        while True:
-            b.window.update_view(b.board)
+        # nextBoard = bc.slide('up', copy(b.board))
+        # if nextBoard != b.board:
+        #     b.move('up')
+        # else:
+            print 'game over'
+            # stop =  float(time.clock())
+            # minutes = (stop - t0)/60
+            # seconds = (stop - t0)%60
+            print 'Running time: ', time.clock()
+            print 2**max(b.board)
+            print nearness, smooth, merge, gradient, edge, opencell, snake
+            while True:
+                b.window.update_view(b.board)
         # sys.exit(0)
+print nearness, smooth, merge, gradient, edge, opencell, snake
 
 while True:
     logic()

@@ -79,14 +79,15 @@ def generateCHANCESuccessors(board):
 
             succ1[i] = 1
             successors.append(succ1)
-            probabilities.append(0.9)
-            succ2[i] = 2
-            successors.append(succ2)
-            probabilities.append(0.1)
+            probabilities.append(1.0)
+            # succ2[i] = 2
+            # successors.append(succ2)
+            # probabilities.append(0.1)
     outcomes = len(probabilities)
 
     for i in xrange(outcomes):
-        probabilities[i] /= (outcomes/2)
+        # probabilities[i] /= (outcomes/2)
+        probabilities[i] /= (outcomes)
 
     return successors, probabilities
 
@@ -130,7 +131,7 @@ def edgeScore(grid):
     if maxTile in (grid[i] for i in corner):
         return 1 # highest tile in corner is good
     if maxTile in (grid[i] for i in edge):
-        return 0.5 # highest tile on edge is not that bad
+        return 0.6 # highest tile on edge is not that bad
     else:
         return 0
 
@@ -138,18 +139,16 @@ def edgeScore(grid):
 def mergeScore(nofMerges, maxMerging, highestMerge, maxTile):
     if maxMerging > 0:
         return 1 # we always want to merge the highest tile
-    if highestMerge + 2>= maxTile:
+    if highestMerge + 1>= maxTile:
         return 0.9
 
     x = nofMerges / 8.0 # max 8 merges possible
-    bestMergeScore = highestMerge / float(maxTile)
+    highestScore = highestMerge/maxTile
 
-    h = x * bestMergeScore 
+    h = x/3 + highestScore/3*2 
     if h < 0.9:
         return h
     return 0.9
-    # return sin(x*5/pi)
-    # return log(x)/4 + 1
 
 
 def openCellScore(board):
