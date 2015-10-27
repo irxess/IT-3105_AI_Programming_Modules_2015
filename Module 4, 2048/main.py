@@ -5,7 +5,7 @@ from copy import copy
 import time
 import settings, sys
 
-
+depth = 7
 # measure process time
 t0 = time.clock()
 stop = minutes = seconds = 0
@@ -58,19 +58,26 @@ def logic():
     if bestHeuristic != -1:
         b.move(bestDirection)
     else:
-        # nextBoard = bc.slide('up', copy(b.board))
-        # if nextBoard != b.board:
-        #     b.move('up')
-        # else:
-            print 'game over'
-            # stop =  float(time.clock())
-            # minutes = (stop - t0)/60
-            # seconds = (stop - t0)%60
-            print 'Running time: ', time.clock()
-            print 2**max(b.board)
-            print nearness, smooth, merge, gradient, edge, opencell, snake
-            while True:
-                b.window.update_view(b.board)
+        # orig_stdout = sys.stdout
+        # f = file('testResults.txt', 'w')
+        # sys.stdout = f
+
+        print '----------------------------------'
+        print 'game over'
+        # stop =  float(time.clock())
+        # minutes = (stop - t0)/60
+        # seconds = (stop - t0)%60
+        print 'Running time: ', time.clock()
+        print 'depth = ', depth
+        print 2**max(b.board)
+        print nearness, smooth, merge, gradient, edge, opencell
+
+        # sys.stdout = orig_stdout
+        # f.close()
+    
+        while True:
+            b.window.update_view(b.board)
+
         # sys.exit(0)
 print nearness, smooth, merge, gradient, edge, opencell, snake
 
