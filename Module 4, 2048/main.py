@@ -19,7 +19,7 @@ opencell = 0.5
 snake    = 0.0
 
 # settings.init( nearness, smooth, merge, gradient, edge, opencell, snake )
-settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6])
+settings.init(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7])
 
 # b = bc.BoardController()
 b = window()
