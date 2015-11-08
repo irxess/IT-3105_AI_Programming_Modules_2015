@@ -20,20 +20,13 @@ def calculateHeuristic(board, nofMerges, maxMerging, highestMerg):
 
     heuristic = 0
 
-    # heuristic += 0.20 * edgeScore(board) # 1.
-    # heuristic += 0.20 * openCellScore(board) # 2.
-    # heuristic += 0.30 * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
-    # heuristic += 0.50 * gradient(board)
-    # heuristic += 0.25 * snake(board)
-    # heuristic += 0.10 * smoothness(board)
-
-    heuristic += s.edgeWeight * edgeScore(board) # 1.
-    heuristic += s.openCellWeigth * openCellScore(board) # 2.
-    # heuristic += s.snakeWeight * snake(board) # 3.
-    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board)) # 4.
-    heuristic += s.gradientWeight * gradient(board)
+    heuristic += s.edgeWeight * edgeScore(board)
+    heuristic += s.openCellWeigth * openCellScore(board) 
+    heuristic += s.snakeWeight * snake(board) 
+    heuristic += s.mergeWeight * mergeScore(nofMerges, maxMerging, highestMerg, max(board))
+    heuristic += s.gradientWeight * gradient(board) 
     heuristic += s.smoothnessWeigth * smoothness(board)
-    heuristic += s.snakeWeight * nearness(board)
+    heuristic += s.nearWeight * nearness(board)
 
     # spaceAround2Tiles()
     # edge around highest
@@ -86,14 +79,15 @@ def generateCHANCESuccessors(board):
 
             succ1[i] = 1
             successors.append(succ1)
-            probabilities.append(0.9)
-            succ2[i] = 2
-            successors.append(succ2)
-            probabilities.append(0.1)
+            probabilities.append(1.0)
+            # succ2[i] = 2
+            # successors.append(succ2)
+            # probabilities.append(0.1)
     outcomes = len(probabilities)
 
     for i in xrange(outcomes):
-        probabilities[i] /= (outcomes/2)
+        # probabilities[i] /= (outcomes/2)
+        probabilities[i] /= (outcomes)
 
     return successors, probabilities
 
@@ -137,23 +131,25 @@ def edgeScore(grid):
     if maxTile in (grid[i] for i in corner):
         return 1 # highest tile in corner is good
     if maxTile in (grid[i] for i in edge):
-        return 0.5 # highest tile on edge is not that bad
+        return 0.6 # highest tile on edge is not that bad
     else:
         return 0
 
 
-def mergeScore(nofMerges, maxMerging, highestMerg, maxTile):
-    x = nofMerges / 4.0 # max 8 merges possible
-    m = maxMerging/ 4.0
-    t = maxTile/8.0
-    # h = highestMerg/float(maxTile)
-    h = highestMerg/8.0
-    tot = x + m + t + h
-    if tot > 1:
-        return 1
-    return tot
-    # return sin(x*5/pi)
-    # return log(x)/4 + 1
+def mergeScore(nofMerges, maxMerging, highestMerge, maxTile):
+    if maxMerging > 0:
+        return 1 # we always want to merge the highest tile
+    if highestMerge + 1>= maxTile:
+        return 0.9
+
+    x = nofMerges / 8.0 # max 8 merges possible
+    highestScore = highestMerge/maxTile
+
+    h = x/3 + highestScore/3*2 
+    if h < 0.9:
+        return h
+    return 0.9
+
 
 def openCellScore(board):
     count = 0
@@ -161,7 +157,6 @@ def openCellScore(board):
         if cell == 0:
             count += 1
     return count/16.0
-
 
 
 def gradient(board):
@@ -175,7 +170,7 @@ def gradient(board):
   #   2, -1, -3, -5,
   #   1, -2, -5, -8 ]
 
-    grad[:] = [x / 10.0 for x in grad]
+    grad[:] = [x / 8.0 for x in grad]
     maxTile = max(board)
     for j in xrange(4):
         for i in xrange( len(board)-1 ):
@@ -184,8 +179,8 @@ def gradient(board):
         b = rotateLeft(b)
 
     # 2.6 is awesome, 1 is bad
-    # return maxScore/2.8
-    return maxScore
+    return maxScore/2.8
+    # return maxScore
 
 
 def smoothness(board):
@@ -212,27 +207,41 @@ def snake(board):
         # left to right snake pattern
         score = 0
         importance = 256
+        broke = False
         for i in [0,1,2]:
             if b[i] >= b[i+1]:
                 score += importance
+            else:
+                broke = True
+                break
             importance /= 2
-        for i in [7,6,5]:
-            if b[i] >= b[i-1]:
-                score += importance
-            importance /= 2
+        if broke == False:
+            for i in [7,6,5]:
+                if b[i] >= b[i-1]:
+                    score += importance
+                else:
+                    break
+                importance /= 2
         maxScore = max(score, maxScore)
 
         # up-down snake pattern
         score = 0
         importance = 256
+        broke = False
         for i in [0,4,8]:
             if b[i] >= b[i+4]:
                 score += importance
+            else:
+                broke = True
+                break
             importance /= 2
-        for i in [13,9,5]:
-            if b[i] >= b[i-4]:
-                score += importance
-            importance /= 2
+        if broke == False:
+            for i in [13,9,5]:
+                if b[i] >= b[i-4]:
+                    score += importance
+                else:
+                    break
+                importance /= 2
         maxScore = max(score, maxScore)
 
         b = rotateLeft(b)
@@ -260,6 +269,7 @@ def rotateLeft(board):
         l -= 1
     return rotated
 
+
 def nearness(board):
     # positions with two larges tiles
     largest, secLargest = second_largest(board)
@@ -269,7 +279,6 @@ def nearness(board):
     sY = secLargest / 4
     distance = abs(lX - sX) + abs(lY - sY)
     return 1 - distance/6.0
-
 
 
 def second_largest(numbers):
@@ -286,6 +295,7 @@ def second_largest(numbers):
                 m2 = x
                 p2 = count-1
     return p1, p2 if count >= 2 else None
+
 # def smoothness(board):
 #     score = 0
 #     highestDiff = 0.0
