@@ -23,13 +23,11 @@ hidden_nodes = 500 #maybe in first hidden_layer
 # topologi : ex. => 3 hidden_layers of sizes [20, 50, 30].
 
 class models():
-#training:
     def __init__(self, units, hidden_layers, learning_rate):
-    
-        self.training_cases = mb.load_mnist()
-        self.testing_cases = mb.load_mnist(dataset='testing')
 
-        self.learning_rate = learning_rate
+        self.training_cases = mb.load_mnist()
+        self.testing_cases  = mb.load_mnist('testing')
+        self.learning_rate  = learning_rate
         self.build_ann1(units, hidden_layers)
 
     # def floatX(X):
@@ -38,7 +36,7 @@ class models():
     def initialize(self, shape):
         return theano.shared( np.random.uniform( -.1, .1, size=shape) )
 
-    # Not testet
+    # Not tested
     def build_ann1(self, units, hidden_layers):
         
         parameters = []
@@ -60,7 +58,7 @@ class models():
         #build multilayers
         for i in range(1, len(hidden_layers)-1):
 
-            weight_hidden = self.initialize( hidden_layers[i], units )
+            weight_hidden = self.initialize( (hidden_layers[i], units) )
             biases_hidden = self.initialize(units)
 
             # weight_hidden = theano.shared( np.random.uniform( -.1, .1, size=(hidden_layers, hidden_nodes) ) )
@@ -103,7 +101,7 @@ class models():
         errors = []
 
         if test_interval:
-            self.avg_vector_distances=[]
+            self.avg_vector_distances = []
 
         for i in range(epochs):
             error = 0
@@ -120,6 +118,7 @@ class models():
             graph.simple_plot(self.avg_vector_distances,xtitle='Epoch', \
                               ytitle='Avg Hidden-Node Vector Distance',title='')
 
+
     def do_testing(self, scatter=True):
         #converts each case into a vector of features (length = 28 x 28 = 784) and a class (0-9).
         self.testing_cases = reconstruc_flat_cases( mb.gen_flat_cases(cases=self.testing_cases) )
@@ -134,7 +133,8 @@ class models():
         #   graph.simple_scatter(hidden_activations,radius=8)
 
         return hidden_activations
-        
+
+
     def consider_interim_test(self,epoch,test_interval):
         # test in given interval
         if epoch % test_interval == 0:
@@ -151,6 +151,7 @@ test()
 
     # def build_ann2(self, units, hidden_nodes, learning_rate):
     #   # vector eller matrix???
+
     #   input_matrix = T.dvector('input')
 
     #   weight_input = theano.shared( np.random.uniform( -.1,.1,size=(units,hidden_nodes) ) )
@@ -162,6 +163,7 @@ test()
     #     biases_output = theano.shared( np.random.uniform(-.1) )
 
     #   # Compute hidden layer
+
     #   hidden = T.tanh( T.dot(input_matrix, weight_input) + biases_hidden)
 
     #   # compute output probability from hidden layer
@@ -170,3 +172,4 @@ test()
     #     # activation functions = output = the neuron s firing rate
     #     x1 = Tann.sigmoid(T.dot(input_matrix, w1) + b1)
     #     x2 = Tann.sigmoid(T.dot(x1, w2) + b2)
+
