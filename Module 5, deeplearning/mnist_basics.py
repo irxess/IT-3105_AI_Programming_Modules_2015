@@ -31,8 +31,9 @@ import pickle
     """
 
 # Set this to the complete path to your mnist files.
-## __mnist_path__ = "path/to/all/your/mnist/files"
-__mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, Deep learning/basics/"
+# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, Deep learning/basics/"
+__mnist_path__ = "/Users/ilsegv/development/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics"
+
 
 # The reduce function was removed in Python 3.0, so just use this handmade version.
 def kd_reduce(func,seq):
@@ -107,9 +108,9 @@ def reconstruct_image(flat_list,dims=(28,28)):
 
 def gen_flat_cases(digits=numpy.arange(10),type='training',cases=None):
     images, labels = cases if cases else load_mnist(type, digits=digits)
-        i2 = list(map(flatten_image,images))
-            l2 = kd_reduce((lambda a, b: a + b), labels.tolist())
-                return i2, l2
+    i2 = list(map(flatten_image,images))
+    l2 = kd_reduce((lambda a, b: a + b), labels.tolist())
+    return i2, l2
 
 def reconstruct_flat_cases(cases,dims=(28,28),nested=True):
     labels = numpy.array([[label] for label in cases[1]]) if nested else cases[1]
