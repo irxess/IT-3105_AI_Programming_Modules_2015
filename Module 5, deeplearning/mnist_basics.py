@@ -6,6 +6,7 @@ import os, struct
 import time
 from array import array as pyarray
 import matplotlib.pyplot as pyplot
+import pickle
 import numpy
 import pickle
 
@@ -32,7 +33,7 @@ import pickle
 
 # Set this to the complete path to your mnist files.
 # __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, Deep learning/basics/"
-__mnist_path__ = "/Users/ilsegv/development/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics"
+__mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics/"
 
 
 # The reduce function was removed in Python 3.0, so just use this handmade version.
@@ -40,7 +41,7 @@ def kd_reduce(func,seq):
     res = seq[0]
     for item in seq[1:]:
         res = func(res,item)
-    return re
+    return res
 
 
 def load_mnist(dataset="training", digits=numpy.arange(10), path= __mnist_path__):
@@ -110,12 +111,12 @@ def gen_flat_cases(digits=numpy.arange(10),type='training',cases=None):
     images, labels = cases if cases else load_mnist(type, digits=digits)
     i2 = list(map(flatten_image,images))
     l2 = kd_reduce((lambda a, b: a + b), labels.tolist())
-    return i2, l2
+    return i2/numpy.float32(255), l2
 
 def reconstruct_flat_cases(cases,dims=(28,28),nested=True):
     labels = numpy.array([[label] for label in cases[1]]) if nested else cases[1]
     images = [reconstruct_image(i,dims=dims) for i in cases[0]] if nested else cases[0]
-    return images,labels
+    return images/numpy.float32(255),labels
 
 # ***** PICKLING FLAT CASES ********
 # This uses pickle to dump cases to and retrieve cases from a binary file.
@@ -137,8 +138,9 @@ def load_flat_cases(filename,dir=__mnist_path__):
 def dump_cases(filename,digits=numpy.arange(10),type='training',dir=__mnist_path__,
                cases=None,labeled=True):
     images, labels = cases if cases else load_mnist(type, digits=digits)
+    images = images/numpy.float32(255)
     fcases = gen_flat_cases(cases=[images,labels])
-    dump_flat_cases(filename,fcases,dir=dir,labeled=labeled)
+    dump_flat_cases(filename, fcases,dir=dir,labeled=labeled)
 
 # This loads any collection of flat MNIST cases from a file.
 def load_cases(filename,dir=__mnist_path__,nested=True):
