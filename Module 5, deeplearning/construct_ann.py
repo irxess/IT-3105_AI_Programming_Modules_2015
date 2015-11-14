@@ -74,7 +74,7 @@ def model2(X, weights, functions):
         h = functions[i](T.dot(h, weights[i]))
         outputs.append(h)
     return outputs  
-    
+
 # converts lables to a 2D numpy array of 0's & 1's
 def one_hot_encoding(x,n):
     if type(x) == list:
@@ -158,7 +158,7 @@ def train_on_batches(nof_training, hidden_nodes, funcs, lr, batch_size=128):
     f = open('testResults.txt', 'a')
     sys.stdout = f
     print('-------------------------------------------------------------------')
-    print('With biases')
+    # print('With biases, without x4')
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
     for i in range(nof_training):
@@ -183,8 +183,8 @@ def blind_testing(feature_sets):
 # test
 # blind_testing()
 
-train_on_batches(nof_training=20, hidden_nodes=[625, 625, 441], \
-                funcs=[T.tanh, T.nnet.sigmoid, T.tanh, T.nnet.softmax], lr=0.02)
+train_on_batches(nof_training=20, hidden_nodes=[625, 625], \
+                funcs=[T.tanh, T.nnet.sigmoid, T.nnet.softmax], lr=0.02)
 
 
 
