@@ -1,0 +1,787 @@
+----------------------------------
+functions =  [<theano.tensor.elemwise.Elemwise object at 0x11207fbe0>, <theano.tensor.elemwise.Elemwise object at 0x11219e080>, <function softmax at 0x1121a7c80>] 
+learning rate =  0.02
+----------------------------------
+functions =  [<theano.tensor.elemwise.Elemwise object at 0x10da52be0>, <theano.tensor.elemwise.Elemwise object at 0x10db71048>, <function softmax at 0x10db7ac80>] 
+learning rate =  0.02
+iteration  1 0.8458
+iteration  2 0.8804
+iteration  3 0.8931
+iteration  4 0.9003
+iteration  5 0.9058
+iteration  6 0.9098
+iteration  7 0.9131
+iteration  8 0.9148
+iteration  9 0.9164
+iteration  10 0.9189
+iteration  11 0.9207
+iteration  12 0.9224
+iteration  13 0.9234
+iteration  14 0.9247
+iteration  15 0.9262
+iteration  16 0.9277
+iteration  17 0.9295
+iteration  18 0.9303
+iteration  19 0.9316
+iteration  20 0.9325
+Running time:  9.463931216666667 (min) 27.835872999999992 (s)
+----------------------------------
+----------------------------------
+----------------------------------
+----------------------------------
+functions =  ['tanh', 'sigmoid', 'softamx'] 
+learning rate =  0.01
+hidden nodes =  [625, 441]
+iteration  1 0.7927
+iteration  2 0.8441
+iteration  3 0.8679
+iteration  4 0.8823
+iteration  5 0.8896
+iteration  6 0.8945
+iteration  7 0.8976
+iteration  8 0.9005
+iteration  9 0.9033
+iteration  10 0.9055
+iteration  11 0.9072
+iteration  12 0.9089
+iteration  13 0.9105
+iteration  14 0.9111
+iteration  15 0.9132
+iteration  16 0.9147
+iteration  17 0.9156
+iteration  18 0.9172
+iteration  19 0.919
+iteration  20 0.9198
+Running time:  9.46892365 (min) 28.13541900000007 (s)
+-------------------------------------------------------------------
+functions =  ['tanh', 'sigmoid', 'softamx'] 
+learning rate =  0.001
+hidden nodes =  [625, 441]
+iteration  1 0.3794
+iteration  2 0.5826
+iteration  3 0.6702
+iteration  4 0.713
+iteration  5 0.7402
+iteration  6 0.7586
+iteration  7 0.7715
+iteration  8 0.7837
+iteration  9 0.7936
+iteration  10 0.8029
+iteration  11 0.8115
+iteration  12 0.8188
+iteration  13 0.8241
+iteration  14 0.8305
+iteration  15 0.8348
+iteration  16 0.8393
+iteration  17 0.8424
+iteration  18 0.8458
+iteration  19 0.8491
+iteration  20 0.8525
+iteration  21 0.8552
+iteration  22 0.8566
+iteration  23 0.8593
+iteration  24 0.8614
+iteration  25 0.8634
+iteration  26 0.8651
+iteration  27 0.8666
+iteration  28 0.8685
+iteration  29 0.8693
+iteration  30 0.87
+Running time:  14.391010866666667 (min) 23.460651999999982 (s)
+-------------------------------------------------------------------
+functions =  ['tanh', 'sigmoid', 'softamx'] 
+learning rate =  0.03
+hidden nodes =  [625, 441]
+iteration  1 0.8702
+iteration  2 0.8946
+iteration  3 0.9031
+iteration  4 0.9102
+iteration  5 0.9148
+iteration  6 0.9187
+iteration  7 0.9223
+iteration  8 0.9246
+iteration  9 0.9262
+iteration  10 0.927
+iteration  11 0.9284
+iteration  12 0.9301
+iteration  13 0.9312
+iteration  14 0.9334
+iteration  15 0.9352
+iteration  16 0.9366
+iteration  17 0.9381
+iteration  18 0.9398
+iteration  19 0.9409
+iteration  20 0.9421
+iteration  21 0.9431
+iteration  22 0.945
+iteration  23 0.946
+iteration  24 0.9465
+iteration  25 0.9476
+iteration  26 0.949
+iteration  27 0.95
+iteration  28 0.9505
+iteration  29 0.9513
+iteration  30 0.953
+Running time:  14.366650466666668 (min) 21.999028000000067 (s)
+-------------------------------------------------------------------
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softamx'] 
+learning rate =  0.03
+hidden nodes =  [625, 441, 441]
+iteration  1 0.7301
+iteration  2 0.8329
+iteration  3 0.8723
+iteration  4 0.8895
+iteration  5 0.8978
+iteration  6 0.9035
+iteration  7 0.9084
+iteration  8 0.9112
+iteration  9 0.916
+iteration  10 0.9187
+iteration  11 0.9211
+iteration  12 0.9241
+iteration  13 0.9258
+iteration  14 0.9276
+iteration  15 0.9299
+iteration  16 0.9315
+iteration  17 0.9336
+iteration  18 0.9348
+iteration  19 0.9354
+iteration  20 0.937
+iteration  21 0.9387
+iteration  22 0.9394
+iteration  23 0.9409
+iteration  24 0.9424
+iteration  25 0.944
+iteration  26 0.9457
+iteration  27 0.9474
+iteration  28 0.9486
+iteration  29 0.9494
+iteration  30 0.9505
+Running time:  18.519986766666666 (min) 31.199206000000004 (s)
+-------------------------------------------------------------------
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softamx'] 
+learning rate =  0.01
+hidden nodes =  [625, 441, 441]
+i: 1   0.6002
+i: 2   0.6819
+i: 3   0.739
+i: 4   0.7844
+i: 5   0.814
+i: 6   0.834
+i: 7   0.8513
+i: 8   0.8634
+i: 9   0.8743
+i: 10   0.8828
+i: 11   0.8873
+i: 12   0.8914
+i: 13   0.895
+i: 14   0.897
+i: 15   0.8997
+i: 16   0.9017
+i: 17   0.9032
+i: 18   0.9055
+i: 19   0.9069
+i: 20   0.9077
+Running time:  13.071745033333334 (min) 4.30470200000002 (s)
+
+-------------------------------------------------------------------
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softamx'] 
+learning rate =  0.02
+hidden nodes =  [625, 625, 441]
+i: 1   0.696
+i: 2   0.8044
+i: 3   0.845
+i: 4   0.8676
+i: 5   0.8818
+i: 6   0.8919
+i: 7   0.897
+i: 8   0.9015
+i: 9   0.9045
+i: 10   0.9074
+i: 11   0.9099
+i: 12   0.9131
+i: 13   0.9148
+i: 14   0.9172
+i: 15   0.9197
+i: 16   0.9219
+i: 17   0.9232
+i: 18   0.9254
+i: 19   0.9266
+i: 20   0.9275
+Running time:  15.42820065 (min) 25.692039000000022 (s)
+-------------------------------------------------------------------
+cost function = sum of squared errors
+functions =  ['tanh', 'sigmoid'] 
+learning rate =  0.02
+hidden nodes =  [256]
+i: 1   0.588
+i: 2   0.5884
+i: 3   0.5846
+i: 4   0.5774
+i: 5   0.5714
+i: 6   0.5658
+i: 7   0.5622
+i: 8   0.5588
+i: 9   0.5534
+i: 10   0.5488
+i: 11   0.5461
+i: 12   0.5427
+i: 13   0.5396
+i: 14   0.5374
+i: 15   0.5368
+i: 16   0.5344
+i: 17   0.5324
+i: 18   0.5311
+i: 19   0.5284
+i: 20   0.5258
+Running time:  3 (min) 35 (s)
+-------------------------------------------------------------------
+cost function = sum of squared errors
+functions =  ['softamx', 'sigmoid'] 
+learning rate =  0.02
+hidden nodes =  [256]
+i: 1   0.0579
+i: 2   0.0667
+i: 3   0.0801
+i: 4   0.0997
+i: 5   0.1233
+i: 6   0.1476
+i: 7   0.1725
+i: 8   0.1988
+i: 9   0.2173
+i: 10   0.1749
+i: 11   0.0981
+i: 12   0.098
+i: 13   0.098
+i: 14   0.098
+i: 15   0.098
+i: 16   0.101
+i: 17   0.101
+i: 18   0.101
+i: 19   0.101
+i: 20   0.101
+Running time:  3 (min) 29 (s)
+-------------------------------------------------------------------
+cost function = sum of squared errors
+functions =  ['sigmoid', 'softamx'] 
+learning rate =  0.02
+hidden nodes =  [256]
+i: 1   0.7657
+i: 2   0.8315
+i: 3   0.8553
+i: 4   0.8707
+i: 5   0.8791
+i: 6   0.8854
+i: 7   0.8908
+i: 8   0.8936
+i: 9   0.8963
+i: 10   0.899
+i: 11   0.901
+i: 12   0.9026
+i: 13   0.9048
+i: 14   0.906
+i: 15   0.907
+i: 16   0.9082
+i: 17   0.9096
+i: 18   0.9106
+i: 19   0.9111
+i: 20   0.9116
+Running time:  3 (min) 32 (s)
+-------------------------------------------------------------------
+cost function = sum of squared errors
+functions =  ['sigmoid', 'softamx'] 
+learning rate =  0.01
+hidden nodes =  [256]
+i: 1   0.6741
+i: 2   0.7642
+i: 3   0.8053
+i: 4   0.8304
+i: 5   0.8459
+i: 6   0.8553
+i: 7   0.8643
+i: 8   0.8697
+i: 9   0.8749
+i: 10   0.88
+i: 11   0.8848
+i: 12   0.8878
+i: 13   0.8887
+i: 14   0.8898
+i: 15   0.892
+i: 16   0.8943
+i: 17   0.8953
+i: 18   0.8964
+i: 19   0.8977
+i: 20   0.8982
+Running time:  3 (min) 29 (s)
+-------------------------------------------------------------------
+cost function = sum of squared errors
+functions =  ['sigmoid', 'softmax'] 
+learning rate =  0.01
+hidden nodes =  [625]
+i: 1   0.752
+i: 2   0.8168
+i: 3   0.8402
+i: 4   0.8555
+i: 5   0.864
+i: 6   0.8725
+i: 7   0.8776
+i: 8   0.8807
+i: 9   0.8836
+i: 10   0.887
+i: 11   0.8898
+i: 12   0.8927
+i: 13   0.8942
+i: 14   0.8952
+i: 15   0.8957
+i: 16   0.8967
+i: 17   0.8986
+i: 18   0.8999
+i: 19   0.9011
+i: 20   0.9026
+Running time:  6 (min) 50 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'softmax'] 
+learning rate =  0.01
+hidden nodes =  [625, 441]
+i: 1   0.8784
+i: 2   0.9014
+i: 3   0.9106
+i: 4   0.9162
+i: 5   0.9212
+i: 6   0.9248
+i: 7   0.9292
+i: 8   0.9319
+i: 9   0.934
+i: 10   0.9365
+i: 11   0.9387
+i: 12   0.9406
+i: 13   0.9426
+i: 14   0.9439
+i: 15   0.9448
+i: 16   0.9461
+i: 17   0.9469
+i: 18   0.9476
+i: 19   0.949
+i: 20   0.9504
+Running time:  11 (min) 20 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441]
+i: 1   0.9018
+i: 2   0.9178
+i: 3   0.9274
+i: 4   0.9317
+i: 5   0.9362
+i: 6   0.9387
+i: 7   0.9424
+i: 8   0.9453
+i: 9   0.9476
+i: 10   0.9495
+i: 11   0.9505
+i: 12   0.952
+i: 13   0.9539
+i: 14   0.9556
+i: 15   0.9567
+i: 16   0.9589
+i: 17   0.9598
+i: 18   0.9614
+i: 19   0.9621
+i: 20   0.9629
+Running time:  11 (min) 16 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441]
+i: 1   0.9011
+i: 2   0.9174
+i: 3   0.9248
+i: 4   0.9321
+i: 5   0.9367
+i: 6   0.9409
+i: 7   0.9447
+i: 8   0.9471
+i: 9   0.9491
+i: 10   0.9508
+i: 11   0.9528
+i: 12   0.954
+i: 13   0.9556
+i: 14   0.9569
+i: 15   0.9582
+i: 16   0.9599
+i: 17   0.9609
+i: 18   0.9621
+i: 19   0.9633
+i: 20   0.964
+i: 21   0.9647
+i: 22   0.9655
+i: 23   0.9663
+i: 24   0.9671
+i: 25   0.9674
+Running time:  13 (min) 49 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [20, 50, 30]
+i: 1   0.1969
+i: 2   0.4807
+i: 3   0.6453
+i: 4   0.7641
+i: 5   0.8276
+i: 6   0.861
+i: 7   0.8782
+i: 8   0.8908
+i: 9   0.8998
+i: 10   0.9075
+i: 11   0.914
+i: 12   0.9188
+i: 13   0.9239
+i: 14   0.927
+i: 15   0.9297
+i: 16   0.9328
+i: 17   0.9368
+i: 18   0.9385
+i: 19   0.9409
+i: 20   0.9429
+i: 21   0.9451
+i: 22   0.9466
+i: 23   0.9479
+i: 24   0.9492
+i: 25   0.95
+Running time:  1 (min) 46 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.01
+hidden nodes =  [20, 50, 30]
+i: 1   0.1626
+i: 2   0.2611
+i: 3   0.2796
+i: 4   0.3656
+i: 5   0.437
+i: 6   0.5222
+i: 7   0.6325
+i: 8   0.6994
+i: 9   0.7441
+i: 10   0.7764
+i: 11   0.8062
+i: 12   0.8344
+i: 13   0.8536
+i: 14   0.8679
+i: 15   0.878
+i: 16   0.8885
+i: 17   0.8963
+i: 18   0.9004
+i: 19   0.9062
+i: 20   0.9116
+i: 21   0.9146
+i: 22   0.9179
+i: 23   0.9204
+i: 24   0.9221
+i: 25   0.9241
+Running time:  1 (min) 46 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.05
+hidden nodes =  [20, 50, 30]
+i: 1   0.4331
+i: 2   0.7172
+i: 3   0.863
+i: 4   0.9
+i: 5   0.9172
+i: 6   0.927
+i: 7   0.9344
+i: 8   0.94
+i: 9   0.9422
+i: 10   0.9432
+i: 11   0.9451
+i: 12   0.9473
+i: 13   0.9492
+i: 14   0.9497
+i: 15   0.9507
+i: 16   0.9516
+i: 17   0.9524
+i: 18   0.9532
+i: 19   0.9534
+i: 20   0.9546
+i: 21   0.9546
+i: 22   0.9549
+i: 23   0.9556
+i: 24   0.9563
+i: 25   0.9562
+Running time:  1 (min) 43 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441, 256]
+i: 1   0.8992
+i: 2   0.9177
+i: 3   0.9275
+i: 4   0.9335
+i: 5   0.9404
+i: 6   0.9446
+i: 7   0.9485
+i: 8   0.9517
+i: 9   0.955
+i: 10   0.9576
+i: 11   0.9597
+i: 12   0.9611
+i: 13   0.9629
+i: 14   0.9649
+i: 15   0.9666
+i: 16   0.9673
+i: 17   0.9685
+i: 18   0.9696
+i: 19   0.9704
+i: 20   0.9709
+i: 21   0.9716
+i: 22   0.9727
+i: 23   0.9737
+i: 24   0.9741
+i: 25   0.9745
+Running time:  16 (min) 6 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441, 256, 128]
+i: 1   0.8733
+i: 2   0.9124
+i: 3   0.9271
+i: 4   0.9365
+i: 5   0.9431
+i: 6   0.9471
+i: 7   0.951
+i: 8   0.955
+i: 9   0.9586
+i: 10   0.9614
+i: 11   0.9639
+i: 12   0.9657
+i: 13   0.9676
+i: 14   0.9693
+i: 15   0.9706
+i: 16   0.9713
+i: 17   0.9721
+i: 18   0.9733
+i: 19   0.9742
+i: 20   0.9743
+i: 21   0.9746
+i: 22   0.975
+i: 23   0.9755
+i: 24   0.9758
+i: 25   0.9762
+Running time:  16 (min) 53 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441, 256, 128]
+i: 1   0.8738
+i: 2   0.9114
+i: 3   0.9255
+i: 4   0.9354
+i: 5   0.9424
+i: 6   0.9485
+i: 7   0.9529
+i: 8   0.9563
+i: 9   0.9596
+i: 10   0.9623
+i: 11   0.9637
+i: 12   0.9663
+i: 13   0.968
+i: 14   0.9698
+i: 15   0.9705
+i: 16   0.9713
+i: 17   0.9721
+i: 18   0.9728
+i: 19   0.9734
+i: 20   0.9739
+Running time:  13 (min) 8 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441, 256, 128, 56]
+i: 1   0.7044
+i: 2   0.8738
+i: 3   0.9102
+i: 4   0.9269
+i: 5   0.937
+i: 6   0.9454
+i: 7   0.9521
+i: 8   0.9562
+i: 9   0.9598
+i: 10   0.9618
+i: 11   0.9635
+i: 12   0.9649
+i: 13   0.9665
+i: 14   0.9682
+i: 15   0.9693
+i: 16   0.9701
+i: 17   0.9706
+i: 18   0.9718
+i: 19   0.9721
+i: 20   0.9729
+Running time:  13 (min) 8 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.01
+hidden nodes =  [625, 441, 256, 128, 56]
+i: 1   0.6302
+i: 2   0.7329
+i: 3   0.8215
+i: 4   0.8769
+i: 5   0.9033
+i: 6   0.9156
+i: 7   0.9231
+i: 8   0.9306
+i: 9   0.9362
+i: 10   0.9416
+i: 11   0.9455
+i: 12   0.9499
+i: 13   0.9527
+i: 14   0.9557
+i: 15   0.9578
+i: 16   0.9599
+i: 17   0.9609
+i: 18   0.9626
+i: 19   0.9638
+i: 20   0.9652
+Running time:  13 (min) 5 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'sigmoid', 'sigmoid', 'sigmoid', 'softmax'] 
+learning rate =  0.03
+hidden nodes =  [625, 441, 256, 128, 56]
+i: 1   0.8171
+i: 2   0.9082
+i: 3   0.9319
+i: 4   0.9467
+i: 5   0.9553
+i: 6   0.9605
+i: 7   0.9639
+i: 8   0.966
+i: 9   0.9682
+i: 10   0.9707
+i: 11   0.9719
+i: 12   0.9731
+i: 13   0.9735
+i: 14   0.974
+i: 15   0.9742
+i: 16   0.9748
+i: 17   0.9754
+i: 18   0.9756
+i: 19   0.9763
+i: 20   0.9766
+Running time:  12 (min) 58 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'tanh', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 441, 256, 128]
+i: 1   0.8883
+i: 2   0.9159
+i: 3   0.9283
+i: 4   0.9385
+i: 5   0.9453
+i: 6   0.9491
+i: 7   0.9527
+i: 8   0.9567
+i: 9   0.9602
+i: 10   0.9628
+i: 11   0.9649
+i: 12   0.9662
+i: 13   0.968
+i: 14   0.9694
+i: 15   0.971
+i: 16   0.9715
+i: 17   0.9725
+i: 18   0.9734
+i: 19   0.9743
+i: 20   0.9751
+Running time:  12 (min) 60 (s)
+-------------------------------------------------------------------
+With biases
+functions =  ['tanh', 'sigmoid', 'tanh', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 625, 441]
+i: 1   0.9128
+i: 2   0.927
+i: 3   0.9359
+i: 4   0.9421
+i: 5   0.9476
+i: 6   0.9517
+i: 7   0.955
+i: 8   0.9585
+i: 9   0.9602
+i: 10   0.9621
+i: 11   0.9637
+i: 12   0.9664
+i: 13   0.968
+i: 14   0.969
+i: 15   0.9698
+i: 16   0.9704
+i: 17   0.9711
+i: 18   0.9717
+i: 19   0.9727
+i: 20   0.9735
+Running time:  18 (min) 20 (s)
+-------------------------------------------------------------------
+With biases, without x4
+functions =  ['tanh', 'sigmoid', 'tanh', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 625, 441]
+i: 1   0.8751
+i: 2   0.8983
+i: 3   0.9064
+i: 4   0.9114
+i: 5   0.9163
+i: 6   0.9193
+i: 7   0.9219
+i: 8   0.9236
+i: 9   0.9266
+i: 10   0.9295
+i: 11   0.9315
+i: 12   0.9333
+i: 13   0.936
+i: 14   0.9375
+i: 15   0.9397
+i: 16   0.9419
+i: 17   0.9432
+i: 18   0.9445
+i: 19   0.9457
+i: 20   0.9472
+Running time:  34 (min) 26 (s)
+-------------------------------------------------------------------
+With biases, without x4
+functions =  ['tanh', 'sigmoid', 'softmax'] 
+learning rate =  0.02
+hidden nodes =  [625, 625]
+i: 1   0.8531
+i: 2   0.8845
+i: 3   0.8959
+i: 4   0.9026
+i: 5   0.9071
+i: 6   0.9106
+i: 7   0.9145
+i: 8   0.917
+i: 9   0.9191
+i: 10   0.9205
+i: 11   0.9218
+i: 12   0.9235
+i: 13   0.9241
+i: 14   0.9256
+i: 15   0.927
+i: 16   0.9289
+i: 17   0.9296
+i: 18   0.9305
+i: 19   0.932
+i: 20   0.9333
+Running time:  24 (min) 51 (s)
