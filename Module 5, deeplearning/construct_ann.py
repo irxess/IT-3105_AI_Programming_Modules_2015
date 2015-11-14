@@ -24,27 +24,27 @@ class Construct_ANN(object):
 
 
     def build_ann(self, hidden_nodes, lr):
-        ann_weights = get_net_weights(hidden_nodes)
+        ann_weights, biases = get_net_weights(hidden_nodes)
         # functions = get_functions(len(hidden_nodes)+1)
         signals = T.fmatrix() # input signals
         lables = T.fmatrix() # input lables
 
-        p_outputs = model(signals, ann_weights, self.functions)# probability outputs given input signals
+        params = []
+        for i in range(len(biases)):
+            params.append(ann_weights[i])
+            params.append(biases[i])
+
+        p_outputs = model(signals, ann_weights, biases, self.functions)# probability outputs given input signals
         # print(ann_weights)
         max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
         
         # maximizes the value there is there and minimizes the other values
         cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, lables)) # classification metric to optimize
         # cost = T.sum((signals - p_outputs)**2)
-        updates = sgd(cost, ann_weights, lr)
+        updates = sgd(cost, params, lr)
         self.train = theano.function(inputs=[signals, lables], outputs=cost, updates=updates, allow_input_downcast=True)
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
         # self.blind_test = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
-
-        # print('functions are not given correctly!')
-        # return False
-    def blind_test(self, feature_sets):
-        pass
 
 
 def get_func_names(funcs):
@@ -56,23 +56,26 @@ def get_func_names(funcs):
         else: names.append(f.name)
     return names
 
-def model(X, weights, functions):
+def model(X, weights, biases, functions):
     h = X
     # print(functions, len(functions))
     # print(weights, len(weights))
     for i in range(len(weights)):
-      h = functions[i](T.dot(h, weights[i]))
+        if functions[i] == T.nnet.sigmoid:
+            weights[i] *= 4
+        h = functions[i](T.dot(h, weights[i])+biases[i])
     return h     
 
-# usage with relu
+# for usage with relu
 def model2(X, weights, functions):
     h = X
     outputs = []
     for i in len(weights):
-      h = functions[i](T.dot(h, weights[i]))
-      outputs.append(h)
+        h = functions[i](T.dot(h, weights[i]))
+        outputs.append(h)
     return outputs  
-
+    
+# converts lables to a 2D numpy array of 0's & 1's
 def one_hot_encoding(x,n):
     if type(x) == list:
         x = np.array(x)
@@ -91,28 +94,34 @@ def floatX(X):
     return np.asarray(X, dtype=theano.config.floatX)
 
 def init_weights(shape):
-    return theano.shared( floatX(np.random.uniform( -.1, .1, size=shape) ))
+    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
     # return theano.shared(floatX(np.random.randn(*shape) * 0.01))
+
 
 def get_net_weights(hidden_nodes):
     network_weights = []
+    biases = []
     n0 = hidden_nodes[0]
-
+    
     # append first hidden layer 
     network_weights.append(init_weights((784, n0)))
+    biases.append( init_weights(n0) )
    
     for n_next in hidden_nodes[1:]:
         network_weights.append(init_weights((n0, n_next)))
+        biases.append(init_weights(n_next))
         n0 = n_next
 
     # append output layer
     network_weights.append(init_weights((hidden_nodes[-1], 10)))
+    biases.append(init_weights(10))
+
     
     # returns weights for all layers in the network
-    return network_weights
+    return network_weights, biases
 
 # sgd : Stochastic Gradient Descent
-# lr= 0.01 for zero mean gradient, larger migth give a woese final model
+# lr= 0.01 for zero mean gradient, larger migth give a worse final model
 def sgd(cost, params, lr):
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
     updates = []
@@ -149,7 +158,7 @@ def train_on_batches(nof_training, hidden_nodes, funcs, lr, batch_size=128):
     f = open('testResults.txt', 'a')
     sys.stdout = f
     print('-------------------------------------------------------------------')
-    print('cost function = sum of squared errors')
+    print('With biases')
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
     for i in range(nof_training):
@@ -174,7 +183,8 @@ def blind_testing(feature_sets):
 # test
 # blind_testing()
 
-train_on_batches(nof_training=20, hidden_nodes=[625, 441], funcs=[T.tanh, T.nnet.sigmoid, T.nnet.softmax], lr=0.01)
+train_on_batches(nof_training=20, hidden_nodes=[625, 625, 441], \
+                funcs=[T.tanh, T.nnet.sigmoid, T.tanh, T.nnet.softmax], lr=0.02)
 
 
 
