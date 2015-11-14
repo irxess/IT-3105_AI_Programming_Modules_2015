@@ -58,3 +58,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+# Large files
+all_flat_mnist_training_cases_text.txt
