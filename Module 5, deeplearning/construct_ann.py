@@ -1,21 +1,30 @@
+"""
+construct_ann.py
+
+Created by Neshat Naderi on 05/11/15.
+
+References: http://cs231n.github.io/neural-networks-2
+"""
 import theano
 from theano import tensor as T
+from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 import numpy as np
 from mnist_basics import load_all_flat_cases, load_flat_cases
 import sys, time
-from math import ceil, floor
+from math import ceil, floor, sqrt
 
+''' Running command: THEANO_FLAGS=device=gpu,floatX=float32 python3 construct_ann.py '''
 # measure process time
 t0 = time.clock()
 stop = minutes = seconds = 0
 
-theano.config.exception_verbosity='high'
+theano.config.exception_verbosity='high' # prints out the error message and what caused the error.
 # raise Exception ('X:', X)
 
 class Construct_ANN(object):
 
     """docstring for Construct_ANN"""
-    def __init__(self, hidden_nodes, functions, lr, input_units=784):
+    def __init__(self, hidden_nodes, functions, lr, input_units=784, output_units=10):
         super(Construct_ANN, self).__init__()
         self.hidden_nodes = hidden_nodes
         self.learning_rate = lr
@@ -33,30 +42,62 @@ class Construct_ANN(object):
         for i in range(len(biases)):
             params.append(ann_weights[i])
             params.append(biases[i])
-
+        
         p_outputs = model(signals, ann_weights, biases, self.functions)# probability outputs given input signals
-        # print(ann_weights)
+        noisy = add_noise(signals, ann_weights, biases, self.functions)
+        # print('p_out dim:',(p_outputs.broadcastable))
+       
         max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
+        # print('max_predict dim:',(max_predict.broadcastable))
+        # print('params dim:' , params[0].broadcastable)
+        # print('output dim:' , p_outputs.broadcastable)
+        # print('noise dim:' , noisy.broadcastable)
+
         
         # maximizes the value there is there and minimizes the other values
-        cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, lables)) # classification metric to optimize
+        # classification metric to optimize
+        # cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, lables)) # without dropout
+        cost = T.mean(T.nnet.categorical_crossentropy(noisy, lables)) # with dropout, but doesn't work :/
+        # print('cost dim', cost.broadcastable)
+
         # cost = T.sum((signals - p_outputs)**2)
-        updates = sgd(cost, params, lr)
+        
+        # updates = sgd(cost, params, lr) # sgd:model1 without dropout
+        updates = acc_sgd(cost, params, lr) #accelerated w/ momentum
+
         self.train = theano.function(inputs=[signals, lables], outputs=cost, updates=updates, allow_input_downcast=True)
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
         # self.blind_test = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
 
+def softmax(X):
+    # numerically more stable than tensor.nnet.softmax
+    # suggested in theano doc.
+    e_x = T.exp(X - X.max(axis=1, keepdims=True))
+    return e_x / e_x.sum(axis=1, keepdims=True)
 
 def get_func_names(funcs):
     names=[]
     for f in funcs:
         if f==T.tanh: names.append('tanh')
         elif f==T.nnet.relu: names.append('relu')
-        elif f==T.nnet.softmax: names.append('softmax')
+        elif f==T.nnet.softmax or f==softmax: names.append('softmax')
         else: names.append(f.name)
     return names
 
+# sgd : Stochastic Gradient Descent
+# lr= 0.01 for zero mean gradient, larger migth give a worse final model
+def sgd(cost, params, lr, momentum=0.8):
+    grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
+    updates = []
+    # Back propagation act
+    for p, g in zip(params, grads):
+        # param_update = theano.shared(p.get_value()*0., broadcastable=p.broadcastable)
+        updates.append([p, p - g * lr])
+        # updates.append((param_update, momentum*param_update + (1. - momentum)*g)) #gradient scaling
+    return updates
+
 def model(X, weights, biases, functions):
+    # w/ sgd
     h = X
     # print(functions, len(functions))
     # print(weights, len(weights))
@@ -66,14 +107,55 @@ def model(X, weights, biases, functions):
         h = functions[i](T.dot(h, weights[i])+biases[i])
     return h     
 
-# for usage with relu
-def model2(X, weights, functions):
-    h = X
-    outputs = []
-    for i in len(weights):
-        h = functions[i](T.dot(h, weights[i]))
-        outputs.append(h)
-    return outputs  
+def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
+    # this function accelerates convergence by momentum
+    grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
+    updates = []
+    # Back propagation act
+    for p, g in zip(params, grads):
+        accumulator = theano.shared(p.get_value()*0., broadcastable=p.broadcastable)
+        acc_new = momentum * accumulator + (1 - momentum) * g ** 2
+        gradient_scaling = T.sqrt(acc_new + epsilon)
+        g = g / gradient_scaling
+        updates.append((p, p - g * lr))
+        updates.append((accumulator, acc_new))
+        # updates.append((param_update, momentum*param_update + (1. - momentum)*g)) #gradient scaling
+    return updates
+
+# with dropout regularization, not regulizes biases
+def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
+    # w/ acc_sgd & dropout
+    # h = dropout(X, p_drop_in)
+    h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0])
+     
+    # outputs = []
+    for i in range(1,len(weights)):
+        if functions[i] == T.nnet.sigmoid:
+            weights[i] *= 4
+        h = dropout(h, p_drop_out)
+        h = functions[i](T.dot(h, weights[i])+biases[i])
+        # outputs.append(h)
+    # prediction = functions[-1]( T.dot(h, weights[-1])+biases[-1] )
+    return h  
+
+# jeg får ikke denne til å funke :s
+def dropout(X, p=0.0):
+    # X: input data 
+#   # p: probability of keeping a unit active. higher = less dropout
+    if p > 0:
+        retain_prob = 1 - p
+        noise = RandomStreams().binomial(X.shape, p=retain_prob, dtype=theano.config.floatX)
+        X = X * (noise/retain_prob) # X w/noise
+    return X
+
+# def inverted_dropout(X, p=0.0):
+#     # we don't regulize biases
+#     # X: input data 
+#     # p: probability of keeping a unit active. higher = less dropout
+#     if p > 0.0:
+#         U = floatX(np.random.uniform( -.1, .1, size=X.shape) < p)/p #dropout mask
+#         X *= U #X w/noise
+#     return X 
 
 # converts lables to a 2D numpy array of 0's & 1's
 def one_hot_encoding(x,n):
@@ -93,42 +175,53 @@ def get_functions(length, funcs=[T.tanh, T.nnet.sigmoid]):
 def floatX(X):
     return np.asarray(X, dtype=theano.config.floatX)
 
-def init_weights(shape):
-    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
+#ReLU units will have a positive mean.
+def init_weights(shape, n):
+    ''' paper on this topic, Delving Deep into Rectifiers: 
+    Surpassing Human-Level Performance on ImageNet Classification by He et al.,
+    It derives an initialization specifically for ReLU neurons, 
+    reaching the conclusion that the variance of neurons 
+    in the network should be 2.0/n.'''
+    
+    # return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
+    
+    # shared variable of random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1
     # return theano.shared(floatX(np.random.randn(*shape) * 0.01))
 
+    # Initialize the weights by drawing them from a gaussian distribution with standard 
+    # deviation of sqrt(2/n), where n is the number of inputs to the neuron.
+    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape) * (sqrt(2.0/n)) )) # multiply 
+
+def init_bias(shape):
+    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
 
 def get_net_weights(hidden_nodes):
     network_weights = []
     biases = []
+    if len(hidden_nodes)==0:
+        network_weights.append(init_weights((784, 10), n=784))
+        biases.append(init_bias(10))
+        return network_weights, biases
+        
     n0 = hidden_nodes[0]
     
     # append first hidden layer 
-    network_weights.append(init_weights((784, n0)))
-    biases.append( init_weights(n0) )
+    network_weights.append(init_weights((784, n0), n=784))
+    biases.append( init_bias(n0) )
    
     for n_next in hidden_nodes[1:]:
-        network_weights.append(init_weights((n0, n_next)))
-        biases.append(init_weights(n_next))
+        network_weights.append(init_weights((n0, n_next), n=n0))
+        biases.append(init_bias(n_next))
         n0 = n_next
 
     # append output layer
-    network_weights.append(init_weights((hidden_nodes[-1], 10)))
-    biases.append(init_weights(10))
+    network_weights.append(init_weights((hidden_nodes[-1], 10), n=hidden_nodes[-1]))
+    biases.append(init_bias(10))
 
     
     # returns weights for all layers in the network
     return network_weights, biases
 
-# sgd : Stochastic Gradient Descent
-# lr= 0.01 for zero mean gradient, larger migth give a worse final model
-def sgd(cost, params, lr):
-    grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
-    updates = []
-    # Back propagation act
-    for p, g in zip(params, grads):
-        updates.append([p, p - g * lr])
-    return updates
 
 def load_cases():
     # load both training & testing cases
@@ -148,26 +241,30 @@ def load_cases():
     return training_signals, training_lables, testing_signals, testing_lables
 
 
-def train_on_batches(nof_training, hidden_nodes, funcs, lr, batch_size=128):
+def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
+    occuracy = 0
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_lables, testing_signals, testing_lables = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
     costs = []
     # Write results ans statistics to a file
     orig_stdout = sys.stdout
-    f = open('testResults.txt', 'a')
+    f = open('testResults2.txt', 'a')
     sys.stdout = f
-    print('-------------------------------------------------------------------')
-    # print('With biases, without x4')
+    print('***********************************************************************')
+    print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
-    for i in range(nof_training):
+    print ('epoch', '|   occuracy', '\n---------------------')
+
+    for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
         costs.append(cost)
-        print ('i:', i+1,' ', np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig)) )
+        occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
+        print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
     # Calculate processing time:
-    stop =  float(time.clock())
+    stop = float(time.clock())
     minutes = (stop - t0)/60
     seconds = (stop - t0)%60
     print ('Running time: ', ceil(minutes), '(min)', ceil(seconds), '(s)')
@@ -182,9 +279,7 @@ def blind_testing(feature_sets):
     # signals = np.array(cases[0])/255.0
 # test
 # blind_testing()
-
-train_on_batches(nof_training=20, hidden_nodes=[625, 625], \
-                funcs=[T.tanh, T.nnet.sigmoid, T.nnet.softmax], lr=0.02)
-
+train_on_batches(epochs=10, hidden_nodes=[625,625],\
+                funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
 
 
