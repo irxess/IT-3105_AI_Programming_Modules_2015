@@ -9,7 +9,7 @@ import theano
 from theano import tensor as T
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 import numpy as np
-from mnist_basics import load_all_flat_cases, load_flat_cases
+from mnist_basics import load_all_flat_cases, load_flat_cases, load_flat_text_cases
 import sys, time
 from math import ceil, floor, sqrt
 
@@ -107,7 +107,7 @@ def model(X, weights, biases, functions):
         h = functions[i](T.dot(h, weights[i])+biases[i])
     return h     
 
-def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
+def acc_sgd(cost, params, lr=0.001, momentum=0.995, epsilon=1e-6):
     # this function accelerates convergence by momentum
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
     updates = []
@@ -126,7 +126,7 @@ def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
 def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
     # w/ acc_sgd & dropout
     # h = dropout(X, p_drop_in)
-    h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0])
+    h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0] )
      
     # outputs = []
     for i in range(1,len(weights)):
@@ -225,8 +225,10 @@ def get_net_weights(hidden_nodes):
 
 def load_cases():
     # load both training & testing cases
-    training_cases = load_all_flat_cases('training')
-    testing_cases = load_all_flat_cases('testing')
+    # training_cases = load_all_flat_cases('training')
+    # testing_cases = load_all_flat_cases('testing')
+    training_cases = load_flat_text_cases('all_flat_mnist_training_cases_text.txt')
+    testing_cases = load_flat_text_cases('all_flat_mnist_testing_cases_text.txt')
   
     # seperate cases into images and their lables
     training_signals = np.array(training_cases[0])/255.0
@@ -255,7 +257,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
-    print ('epoch', '|   occuracy', '\n---------------------')
+    print ('epoch', '|','   occuracy', '\n---------------------')
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
