@@ -17,6 +17,7 @@ from math import ceil, floor, sqrt
 # Numpy printing options
 np.set_printoptions(threshold=1000, edgeitems=38, linewidth=159)
 
+''' Running command: THEANO_FLAGS=device=gpu,floatX=float32 python3 construct_ann.py '''
 # measure process time
 t0 = time.clock()
 stop = minutes = seconds = 0
@@ -49,6 +50,7 @@ class Construct_ANN(object):
         p_outputs = model(signals, ann_weights, biases, self.functions)# probability outputs given input signals
         noisy = add_noise(signals, ann_weights, biases, self.functions)
         # print('p_out dim:',(p_outputs.broadcastable))
+
         max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
         # print('max_predict dim:',(max_predict.broadcastable))
         # print('params dim:' , params[0].broadcastable)
@@ -68,6 +70,7 @@ class Construct_ANN(object):
 
         self.train = theano.function(inputs=[signals, lables], outputs=cost, updates=updates, allow_input_downcast=True)
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
+
 
     # load new cases
     def blind_test(self, test_input):
@@ -162,7 +165,7 @@ def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
 # jeg får ikke denne til å funke :s
 def dropout(X, p=0.0):
     # X: input data
-#   # p: probability of keeping a unit active. higher = less dropout
+    # p: probability of keeping a unit active. higher = less dropout
     if p > 0:
         retain_prob = 1 - p
         noise = RandomStreams().binomial(X.shape, p=retain_prob, dtype=theano.config.floatX)
@@ -239,7 +242,6 @@ def get_net_weights(hidden_nodes):
     network_weights.append(init_weights((hidden_nodes[-1], 10), n=hidden_nodes[-1]))
     biases.append(init_bias(10))
 
-
     # returns weights for all layers in the network
     return network_weights, biases
 
@@ -297,6 +299,9 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     f.close()
     return ann
 
+train_on_batches(epochs=10, hidden_nodes=[625,625],\
+                funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
+>>>>>>> 72f0af522af715fd952936197b3d18c67fd300e2
 
 # train 20 times, 2 hidden layers with 625 nodes,
 trained_ann = train_on_batches(epochs=20, hidden_nodes=[625, 625], \
