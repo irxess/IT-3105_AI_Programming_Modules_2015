@@ -72,7 +72,6 @@ class Construct_ANN(object):
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
 
 
-    # load new cases
     def blind_test(self, test_input):
         test_cases = np.array(test_input)/255.0
         test_count = len(test_input)
@@ -92,7 +91,9 @@ class Construct_ANN(object):
         # cases = np.array(load_cases(feature_sets))/255.0
         # signals = np.array(cases[0])/255.0
         # return predictions[:pred_index]
-        return predictions
+        print(len(predictions))
+        # return predictions
+        return predictions[:pred_index]
 
 def softmax(X):
     # numerically more stable than tensor.nnet.softmax
@@ -301,10 +302,9 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
 
 train_on_batches(epochs=10, hidden_nodes=[625,625],\
                 funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
->>>>>>> 72f0af522af715fd952936197b3d18c67fd300e2
 
 # train 20 times, 2 hidden layers with 625 nodes,
-trained_ann = train_on_batches(epochs=20, hidden_nodes=[625, 625], \
+trained_ann = train_on_batches(epochs=1, hidden_nodes=[625, 625], \
                 funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
 
 minor_demo(trained_ann)

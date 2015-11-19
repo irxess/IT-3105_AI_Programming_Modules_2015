@@ -61,4 +61,4 @@ target/
 
 
 # Large files
-all_flat_mnist_training_cases_text.txt
+all_flat_mnist_*

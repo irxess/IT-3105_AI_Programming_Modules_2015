@@ -191,6 +191,9 @@ def minor_demo(ann,ignore=0):
         images,_ = cases
         predictions = ann.blind_test(images)  # Students must write THIS method for their ANN
         print(predictions)
+        print(type(predictions))
+        print(len(predictions))
+        # sys.exit(0)
         return score_it(predictions,k=k)
 
     demo100 = load_flat_text_cases('demo100_text.txt')
