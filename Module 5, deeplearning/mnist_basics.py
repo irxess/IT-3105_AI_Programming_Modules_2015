@@ -1,13 +1,13 @@
-# __author__ = 'keithd'
+__author__ = 'keithd'
+
 # Copied (and modified) from http://g.sweyla.com/blog/2012/mnist-numpy/, which is
 # adapted from http://abel.ee.ucla.edu/cvxopt/_downloads/mnist.py
 
-import os, struct
+import sys, os, struct
 import time
 from array import array as pyarray
 import matplotlib.pyplot as pyplot
-import pickle
-import numpy
+import numpy, pickle
 import requests
 
 """
@@ -32,8 +32,8 @@ import requests
     """
 
 # Set this to the complete path to your mnist files.
-# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, Deep learning/basics/"
-__mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics/"
+# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics/"
+# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015//basics/"
 
 
 # The reduce function was removed in Python 3.0, so just use this handmade version.
@@ -43,9 +43,31 @@ def kd_reduce(func,seq):
         res = func(res,item)
     return res
 
+# Set this to the complete path to your mnist files.
+## __mnist_path__ = "path/to/all/your/mnist/files"
+__mnist_path__ ='./basics'
+
+# The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
+# subsets of the entire training or test sets, as determined by the 'digits'
+# argument.  For example, when digits = [5,8], this returns all and only the images of 5's and 8's.
+
+# Note that the 'path' argument is the complete file path to the directory in which you
+# store the 4 -ubyte files.  To test if this works, load this module and then type: "show_avg_digit(3)", which
+# should produce a picture of the "average 3" in the training set.
+
+# Also note that the training and test data are divided into two pairs of files.  Each pair contains the
+# images and the labels, each in a separate file.  The functions in this file maintain that same distinction, always
+# dealing with separate lists (or arrays) of images or labels.  Your own code may package a case into a combination of a feature
+# vector and a label, but that is not done here.
+
+# The representations created by load_mnist are:
+# 1) images (i.e. features) - A 3-dimensional numpy array, where the first dimension is the index of the image in the
+# subset, and the remaining two dimensions are those of the rows and columns of each image.
+# 2) labels - a 2-dimensional numpy array whose first dimension is the number of images in subset and whose second
+# dimension is always 1.   Check it out by calling and examining the results.
 
 def load_mnist(dataset="training", digits=numpy.arange(10), path= __mnist_path__):
-    
+
     if dataset == "training":
         fname_img = os.path.join(path, 'train-images.idx3-ubyte')
         fname_lbl = os.path.join(path, 'train-labels.idx1-ubyte')
@@ -64,16 +86,16 @@ def load_mnist(dataset="training", digits=numpy.arange(10), path= __mnist_path__
     magic_nr, size, rows, cols = struct.unpack(">IIII", fimg.read(16))
     img = pyarray("B", fimg.read())
     fimg.close()
-    
+
     ind = [ k for k in range(size) if lbl[k] in digits ]
     N = len(ind)
-    
+
     images = numpy.zeros((N, rows, cols), dtype=numpy.uint8)
-    labels = numpy.zeros((N, 1), dtype=numpy.uint8)
+    labels = numpy.zeros((N, 1), dtype=numpy.int8)
     for i in range(len(ind)):
         images[i] = numpy.array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
         labels[i] = lbl[ind[i]]
-    images = images / numpy.float32(255) #nomalizes the images. it divides each pixel value to 255 to get values between [0,1]
+
     return images, labels
 
 # *****   Viewing images *******
@@ -108,15 +130,15 @@ def reconstruct_image(flat_list,dims=(28,28)):
 # they are assumed to have the same format as that returned by load_mnist:  (list-of-images, list-of-labels)
 
 def gen_flat_cases(digits=numpy.arange(10),type='training',cases=None):
-    images, labels = cases if cases else load_mnist(type, digits=digits)
-    i2 = list(map(flatten_image,images))
-    l2 = kd_reduce((lambda a, b: a + b), labels.tolist())
-    return i2/numpy.float32(255), l2
+     images, labels = cases if cases else load_mnist(type, digits=digits)
+     i2 = list(map(flatten_image,images))
+     l2 = kd_reduce((lambda a, b: a + b), labels.tolist())
+     return i2, l2
 
 def reconstruct_flat_cases(cases,dims=(28,28),nested=True):
     labels = numpy.array([[label] for label in cases[1]]) if nested else cases[1]
     images = [reconstruct_image(i,dims=dims) for i in cases[0]] if nested else cases[0]
-    return images/numpy.float32(255),labels
+    return images,labels
 
 # ***** PICKLING FLAT CASES ********
 # This uses pickle to dump cases to and retrieve cases from a binary file.
@@ -138,9 +160,8 @@ def load_flat_cases(filename,dir=__mnist_path__):
 def dump_cases(filename,digits=numpy.arange(10),type='training',dir=__mnist_path__,
                cases=None,labeled=True):
     images, labels = cases if cases else load_mnist(type, digits=digits)
-    images = images/numpy.float32(255)
     fcases = gen_flat_cases(cases=[images,labels])
-    dump_flat_cases(filename, fcases,dir=dir,labeled=labeled)
+    dump_flat_cases(filename,fcases,dir=dir,labeled=labeled)
 
 # This loads any collection of flat MNIST cases from a file.
 def load_cases(filename,dir=__mnist_path__,nested=True):
@@ -194,6 +215,8 @@ def minor_demo(ann,ignore=0):
     def test_it(ann,cases,k=4):
         images,_ = cases
         predictions = ann.blind_test(images)  # Students must write THIS method for their ANN
+
+        print(predictions)
         return score_it(predictions,k=k)
 
     demo100 = load_flat_text_cases('demo100_text.txt')
@@ -203,7 +226,5 @@ def minor_demo(ann,ignore=0):
     print('Training set: \n ',test_it(ann,training_cases,4))
     print('Testing set:\n ',test_it(ann,test_cases,4))
     print('Demo 100 set: \n ',test_it(ann,demo100,8))
-
-
 
 
