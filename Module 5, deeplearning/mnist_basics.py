@@ -14,16 +14,16 @@ import requests
     The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
     subsets of the entire training or test sets, as determined by the 'digits'
     argument.  For example, when digits = [5,8], this returns all and only the images of 5's and 8's.
-    
+
     Note that the 'path' argument is the complete file path to the directory in which you
     store the 4 -ubyte files.  To test if this works, load this module and then type: "show_avg_digit(3)", which
     should produce a picture of the "average 3" in the training set.
-    
+
     Also note that the training and test data are divided into two pairs of files.  Each pair contains the
     images and the labels, each in a separate file.  The functions in this file maintain that same distinction, always
     dealing with separate lists (or arrays) of images or labels.  Your own code may package a case into a combination of a feature
     vector and a label, but that is not done here.
-    
+
     The representations created by load_mnist are:
     1) images (i.e. features) - A 3-dimensional numpy array, where the first dimension is the index of the image in the
     subset, and the remaining two dimensions are those of the rows and columns of each image.
@@ -45,7 +45,7 @@ def kd_reduce(func,seq):
 
 # Set this to the complete path to your mnist files.
 ## __mnist_path__ = "path/to/all/your/mnist/files"
-__mnist_path__ ='./basics'
+__mnist_path__ ='./basics/'
 
 # The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
 # subsets of the entire training or test sets, as determined by the 'digits'
@@ -214,12 +214,7 @@ def minor_demo(ann,ignore=0):
 
     def test_it(ann,cases,k=4):
         images,_ = cases
-        predictions = ann.blind_test(images)  # Students must write THIS method for their ANN
-
-        print(predictions)
-        print(type(predictions))
-        print(len(predictions))
-        # sys.exit(0)
+        predictions = ann.blind_test(images)
         return score_it(predictions,k=k)
 
     demo100 = load_flat_text_cases('demo100_text.txt')
@@ -229,5 +224,3 @@ def minor_demo(ann,ignore=0):
     print('Training set: \n ',test_it(ann,training_cases,4))
     print('Testing set:\n ',test_it(ann,test_cases,4))
     print('Demo 100 set: \n ',test_it(ann,demo100,8))
-
-

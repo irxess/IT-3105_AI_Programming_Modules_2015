@@ -75,23 +75,14 @@ class Construct_ANN(object):
     def blind_test(self, test_input):
         test_cases = np.array(test_input)/255.0
         test_count = len(test_input)
-        predictions = np.empty(shape=[test_count], dtype=int)
+        predictions = []
         pred_index = 0
 
-        print(test_count)
-        # for start, end in zip( range(0,test_count, 128), range(128,test_count, 128)):
-            # print(start, end)
-            # prediction = self.predict(test_cases[start:end])
         prediction = self.predict(test_cases)
         for ele in prediction:
-            predictions[pred_index] = int(ele)
+            predictions.append( int(ele) )
             pred_index += 1
-            # np.append( predictions, prediction, axis=0 )
 
-        # cases = np.array(load_cases(feature_sets))/255.0
-        # signals = np.array(cases[0])/255.0
-        # return predictions[:pred_index]
-        print(len(predictions))
         # return predictions
         return predictions[:pred_index]
 
