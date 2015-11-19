@@ -106,7 +106,7 @@ def model(X, weights, biases, functions):
             weights[i] *= 4
         h = functions[i](T.dot(h, weights[i])+biases[i])
     return h     
-
+# ref: http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 def acc_sgd(cost, params, lr=0.001, momentum=0.995, epsilon=1e-6):
     # this function accelerates convergence by momentum
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
@@ -182,12 +182,6 @@ def init_weights(shape, n):
     It derives an initialization specifically for ReLU neurons, 
     reaching the conclusion that the variance of neurons 
     in the network should be 2.0/n.'''
-    
-    # return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
-    
-    # shared variable of random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1
-    # return theano.shared(floatX(np.random.randn(*shape) * 0.01))
-
     # Initialize the weights by drawing them from a gaussian distribution with standard 
     # deviation of sqrt(2/n), where n is the number of inputs to the neuron.
     return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape) * (sqrt(2.0/n)) )) # multiply 
@@ -244,11 +238,10 @@ def load_cases():
 
 
 def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
-    occuracy = 0
+
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_lables, testing_signals, testing_lables = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
-    costs = []
     # Write results ans statistics to a file
     orig_stdout = sys.stdout
     f = open('testResults2.txt', 'a')
@@ -262,7 +255,6 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
-        costs.append(cost)
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
         print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
     # Calculate processing time:
@@ -274,14 +266,6 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     f.close()
     return costs
 
-### TODO ###
-# implement correct blind_test, or ask??
-def blind_testing(feature_sets):
-    cases = np.array(load_cases(feature_sets))/255.0
-    # signals = np.array(cases[0])/255.0
-# test
-# blind_testing()
 train_on_batches(epochs=10, hidden_nodes=[625,625],\
                 funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
-
 
