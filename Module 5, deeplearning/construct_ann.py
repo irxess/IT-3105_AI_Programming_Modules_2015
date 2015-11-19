@@ -52,10 +52,6 @@ class Construct_ANN(object):
         # print('p_out dim:',(p_outputs.broadcastable))
 
         max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
-        # print('max_predict dim:',(max_predict.broadcastable))
-        # print('params dim:' , params[0].broadcastable)
-        # print('output dim:' , p_outputs.broadcastable)
-        # print('noise dim:' , noisy.broadcastable)
 
         # maximizes the value there is there and minimizes the other values
         # classification metric to optimize
@@ -76,7 +72,7 @@ class Construct_ANN(object):
     def blind_test(self, test_input):
         test_cases = np.array(test_input)/255.0
         test_count = len(test_input)
-        predictions = np.empty(shape=[test_count], dtype=int)
+        predictions = np.empty(shape=test_count, dtype=int)
         pred_index = 0
 
         print(test_count)
