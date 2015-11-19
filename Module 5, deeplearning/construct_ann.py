@@ -132,6 +132,7 @@ def model(X, weights, biases, functions):
         h = functions[i](T.dot(h, weights[i])+biases[i])
     return h
 
+# ref: http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
     # this function accelerates convergence by momentum
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
@@ -151,8 +152,7 @@ def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
 def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
     # w/ acc_sgd & dropout
     # h = dropout(X, p_drop_in)
-    h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0])
-
+    h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0] )
     # outputs = []
     for i in range(1,len(weights)):
         if functions[i] == T.nnet.sigmoid:
@@ -163,7 +163,6 @@ def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
     # prediction = functions[-1]( T.dot(h, weights[-1])+biases[-1] )
     return h
 
-# jeg får ikke denne til å funke :s
 def dropout(X, p=0.0):
     # X: input data
     # p: probability of keeping a unit active. higher = less dropout
@@ -172,15 +171,6 @@ def dropout(X, p=0.0):
         noise = RandomStreams().binomial(X.shape, p=retain_prob, dtype=theano.config.floatX)
         X = X * (noise/retain_prob) # X w/noise
     return X
-
-# def inverted_dropout(X, p=0.0):
-#     # we don't regulize biases
-#     # X: input data
-#     # p: probability of keeping a unit active. higher = less dropout
-#     if p > 0.0:
-#         U = floatX(np.random.uniform( -.1, .1, size=X.shape) < p)/p #dropout mask
-#         X *= U #X w/noise
-#     return X
 
 # converts lables to a 2D numpy array of 0's & 1's
 def one_hot_encoding(x,n):
@@ -207,15 +197,12 @@ def init_weights(shape, n):
     It derives an initialization specifically for ReLU neurons,
     reaching the conclusion that the variance of neurons
     in the network should be 2.0/n.'''
-
     # return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
-
     # shared variable of random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1
     # return theano.shared(floatX(np.random.randn(*shape) * 0.01))
-
     # Initialize the weights by drawing them from a gaussian distribution with standard
     # deviation of sqrt(2/n), where n is the number of inputs to the neuron.
-    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape) * (sqrt(2.0/n)) )) # multiply
+    return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape) * (sqrt(2.0/n)) ))
 
 def init_bias(shape):
     return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
@@ -249,9 +236,10 @@ def get_net_weights(hidden_nodes):
 
 def load_cases():
     # load both training & testing cases
-    training_cases = load_all_flat_cases('training')
-    testing_cases = load_all_flat_cases('testing')
-
+    # training_cases = load_all_flat_cases('training')
+    # testing_cases = load_all_flat_cases('testing')
+    training_cases = load_flat_text_cases('all_flat_mnist_training_cases_text.txt')
+    testing_cases = load_flat_text_cases('all_flat_mnist_testing_cases_text.txt')
     # seperate cases into images and their lables
     training_signals = np.array(training_cases[0])/255.0
     training_lables = training_cases[1]
@@ -266,7 +254,7 @@ def load_cases():
 
 
 def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
-    occuracy = 0
+
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_lables, testing_signals, testing_lables = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
@@ -278,7 +266,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
-    print ('epoch', '|   occuracy', '\n---------------------')
+    print ('epoch', '|','   occuracy', '\n---------------------')
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
@@ -300,11 +288,9 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     f.close()
     return ann
 
-train_on_batches(epochs=10, hidden_nodes=[625,625],\
-                funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
 
 # train 20 times, 2 hidden layers with 625 nodes,
-trained_ann = train_on_batches(epochs=1, hidden_nodes=[625, 625], \
+trained_ann = train_on_batches(epochs=10, hidden_nodes=[625, 625], \
                 funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
 
 minor_demo(trained_ann)

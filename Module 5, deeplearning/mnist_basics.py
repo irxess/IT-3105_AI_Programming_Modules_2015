@@ -7,10 +7,34 @@ import sys, os, struct
 import time
 from array import array as pyarray
 import matplotlib.pyplot as pyplot
-import numpy
-import pickle
+import numpy, pickle
 import requests
-# import construct_ann as ann
+
+"""
+    The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
+    subsets of the entire training or test sets, as determined by the 'digits'
+    argument.  For example, when digits = [5,8], this returns all and only the images of 5's and 8's.
+    
+    Note that the 'path' argument is the complete file path to the directory in which you
+    store the 4 -ubyte files.  To test if this works, load this module and then type: "show_avg_digit(3)", which
+    should produce a picture of the "average 3" in the training set.
+    
+    Also note that the training and test data are divided into two pairs of files.  Each pair contains the
+    images and the labels, each in a separate file.  The functions in this file maintain that same distinction, always
+    dealing with separate lists (or arrays) of images or labels.  Your own code may package a case into a combination of a feature
+    vector and a label, but that is not done here.
+    
+    The representations created by load_mnist are:
+    1) images (i.e. features) - A 3-dimensional numpy array, where the first dimension is the index of the image in the
+    subset, and the remaining two dimensions are those of the rows and columns of each image.
+    2) labels - a 2-dimensional numpy array whose first dimension is the number of images in subset and whose second
+    dimension is always 1.   Check it out by calling and examining the results.
+    """
+
+# Set this to the complete path to your mnist files.
+# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015/Module 5, deeplearning/basics/"
+# __mnist_path__ = "/Users/neshat/Documents/NTNU/Datateknikk/AIProg/IT-3105_AI_Programming_Modules_2015//basics/"
+
 
 # The reduce function was removed in Python 3.0, so just use this handmade version.
 def kd_reduce(func,seq):
@@ -21,7 +45,7 @@ def kd_reduce(func,seq):
 
 # Set this to the complete path to your mnist files.
 ## __mnist_path__ = "path/to/all/your/mnist/files"
-__mnist_path__ = "./basics/"
+__mnist_path__ ='./basics'
 
 # The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
 # subsets of the entire training or test sets, as determined by the 'digits'
@@ -182,6 +206,7 @@ def load_flat_text_cases(filename, dir=__mnist_path__):
 # similar during the demo session.
 
 def minor_demo(ann,ignore=0):
+
     def score_it(classification,k=4):
         params = {"results": str(ignore) + " " + str(classification), "raw": "1","k": k}
         resp = requests.post('http://folk.ntnu.no/valerijf/5/', data=params)
@@ -190,6 +215,7 @@ def minor_demo(ann,ignore=0):
     def test_it(ann,cases,k=4):
         images,_ = cases
         predictions = ann.blind_test(images)  # Students must write THIS method for their ANN
+
         print(predictions)
         print(type(predictions))
         print(len(predictions))
@@ -203,3 +229,5 @@ def minor_demo(ann,ignore=0):
     print('Training set: \n ',test_it(ann,training_cases,4))
     print('Testing set:\n ',test_it(ann,test_cases,4))
     print('Demo 100 set: \n ',test_it(ann,demo100,8))
+
+
