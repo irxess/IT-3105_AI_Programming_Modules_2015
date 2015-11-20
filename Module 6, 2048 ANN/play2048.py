@@ -1,7 +1,12 @@
+import sys
+sys.path.append("../Module 4, 2048/")
 import boardcontroller as bc
+from copy import copy
+import random
+import time
 
 def playRandom():
-    board = new boardcontroller()
+    board = bc.BoardController()
     while True:
         moveRandom(board)
         board.window.update_view(board.board)
@@ -26,3 +31,11 @@ def moveRandom(b):
 
 def playANN(functions, layer_sizes, learning_rate):
     pass
+
+if __name__ == "__main__":
+    if (sys.argv[1] == 'ai'):
+        playANN( sys.argv[2], sys.argv[3], sys.argv[4])
+    elif (sys.argv[1] == 'random'):
+        playRandom()
+    else:
+        print("Argument one should be 'ai' or 'random'")

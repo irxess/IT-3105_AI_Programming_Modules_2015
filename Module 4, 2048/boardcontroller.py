@@ -1,8 +1,12 @@
 import visuals
 import random
 from copy import copy
-from expectimax import *
-import numpy as np
+import sys
+if (sys.version_info < (3, 0)):
+    from expectimax import *
+else:
+    xrange = range
+
 
 class BoardController():
     def __init__(self):
@@ -158,7 +162,7 @@ def slideRight(board):
     maxMerging = highestMerg=0
     maxTile = max(board)
     for i in xrange(3):
-        for pos in [0,1,2,4,5,6,8,9,10,12,13,14]:
+        for pos in [2,1,0,6,5,4,10,9,8,14,13,12]:
             if board[pos+1] == 0:
                 board[pos+1] = board[pos]
                 board[pos] = 0
