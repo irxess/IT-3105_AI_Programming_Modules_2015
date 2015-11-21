@@ -10,6 +10,8 @@ import operator
 directions = ('up', 'down', 'left', 'right')
 
 def calculate_heuristics(board):
+    # create a 16-length array, containing all results of other heuristic functions
+    # should be a numpy array
     pass
 
 def edgeScore(grid):

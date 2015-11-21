@@ -7,6 +7,9 @@ from copy import copy
 import random
 import time
 import pickle
+import theano
+from theano import tensor as T
+from heuristic import calculate_heuristics
 
 def playRandom():
     board = bc.BoardController()
@@ -76,7 +79,8 @@ def game_over(b):
 
 if __name__ == "__main__":
     if (sys.argv[1] == 'ai'):
-        playANN( sys.argv[2], sys.argv[3], sys.argv[4])
+        # playANN( sys.argv[2], sys.argv[3], sys.argv[4])
+        playANN([T.nnet.relu, T.nnet.softmax], [40], 0.02)
     elif (sys.argv[1] == 'random'):
         playRandom()
     else:
