@@ -9,6 +9,9 @@ import operator
 
 directions = ('up', 'down', 'left', 'right')
 
+def calculate_heuristics(board):
+    pass
+
 def edgeScore(grid):
     scoreCorner = 0
     scoreEdge = 0
