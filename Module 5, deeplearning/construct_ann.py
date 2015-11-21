@@ -40,7 +40,7 @@ class Construct_ANN(object):
         ann_weights, biases = get_net_weights(hidden_nodes)
         # functions = get_functions(len(hidden_nodes)+1)
         signals = T.fmatrix() # input signals
-        lables = T.fmatrix() # input lables
+        labels = T.fmatrix() # input labels
 
         params = []
         for i in range(len(biases)):
@@ -59,8 +59,8 @@ class Construct_ANN(object):
 
         # maximizes the value there is there and minimizes the other values
         # classification metric to optimize
-        # cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, lables)) # without dropout
-        cost = T.mean(T.nnet.categorical_crossentropy(noisy, lables)) # with dropout, but doesn't work :/
+        # cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # without dropout
+        cost = T.mean(T.nnet.categorical_crossentropy(noisy, labels)) # with dropout, but doesn't work :/
         # print('cost dim', cost.broadcastable)
 
         # cost = T.sum((signals - p_outputs)**2)
@@ -68,7 +68,7 @@ class Construct_ANN(object):
         # updates = sgd(cost, params, lr) # sgd:model1 without dropout
         updates = acc_sgd(cost, params, lr) #accelerated w/ momentum
 
-        self.train = theano.function(inputs=[signals, lables], outputs=cost, updates=updates, allow_input_downcast=True)
+        self.train = theano.function(inputs=[signals, labels], outputs=cost, updates=updates, allow_input_downcast=True)
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
 
 
@@ -163,7 +163,7 @@ def dropout(X, p=0.0):
         X = X * (noise/retain_prob) # X w/noise
     return X
 
-# converts lables to a 2D numpy array of 0's & 1's
+# converts labels to a 2D numpy array of 0's & 1's
 def one_hot_encoding(x,n):
     if type(x) == list:
         x = np.array(x)
@@ -231,57 +231,61 @@ def load_cases():
     # testing_cases = load_all_flat_cases('testing')
     training_cases = load_flat_text_cases('all_flat_mnist_training_cases_text.txt')
     testing_cases = load_flat_text_cases('all_flat_mnist_testing_cases_text.txt')
-    # seperate cases into images and their lables
+    # seperate cases into images and their labels
     training_signals = np.array(training_cases[0])/255.0
-    training_lables = training_cases[1]
+    training_labels = training_cases[1]
     testing_signals  = np.array(testing_cases[0])/255.0
-    testing_lables  = testing_cases[1]
+    testing_labels  = testing_cases[1]
 
     # Modify to 2D(lable arrays)numpy arrays of zeros & ones of length 10
-    testing_lables  = one_hot_encoding(testing_lables, 10)
-    training_lables = one_hot_encoding(training_lables, 10)
+    testing_labels  = one_hot_encoding(testing_labels, 10)
+    training_labels = one_hot_encoding(training_labels, 10)
 
-    return training_signals, training_lables, testing_signals, testing_lables
+    return training_signals, training_labels, testing_signals, testing_labels
 
 
 def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
-
     ann = Construct_ANN(hidden_nodes, funcs, lr)
-    # traning_signals, training_lables, testing_signals, testing_lables = load_cases()
+    # traning_signals, training_labels, testing_signals, testing_labels = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
     # Write results ans statistics to a file
-    orig_stdout = sys.stdout
-    f = open('testResults2.txt', 'a')
-    sys.stdout = f
-    print('***********************************************************************')
-    print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
-    print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
-    print('hidden nodes = ',ann.hidden_nodes)
-    print ('epoch', '|','   occuracy', '\n---------------------')
+    # orig_stdout = sys.stdout
+    # f = open('testResults2.txt', 'a')
+    # sys.stdout = f
+    # print('***********************************************************************')
+    # print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
+    # print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
+    # print('hidden nodes = ',ann.hidden_nodes)
+    # print ('epoch', '|','   occuracy', '\n---------------------')
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
+            print(tr_sig[start:end])
+            print(start, end, type(tr_sig), type(tr_lbl))
+            print(tr_lbl[start:end])
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
+            sys.exit(0)
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
-        print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
+        # print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
-    print(sum(answers==predictions), 'out of', total, 'correct.')
+    # print(sum(answers==predictions), 'out of', total, 'correct.')
 
     # Calculate processing time:
     stop = float(time.clock())
     minutes = (stop - t0)/60
     seconds = (stop - t0)%60
-    print ('Running time: ', ceil(minutes), '(min)', ceil(seconds), '(s)')
+    # print ('Running time: ', ceil(minutes), '(min)', ceil(seconds), '(s)')
 
-    sys.stdout = orig_stdout
-    f.close()
+    # sys.stdout = orig_stdout
+    # f.close()
     return ann
 
+# only run this if we're not being imported
+if __name__ == "__main__":
+    # train 20 times, 2 hidden layers with 625 nodes,
+    trained_ann = train_on_batches(epochs=10, hidden_nodes=[625, 625], \
+                    funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
 
-# train 20 times, 2 hidden layers with 625 nodes,
-trained_ann = train_on_batches(epochs=10, hidden_nodes=[625, 625], \
-                funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
-
-minor_demo(trained_ann)
+    minor_demo(trained_ann)
