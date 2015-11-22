@@ -1,14 +1,17 @@
 import visuals
 import random
 from copy import copy
-from expectimax import *
-import numpy as np
+import sys
+if (sys.version_info < (3, 0)):
+    from expectimax import *
+else:
+    xrange = range
+
 
 class BoardController():
     def __init__(self):
         random.seed()
         self.board = [0] * 4*4
-        #self.board = np.zeros([4, 4], dtype=int)
         self.window = visuals.GameWindow()
         spawnRandomTile(self.board)
         self.window.update_view(self.board)
@@ -29,10 +32,6 @@ class BoardController():
         Get the value of a position of the board.
         0,0 is the top left corner.
         """
-        #if x < 4 and x >= 0:
-        #    if y < 4 and y >= 0:
-
-        #        return self.board[ x*4 + y ]
         return self.board[x * 4 + y]
 
 
@@ -41,10 +40,6 @@ class BoardController():
         Update the value of a position of the board.
         0,0 is the top left corner.
         """
-        #if x < 4 and x >= 0:
-        #    if y < 4 and y >= 0:
-        #        position = x*4 + y
-        #        self.board[ position ] = v
         self.board[x * 4 + y] = v
 
 
@@ -158,7 +153,7 @@ def slideRight(board):
     maxMerging = highestMerg=0
     maxTile = max(board)
     for i in xrange(3):
-        for pos in [0,1,2,4,5,6,8,9,10,12,13,14]:
+        for pos in [2,1,0,6,5,4,10,9,8,14,13,12]:
             if board[pos+1] == 0:
                 board[pos+1] = board[pos]
                 board[pos] = 0
