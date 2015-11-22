@@ -68,27 +68,20 @@ class Construct_ANN(object):
         self.predict = theano.function(inputs=[signals], outputs=max_predict, allow_input_downcast=True)
 
 
-    # load new cases
     def blind_test(self, test_input):
         test_cases = np.array(test_input)/255.0
         test_count = len(test_input)
-        predictions = np.empty(shape=test_count, dtype=int)
+
+        predictions = []
         pred_index = 0
 
-        print(test_count)
-        # for start, end in zip( range(0,test_count, 128), range(128,test_count, 128)):
-            # print(start, end)
-            # prediction = self.predict(test_cases[start:end])
         prediction = self.predict(test_cases)
         for ele in prediction:
-            predictions[pred_index] = int(ele)
+            predictions.append( int(ele) )
             pred_index += 1
-            # np.append( predictions, prediction, axis=0 )
 
-        # cases = np.array(load_cases(feature_sets))/255.0
-        # signals = np.array(cases[0])/255.0
-        # return predictions[:pred_index]
-        return predictions
+        # return predictions
+        return predictions[:pred_index]
 
 def softmax(X):
     # numerically more stable than tensor.nnet.softmax
@@ -125,7 +118,7 @@ def model(X, weights, biases, functions):
         if functions[i] == T.nnet.sigmoid:
             weights[i] *= 4
         h = functions[i](T.dot(h, weights[i])+biases[i])
-    return h     
+    return h
 
 # ref: http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
@@ -262,12 +255,18 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print('hidden nodes = ',ann.hidden_nodes)
     print ('epoch', '|','   occuracy', '\n---------------------')
+    occuracy=0
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
-        print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
+        # if occuracy > occ:
+        #     i -= 1
+        # else:
+        #     occuracy = occ
+            # np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
+        print (i+1,'       ', "{:.3f}".format(occuracy*100),'%' )
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
