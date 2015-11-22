@@ -1,18 +1,49 @@
 from abc import ABCMeta, abstractmethod
 import boardcontroller as bc
 from copy import deepcopy, copy
-import random
+import sys, random
 from math import *
 import numpy as np
 import settings as s
 import operator
+if (sys.version_info > (3, 0)):
+    xrange = range
 
 directions = ('up', 'down', 'left', 'right')
 
-def calculate_heuristics(board):
-    # create a 16-length array, containing all results of other heuristic functions
+def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
+    # create a 14-length array, containing all results of other heuristic functions
     # should be a numpy array
-    pass
+    # x = np.array()
+    # lbls = np.zeros((len(x),n))
+    # lbls[np.arange(len(x)),x] = 1
+    h_index = 0
+
+    heuristics = np.empty(14, dtype=float)
+    heuristics[h_index] = edgeScore(board)
+    h_index += 1
+
+    merges = mergeScore(mergeCount)
+    for i in range(len(merges)):
+        heuristics[h_index] = merges[i]
+        h_index += 1
+
+    openCells = openCellScore(board)
+    for i in range(len(openCells)):
+        heuristics[h_index] = openCells[i]
+        h_index += 1
+
+    heuristics[h_index] = gradient(board)
+    h_index += 1
+
+    snakeLength = snake(board)
+    for i in range(len(snakeLength)):
+        heuristics[h_index] = snakeLength[i]
+        h_index += 1
+
+    heuristics[h_index] = nearness(board)
+
+    return heuristics
 
 def edgeScore(grid):
     scoreCorner = 0
@@ -23,21 +54,21 @@ def edgeScore(grid):
     edge = frozenset(grid).difference(center) # edge cells = (all cells) - (center cells)
     maxTile = max(grid)
     if maxTile in (grid[i] for i in corner):
-        return 1 # highest tile in corner is good
+        return 1.0 # highest tile in corner is good
     if maxTile in (grid[i] for i in edge):
         return 0.4 # highest tile on edge is not that bad
     else:
-        return 0
+        return 0.0
 
 def mergeScore(nofMerges):
     if nofMerges > 5:
-        return [1, 1, 1]
+        return [1., 1., 1.]
     elif nofMerges > 3:
-        return [1, 1, 0]
+        return [1., 1., 0.]
     elif nofMerges > 0:
-        return [1, 0, 0]
+        return [1., 0., 0.]
     else:
-        return [0, 0, 0]
+        return [0., 0., 0.]
 
 def openCellScore(board):
     count = 0
@@ -74,7 +105,10 @@ def gradient(board):
         b = rotateLeft(b)
 
     # 2.6 is awesome, 1 is bad
-    return maxScore/2.8
+    r = maxScore/2.8
+    if r > 1:
+        r = 1.
+    return r
 
 # def smoothness(board):
 #     score = 0
@@ -136,15 +170,15 @@ def snake(board):
 
         b = rotateLeft(b)
     if score > 6:
-        return [1, 1, 1, 1]
+        return [1., 1., 1., 1.]
     elif score > 4:
-        return [1, 1, 1, 0]
+        return [1., 1., 1., 0.]
     elif score > 3:
-        return [1, 1, 0, 0]
+        return [1., 1., 0., 0.]
     elif score > 2:
-        return [1, 0, 0, 0]
+        return [1., 0., 0., 0.]
     else:
-        return [0, 0, 0, 0]
+        return [0., 0., 0., 0.]
     # x =  maxScore/504.0 # 504 is the max score possible
     # return 2**x - 1
 

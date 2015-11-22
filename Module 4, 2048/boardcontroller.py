@@ -12,7 +12,6 @@ class BoardController():
     def __init__(self):
         random.seed()
         self.board = [0] * 4*4
-        #self.board = np.zeros([4, 4], dtype=int)
         self.window = visuals.GameWindow()
         spawnRandomTile(self.board)
         self.window.update_view(self.board)
@@ -33,10 +32,6 @@ class BoardController():
         Get the value of a position of the board.
         0,0 is the top left corner.
         """
-        #if x < 4 and x >= 0:
-        #    if y < 4 and y >= 0:
-
-        #        return self.board[ x*4 + y ]
         return self.board[x * 4 + y]
 
 
@@ -45,10 +40,6 @@ class BoardController():
         Update the value of a position of the board.
         0,0 is the top left corner.
         """
-        #if x < 4 and x >= 0:
-        #    if y < 4 and y >= 0:
-        #        position = x*4 + y
-        #        self.board[ position ] = v
         self.board[x * 4 + y] = v
 
 

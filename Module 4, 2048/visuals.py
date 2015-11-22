@@ -37,10 +37,8 @@ BACKGROUND_COLOR_DICT       = {
 class GameWindow(Frame):
     def __init__(self):
         Frame.__init__(self)
-
         self.grid()
         self.master.title('2048')
-
         self.grid_cells = []
         self.init_grid()
         self.update_view( (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) )

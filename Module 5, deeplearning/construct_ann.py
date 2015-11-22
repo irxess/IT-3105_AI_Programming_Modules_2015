@@ -28,16 +28,16 @@ theano.config.exception_verbosity='high' # prints out the error message and what
 class Construct_ANN(object):
 
     """docstring for Construct_ANN"""
-    def __init__(self, hidden_nodes, functions, lr, input_units=784, output_units=10):
+    def __init__(self, hidden_nodes, functions, lr, input_units=784, output_units=10, max_of_outputs=True):
         super(Construct_ANN, self).__init__()
         self.hidden_nodes = hidden_nodes
         self.learning_rate = lr
         self.functions = functions
-        self.build_ann(hidden_nodes, self.learning_rate)
+        self.build_ann(hidden_nodes, self.learning_rate, input_units, output_units, max_of_outputs)
 
 
-    def build_ann(self, hidden_nodes, lr):
-        ann_weights, biases = get_net_weights(hidden_nodes)
+    def build_ann(self, hidden_nodes, lr, input_units, output_units, max_of_outputs):
+        ann_weights, biases = get_net_weights(hidden_nodes, input_units, output_units)
         # functions = get_functions(len(hidden_nodes)+1)
         signals = T.fmatrix() # input signals
         labels = T.fmatrix() # input labels
@@ -51,7 +51,10 @@ class Construct_ANN(object):
         noisy = add_noise(signals, ann_weights, biases, self.functions)
         # print('p_out dim:',(p_outputs.broadcastable))
 
-        max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
+        if max_of_outputs:
+            max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
+        else:
+            max_predict = p_outputs[0]
         # print('max_predict dim:',(max_predict.broadcastable))
         # print('params dim:' , params[0].broadcastable)
         # print('output dim:' , p_outputs.broadcastable)
@@ -198,18 +201,18 @@ def init_weights(shape, n):
 def init_bias(shape):
     return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
 
-def get_net_weights(hidden_nodes):
+def get_net_weights(hidden_nodes, input_units, output_units):
     network_weights = []
     biases = []
     if len(hidden_nodes)==0:
-        network_weights.append(init_weights((784, 10), n=784))
-        biases.append(init_bias(10))
+        network_weights.append(init_weights((input_units, output_units), n=input_units))
+        biases.append(init_bias(output_units))
         return network_weights, biases
 
     n0 = hidden_nodes[0]
 
     # append first hidden layer
-    network_weights.append(init_weights((784, n0), n=784))
+    network_weights.append(init_weights((input_units, n0), n=input_units))
     biases.append( init_bias(n0) )
 
     for n_next in hidden_nodes[1:]:
@@ -218,8 +221,8 @@ def get_net_weights(hidden_nodes):
         n0 = n_next
 
     # append output layer
-    network_weights.append(init_weights((hidden_nodes[-1], 10), n=hidden_nodes[-1]))
-    biases.append(init_bias(10))
+    network_weights.append(init_weights((hidden_nodes[-1], output_units), n=hidden_nodes[-1]))
+    biases.append(init_bias(output_units))
 
     # returns weights for all layers in the network
     return network_weights, biases
@@ -261,6 +264,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
             print(tr_sig[start:end])
+            print(len(tr_sig[start]))
             print(start, end, type(tr_sig), type(tr_lbl))
             print(tr_lbl[start:end])
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
