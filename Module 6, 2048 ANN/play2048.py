@@ -42,7 +42,7 @@ def moveRandom(b):
         print(score)
         return score
 
-def playANN(functions, layer_sizes, learning_rate, training_size=21760, times_to_play=1):
+def playANN(functions, layer_sizes, learning_rate, epochs, training_size=21760, times_to_play=1):
     with open('training_data.pkl', 'rb') as f:
         tr_data, tr_labels = pickle.load(f)
     ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=56, output_units=4, max_of_outputs=True)
@@ -60,8 +60,9 @@ def playANN(functions, layer_sizes, learning_rate, training_size=21760, times_to
 
     # tr_sig is a numpy array with inputs as numpy arrays
     # tr_lbl is a numpy array with correct outputs as numpy arrays
-    for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
-        ann.train(tr_sig[start:end], tr_lbl[start:end])
+     for i in range(epochs):
+            for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
+                ann.train(tr_sig[start:end], tr_lbl[start:end])
 
     # start game
     b = bc.BoardController()

@@ -17,7 +17,6 @@ from math import ceil, floor, sqrt
 # Numpy printing options
 np.set_printoptions(threshold=1000, edgeitems=38, linewidth=159)
 
-''' Running command: THEANO_FLAGS=device=gpu,floatX=float32 python3 construct_ann.py '''
 # measure process time
 t0 = time.clock()
 stop = minutes = seconds = 0
@@ -260,17 +259,18 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
-            print(tr_sig[start:end])
-            print(len(tr_sig[start]))
-            print(start, end, type(tr_sig), type(tr_lbl))
-            print(tr_lbl[start:end])
+            # print(tr_sig[start:end])
+            # print(len(tr_sig[start]))
+            # print(start, end, type(tr_sig), type(tr_lbl))
+            # print(tr_lbl[start:end])
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
-            sys.exit(0)
+            # sys.exit(0)
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
+        print(occuracy)
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
-    # print(sum(answers==predictions), 'out of', total, 'correct.')
+    print(sum(answers==predictions), 'out of', total, 'correct.')
 
     # Calculate processing time:
     stop = float(time.clock())
@@ -285,7 +285,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
 # only run this if we're not being imported
 if __name__ == "__main__":
     # train 20 times, 2 hidden layers with 625 nodes,
-    trained_ann = train_on_batches(epochs=10, hidden_nodes=[625, 625], \
-                    funcs=[T.nnet.relu, T.nnet.relu, T.nnet.softmax], lr=0.001)
+    trained_ann = train_on_batches(epochs=20, hidden_nodes=[625, 625], \
+                    funcs=[T.nnet.relu, T.nnet.relu, softmax], lr=0.001)
 
     minor_demo(trained_ann)
