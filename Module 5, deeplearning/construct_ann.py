@@ -56,8 +56,8 @@ class Construct_ANN(object):
 
         # maximizes the value there is there and minimizes the other values
         # classification metric to optimize
-        # cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # without dropout
-        cost = T.mean(T.nnet.categorical_crossentropy(noisy, labels)) # with dropout, but doesn't work :/
+        cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # without dropout
+        # cost = T.mean(T.nnet.categorical_crossentropy(noisy, labels)) # with dropout, but doesn't work :/
         # print('cost dim', cost.broadcastable)
 
         # cost = T.sum((signals - p_outputs)**2)

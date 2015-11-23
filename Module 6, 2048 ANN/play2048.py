@@ -8,6 +8,8 @@ import random, time, pickle
 import theano
 from theano import tensor as T
 from heuristic import calculate_heuristics
+from heuristic2 import calculate_heuristics2
+from heuristic3 import calculate_heuristics3
 import numpy as np
 import requests
 
@@ -42,16 +44,28 @@ def moveRandom(b):
         print(score)
         return score
 
-def playANN(functions, layer_sizes, learning_rate, epochs=1, training_size=21760, times_to_play=1):
+def playANN(functions, layer_sizes, learning_rate, epochs=1, training_size=21760, times_to_play=1, prep=1):
     with open('training_data.pkl', 'rb') as f:
         tr_data, tr_labels = pickle.load(f)
-    ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=56, output_units=4, max_of_outputs=False)
-    tr_sig = np.zeros([training_size, 56])
+
+    # find input size:
+    if prep == 1:
+        preprocess_function = preprocess
+    elif prep == 2:
+        preprocess_function = preprocess2
+    else:
+        preprocess_function = preprocess3
+
+    input_size = len(preprocess_function(tr_data[0]))
+
+    ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=input_size, output_units=4, max_of_outputs=False)
+    tr_sig = np.zeros([training_size, input_size])
     tr_lbl = np.empty([training_size, 4])
     for i in range(training_size):
         boardstate = tr_data[i]
         label = tr_labels[i]
-        input_layer = preprocess(boardstate)
+        input_layer = preprocess_function(boardstate)
+
         correct_output = generate_output_layer(label)
         for j in range(len(input_layer)):
             tr_sig[i][j] = input_layer[j]
@@ -70,7 +84,7 @@ def playANN(functions, layer_sizes, learning_rate, epochs=1, training_size=21760
     results = []
     while games_played < times_to_play:
         old_board = copy(b.board)
-        result = moveANN(ann, b)
+        result = moveANN(ann, b, prep)
         if result > 0: # game over
             games_played += 1
             results.append(result)
@@ -78,10 +92,16 @@ def playANN(functions, layer_sizes, learning_rate, epochs=1, training_size=21760
                 b.start_new_game()
     return results
 
-def moveANN(ann, b):
+def moveANN(ann, b, prep):
     # change max_of_outputs to False is we want to see
     # the rating of all 4 directions
-    input_layer = preprocess(b.board)
+    if prep == 1:
+        input_layer = preprocess(b.board)
+    elif prep == 2:
+        input_layer = preprocess2(b.board)
+    else:
+        input_layer = preprocess3(b.board)
+
     weights = ann.predict([input_layer])
     directions = ['up', 'down', 'left', 'right']
     sorted_moves = zip(directions, weights)
@@ -108,12 +128,28 @@ def moveANN(ann, b):
     return score
 
 def preprocess(state):
+    input_layer = np.zeros([4, 17], dtype=float)
+    i = 0
+    for direction in ['up', 'down', 'left', 'right']:
+        board, mergeCount, maxMerging, highestMerg, moves = bc.slide(direction, copy(state))
+        if board != state:
+            input_layer[i] = calculate_heuristics(board, mergeCount, maxMerging, highestMerg)
+        # else: keep these values at 0
+        i += 1
+    return input_layer.flatten()
+
+def preprocess2(state):
+    input_layer = calculate_heuristics2(state)
+    print(input_layer)
+    return input_layer
+
+def preprocess3(state):
     input_layer = np.zeros([4, 14], dtype=float)
     i = 0
     for direction in ['up', 'down', 'left', 'right']:
-        board, mergeCount, maxMerging, highestMerg = bc.slide(direction, copy(state))
+        board, mergeCount, maxMerging, highestMerg, moves = bc.slide(direction, copy(state))
         if board != state:
-            input_layer[i] = calculate_heuristics(board, mergeCount, maxMerging, highestMerg)
+            input_layer[i] = calculate_heuristics(board, mergeCount, maxMerging, highestMerg, moves)
         # else: keep these values at 0
         i += 1
     return input_layer.flatten()
@@ -150,7 +186,7 @@ if __name__ == "__main__":
     # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
     if (sys.argv[1] == 'ai'):
         func, layers, lr = parse_input()
-        results = playANN(func, layers, lr, epochs=20, times_to_play=50)
+        results = playANN(func, layers, lr, epochs=10, times_to_play=50)
         print('Average: ', sum(results) / float(len(results)))
         # playANN([T.tanh, T.nnet.sigmoid, T.nnet.softmax], [80, 70], 0.006)
         # playANN([T.nnet.relu, T.nnet.softmax], [100], 0.004)
@@ -158,7 +194,7 @@ if __name__ == "__main__":
         playRandom(times_to_play=10)
     elif (sys.argv[1] == 'both'):
         func, layers, lr = parse_input()
-        ann_list = playANN(func, layers, lr, times_to_play=50)
+        ann_list = playANN(func, layers, lr, 10, times_to_play=50)
         random_list = playRandom(times_to_play=50)
         print(random_list)
         print(ann_list)

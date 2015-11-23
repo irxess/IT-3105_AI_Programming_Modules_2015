@@ -12,14 +12,14 @@ if (sys.version_info > (3, 0)):
 directions = ('up', 'down', 'left', 'right')
 
 def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
-    # create a 14-length array, containing all results of other heuristic functions
+    # create a 17-length array, containing all results of other heuristic functions
     # should be a numpy array
     # x = np.array()
     # lbls = np.zeros((len(x),n))
     # lbls[np.arange(len(x)),x] = 1
     h_index = 0
 
-    heuristics = np.empty(14, dtype=float)
+    heuristics = np.empty(17, dtype=float)
     heuristics[h_index] = edgeScore(board)
     h_index += 1
 
@@ -45,6 +45,8 @@ def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
 
     return heuristics
 
+
+
 def edgeScore(grid):
     scoreCorner = 0
     scoreEdge = 0
@@ -62,13 +64,19 @@ def edgeScore(grid):
 
 def mergeScore(nofMerges):
     if nofMerges > 5:
-        return [1., 1., 1.]
+        return [1., 1., 1., 1., 1., 1.]
+    elif nofMerges > 4:
+        return [1., 1., 1., 1., 1., 0.]
     elif nofMerges > 3:
-        return [1., 1., 0.]
+        return [1., 1., 1., 1., 0., 0.]
+    elif nofMerges > 2:
+        return [1., 1., 1., 0., 0., 0.]
+    elif nofMerges > 1:
+        return [1., 1., 0., 0., 0., 0.]
     elif nofMerges > 0:
-        return [1., 0., 0.]
+        return [1., 0., 0., 0., 0., 0.]
     else:
-        return [0., 0., 0.]
+        return [0., 0., 0., 0., 0., 0.]
 
 def openCellScore(board):
     count = 0
@@ -234,18 +242,3 @@ def second_largest(numbers):
 #         score -= ( difference )
 #         highestDiff = max(highestDiff, difference)
 #     return score/highestDiff
-
-# def snake(board):
-#     b = copy(board)
-#     maxScore = 0
-#     maxTile = max(board)
-#     pattern = [16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-#     # pattern = [16, 15, 14, 13, 9, 10, 11, 12, 5, 6, 7, 8, 4, 3, 2, 1]
-#     pattern[:] = [x / 16.0 for x in pattern]
-#     for j in xrange(4):
-#         for i in xrange( len(board)-1 ):
-#             b[i] =  pattern[i] * b[i] / maxTile
-#         # maxScore = max(sum(x for x in b), maxScore)
-#         maxScore = max(sum(b), maxScore)
-#         b = rotateLeft(b)
-#     return maxScore
