@@ -12,6 +12,7 @@ from heuristic2 import calculate_heuristics2
 from heuristic3 import calculate_heuristics3
 import numpy as np
 import requests
+import pdb
 
 def playRandom(times_to_play=1):
     b = bc.BoardController()
@@ -104,23 +105,27 @@ def moveANN(ann, b, prep):
 
     weights = ann.predict([input_layer])
     directions = ['up', 'down', 'left', 'right']
-    sorted_moves = zip(directions, weights)
+    weighted_moves = []
+    for i in range(len(directions)):
+        weighted_moves.append( (weights[i], directions[i]) )
+
     # sorted_moves.sort(key = lambda t: t[1])
-    sorted_moves = sorted(sorted_moves)
-    # print(sorted_moves)
-    for weighted_move in sorted_moves:
-        # print(weighted_move)
-        move = weighted_move[0]
-        # print(move)
+    weighted_moves.sort(reverse=True)
+    for weighted_move in weighted_moves:
+        move = weighted_move[1]
+        old_board = copy(b.board)
         try:
-            old_board = copy(b.board)
+            # print('Trying to move')
             b.move(move)
+            # print(old_board)
+            # print(b.board)
             if old_board != b.board:
                 return 0
             else:
                 b.board = old_board
                 print('invalid move')
         except(ValueError, IndexError):
+            b.board = old_board
             pass # invalid move, try next value
     # no moves left at this point
     score = 2**max(b.board)
