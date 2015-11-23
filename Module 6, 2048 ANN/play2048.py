@@ -32,7 +32,7 @@ def moveRandom(b):
     bestDirection = 'none'
     valid_moves = []
     for direction in ['up', 'down', 'left', 'right']:
-        nextBoard, nofMerges, maxMerging, highestMerg = bc.slide( direction, copy(b.board) )
+        count = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
             bestHeuristic = 1
             valid_moves.append(direction)
