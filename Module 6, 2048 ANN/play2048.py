@@ -128,7 +128,7 @@ def moveANN(ann, b, prep):
     return score
 
 def preprocess(state):
-    input_layer = np.zeros([4, 18], dtype=float)
+    input_layer = np.zeros([4, 19], dtype=float)
     i = 0
     for direction in ['up', 'down', 'left', 'right']:
         board, mergeCount, maxMerging, highestMerg, moves = bc.slide(direction, copy(state))

@@ -19,7 +19,7 @@ def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
     # lbls[np.arange(len(x)),x] = 1
     h_index = 0
 
-    heuristics = np.empty(18, dtype=float)
+    heuristics = np.empty(19, dtype=float)
 
     heuristics[h_index] = edgeScore(board)
     h_index += 1
@@ -119,25 +119,17 @@ def smoothness(board):
 
 def monotonicity(board):
     score=0
-
-    for col in range(4):
-        for row in range(3):
-            i = row + 4*col
-            if board[i] < board[i+1] < board[i+2] < board[i+3]: 
-                score += 1
-
-            elif board[i] > board[i+1] > board[i+2] > board[i+3]: 
-                score +=1
-
-    for row in range(4):
-        for col in range(3):
-            j = col + 4*row
-            if board[j] < board[j+1] < board[j+2] < board[j+3]: 
-                score += 1
-
-            elif board[j] > board[j+1] > board[j+2] > board[j+3]: 
-                score +=1
-            
+    for j in range(4):
+        i = 4*j
+        if board[i] < board[i+1] < board[i+2] < board[i+3]: 
+            score += 1
+        elif board[i] > board[i+1] > board[i+2] > board[i+3]: 
+            score +=1
+        
+        if board[j] < board[j+4] < board[j+2*4] < board[j+3*4]:
+            score +=1
+        elif board[j] > board[j+4] > board[j+2*4] > board[j+3*4]:
+            score +=1
     return score/8.
 
 def gradient(board):
