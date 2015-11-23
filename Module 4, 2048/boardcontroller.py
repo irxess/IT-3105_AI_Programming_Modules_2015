@@ -66,16 +66,17 @@ def slideUp(board):
     mergeCount = 0
     maxMerging = highestMerg = 0
     maxTile = max(board)
+    moves = 0
 
     for i in xrange(3): # move as much as possible
         for pos in xrange(4,16):
             if board[pos-4] == 0:
                 board[pos-4] = board[pos]
                 board[pos] = 0
+                moves += 1
             elif board[pos-4] == board[pos]:
                 if not merged[pos] and not merged[pos-4]:
                     # merge tiles
-
                     if board[pos] == maxTile:
                         maxMerging = board[pos]+1
                     board[pos-4] += 1
@@ -83,37 +84,25 @@ def slideUp(board):
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos-4] = True
-    return board, mergeCount, maxMerging, highestMerg
+    return board, mergeCount, maxMerging, highestMerg, moves
 
 
 def slideDown(board):
-    #mergeCount = 0
-
-    # for row in xrange(3, 0, -1):
-    #     for col in xrange(4):
-    #         if board[row, col] == 0:
-    #             board[row, col] = board[row-1, col]
-    #             board[row-1, col] = 0
-            #elif board[row, col] == board[row-1, col]:
-            #    board[row, col] = board[row-1, col] + board[row, col]
-            #    mergeCount += 1
-            #else:
-            #    board[row, col] = board[row, col]
-
     merged = [False] * 4*4
     mergeCount = 0
     maxMerging = highestMerg= 0
     maxTile = max(board)
+    moves = 0
 
     for i in xrange(3):
         for pos in range(11,-1,-1):
             if board[pos+4] == 0:
                 board[pos+4] = board[pos]
                 board[pos] = 0
+                moves += 1
             elif board[pos+4] == board[pos]:
                 if not merged[pos] and not merged[pos+4]:
                     # merge tiles
-
                     if board[pos] == maxTile:
                         maxMerging = board[pos]+1
                     board[pos+4] += 1
@@ -121,7 +110,7 @@ def slideDown(board):
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos+4] = True
-    return board, mergeCount, maxMerging, highestMerg
+    return board, mergeCount, maxMerging, highestMerg, moves
 
 
 def slideLeft(board):
@@ -129,24 +118,25 @@ def slideLeft(board):
     mergeCount = 0
     maxMerging = highestMerg = 0
     maxTile = max(board)
+    moves = 0
 
     for i in xrange(3):
         for pos in [1,2,3,5,6,7,9,10,11,13,14,15]:
             if board[pos-1] == 0:
                 board[pos-1] = board[pos]
                 board[pos] = 0
+                moves += 1
             elif board[pos-1] == board[pos]:
                 if not merged[pos] and not merged[pos-1]:
                     # merge tiles
                     if board[pos] == maxTile:
                         maxMerging = board[pos]+1
-
                     board[pos-1] += 1
                     highestMerg = max( board[pos-4] , highestMerg)
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos-1] = True
-    return board, mergeCount, maxMerging, highestMerg
+    return board, mergeCount, maxMerging, highestMerg, moves
 
 
 def slideRight(board):
@@ -154,11 +144,14 @@ def slideRight(board):
     mergeCount = 0
     maxMerging = highestMerg=0
     maxTile = max(board)
+    moves = 0
+
     for i in xrange(3):
         for pos in [2,1,0,6,5,4,10,9,8,14,13,12]:
             if board[pos+1] == 0:
                 board[pos+1] = board[pos]
                 board[pos] = 0
+                moves += 1
             elif board[pos+1] == board[pos]:
                 if not merged[pos] and not merged[pos+1]:
                     # merge tiles
@@ -170,7 +163,7 @@ def slideRight(board):
                     board[pos] = 0
                     mergeCount += 1
                     merged[pos+1] = True
-    return board, mergeCount, maxMerging, highestMerg
+    return board, mergeCount, maxMerging, highestMerg, moves
 
 
 def findEmptyTiles(board):
