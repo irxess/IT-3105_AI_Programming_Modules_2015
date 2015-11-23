@@ -60,9 +60,9 @@ def playANN(functions, layer_sizes, learning_rate, epochs, training_size=21760, 
 
     # tr_sig is a numpy array with inputs as numpy arrays
     # tr_lbl is a numpy array with correct outputs as numpy arrays
-     for i in range(epochs):
-            for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
-                ann.train(tr_sig[start:end], tr_lbl[start:end])
+    for i in range(epochs):
+        for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
+            ann.train(tr_sig[start:end], tr_lbl[start:end])
 
     # start game
     b = bc.BoardController()
@@ -135,14 +135,14 @@ if __name__ == "__main__":
     # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
     if (sys.argv[1] == 'ai'):
         func, layers, lr = parse_input()
-        playANN(func, layers, lr, times_to_play=10)
+        playANN(func, layers, lr, 10, times_to_play=10)
         # playANN([T.tanh, T.nnet.sigmoid, T.nnet.softmax], [80, 70], 0.006)
         # playANN([T.nnet.relu, T.nnet.softmax], [100], 0.004)
     elif (sys.argv[1] == 'random'):
         playRandom(times_to_play=10)
     elif (sys.argv[1] == 'both'):
         func, layers, lr = parse_input()
-        ann_list = playANN(func, layers, lr, times_to_play=50)
+        ann_list = playANN(func, layers, lr, 10, times_to_play=50)
         random_list = playRandom(times_to_play=50)
         print(random_list)
         print(ann_list)
