@@ -50,15 +50,10 @@ class Construct_ANN(object):
         p_outputs = model(signals, ann_weights, biases, self.functions)# probability outputs given input signals
         noisy = add_noise(signals, ann_weights, biases, self.functions)
         # print('p_out dim:',(p_outputs.broadcastable))
-
         if max_of_outputs:
             max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
         else:
             max_predict = p_outputs[0]
-        # print('max_predict dim:',(max_predict.broadcastable))
-        # print('params dim:' , params[0].broadcastable)
-        # print('output dim:' , p_outputs.broadcastable)
-        # print('noise dim:' , noisy.broadcastable)
 
         # maximizes the value there is there and minimizes the other values
         # classification metric to optimize
@@ -78,6 +73,7 @@ class Construct_ANN(object):
     def blind_test(self, test_input):
         test_cases = np.array(test_input)/255.0
         test_count = len(test_input)
+
         predictions = []
         pred_index = 0
 
@@ -252,6 +248,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     # traning_signals, training_labels, testing_signals, testing_labels = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
     # Write results ans statistics to a file
+
     # orig_stdout = sys.stdout
     # f = open('testResults2.txt', 'a')
     # sys.stdout = f
@@ -270,7 +267,6 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
             sys.exit(0)
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
-        # print (i+1,'       ', "{:.2f}".format(occuracy*100),'%' )
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
