@@ -10,12 +10,14 @@ else:
 
 class BoardController():
     def __init__(self):
+        self.window = visuals.GameWindow()
+        self.start_new_game()
+
+    def start_new_game(self):
         random.seed()
         self.board = [0] * 4*4
-        self.window = visuals.GameWindow()
         spawnRandomTile(self.board)
         self.window.update_view(self.board)
-
 
     def move(self, direction):
         """
