@@ -42,10 +42,10 @@ def moveRandom(b):
         print(score)
         return score
 
-def playANN(functions, layer_sizes, learning_rate, epochs, training_size=21760, times_to_play=1):
+def playANN(functions, layer_sizes, learning_rate, epochs=1, training_size=21760, times_to_play=1):
     with open('training_data.pkl', 'rb') as f:
         tr_data, tr_labels = pickle.load(f)
-    ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=56, output_units=4, max_of_outputs=True)
+    ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=56, output_units=4, max_of_outputs=False)
     tr_sig = np.zeros([training_size, 56])
     tr_lbl = np.empty([training_size, 4])
     for i in range(training_size):
@@ -60,9 +60,9 @@ def playANN(functions, layer_sizes, learning_rate, epochs, training_size=21760, 
 
     # tr_sig is a numpy array with inputs as numpy arrays
     # tr_lbl is a numpy array with correct outputs as numpy arrays
-     for i in range(epochs):
-            for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
-                ann.train(tr_sig[start:end], tr_lbl[start:end])
+    for i in range(epochs):
+        for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
+            ann.train(tr_sig[start:end], tr_lbl[start:end])
 
     # start game
     b = bc.BoardController()
@@ -74,23 +74,38 @@ def playANN(functions, layer_sizes, learning_rate, epochs, training_size=21760, 
         if result > 0: # game over
             games_played += 1
             results.append(result)
-            b.start_new_game()
+            if games_played < times_to_play:
+                b.start_new_game()
     return results
 
 def moveANN(ann, b):
     # change max_of_outputs to False is we want to see
     # the rating of all 4 directions
     input_layer = preprocess(b.board)
-    move = ann.predict([input_layer])
+    weights = ann.predict([input_layer])
     directions = ['up', 'down', 'left', 'right']
-    try:
-        b.move(directions[move])
-        return 0
-    except(ValueError, IndexError):
-        #game_over(b)
-        score = 2**max(b.board)
-        print(score)
-        return score
+    sorted_moves = zip(directions, weights)
+    # sorted_moves.sort(key = lambda t: t[1])
+    sorted_moves = sorted(sorted_moves)
+    # print(sorted_moves)
+    for weighted_move in sorted_moves:
+        # print(weighted_move)
+        move = weighted_move[0]
+        # print(move)
+        try:
+            old_board = copy(b.board)
+            b.move(move)
+            if old_board != b.board:
+                return 0
+            else:
+                b.board = old_board
+                print('invalid move')
+        except(ValueError, IndexError):
+            pass # invalid move, try next value
+    # no moves left at this point
+    score = 2**max(b.board)
+    print(score)
+    return score
 
 def preprocess(state):
     input_layer = np.zeros([4, 14], dtype=float)
@@ -135,7 +150,8 @@ if __name__ == "__main__":
     # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
     if (sys.argv[1] == 'ai'):
         func, layers, lr = parse_input()
-        playANN(func, layers, lr, times_to_play=10)
+        results = playANN(func, layers, lr, epochs=20, times_to_play=50)
+        print('Average: ', sum(results) / float(len(results)))
         # playANN([T.tanh, T.nnet.sigmoid, T.nnet.softmax], [80, 70], 0.006)
         # playANN([T.nnet.relu, T.nnet.softmax], [100], 0.004)
     elif (sys.argv[1] == 'random'):
