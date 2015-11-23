@@ -19,7 +19,7 @@ def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
     # lbls[np.arange(len(x)),x] = 1
     h_index = 0
 
-    heuristics = np.empty(17, dtype=float)
+    heuristics = np.empty(18, dtype=float)
     heuristics[h_index] = edgeScore(board)
     h_index += 1
 
@@ -42,6 +42,7 @@ def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
         h_index += 1
 
     heuristics[h_index] = nearness(board)
+    heuristics[h_index+1] = smoothness(board)
 
     return heuristics
 
@@ -93,6 +94,21 @@ def openCellScore(board):
         return [1, 0, 0, 0]
     else:
         return [0, 0, 0, 0]
+
+
+ # rotated = []
+ #    l = 16
+ #    for i in xrange(3, -1, -1):
+ #        rotated.extend( board[i:l:4] )
+ #        l -= 1
+ #    return rotated
+def smoothness(board):
+    diff = 0
+    for col in range(3):
+        for row in range(3):
+            i = row + 4*col;
+            diff -= abs(board[i]-board[i+1]) / 15
+    return diff
 
 def gradient(board):
     b = copy(board)
