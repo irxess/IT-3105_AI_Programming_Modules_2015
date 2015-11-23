@@ -9,12 +9,21 @@ import theano
 from theano import tensor as T
 from heuristic import calculate_heuristics
 import numpy as np
+import requests
 
-def playRandom():
-    board = bc.BoardController()
-    while True:
-        moveRandom(board)
-        board.window.update_view(board.board)
+def playRandom(times_to_play=1):
+    b = bc.BoardController()
+    games_played = 0
+    results = []
+    while games_played < times_to_play:
+        old_board = copy(b.board)
+        result = moveRandom(b)
+        b.window.update_view(b.board)
+        if result > 0: # game over
+            games_played += 1
+            results.append(result)
+            b.start_new_game()
+    return results
 
 def moveRandom(b):
     bestDirection = 'none'
@@ -26,10 +35,14 @@ def moveRandom(b):
             valid_moves.append(direction)
     if len(valid_moves)!=0:
         b.move( random.choice(valid_moves) )
+        return 0
     else:
-        game_over(b)
+        # game_over(b)
+        score = 2**max(b.board)
+        print(score)
+        return score
 
-def playANN(functions, layer_sizes, learning_rate, training_size=21760):
+def playANN(functions, layer_sizes, learning_rate, training_size=21760, times_to_play=1):
     with open('training_data.pkl', 'rb') as f:
         tr_data, tr_labels = pickle.load(f)
     ann = construct_ann.Construct_ANN(layer_sizes, functions, learning_rate, input_units=56, output_units=4, max_of_outputs=True)
@@ -52,11 +65,16 @@ def playANN(functions, layer_sizes, learning_rate, training_size=21760):
 
     # start game
     b = bc.BoardController()
-    while True:
+    games_played = 0
+    results = []
+    while games_played < times_to_play:
         old_board = copy(b.board)
-        moveANN(ann, b)
-        # if old_board == b.board: # should implement a better check
-        #     game_over(b)
+        result = moveANN(ann, b)
+        if result > 0: # game over
+            games_played += 1
+            results.append(result)
+            b.start_new_game()
+    return results
 
 def moveANN(ann, b):
     # change max_of_outputs to False is we want to see
@@ -66,9 +84,12 @@ def moveANN(ann, b):
     directions = ['up', 'down', 'left', 'right']
     try:
         b.move(directions[move])
+        return 0
     except(ValueError, IndexError):
-        game_over(b)
-
+        #game_over(b)
+        score = 2**max(b.board)
+        print(score)
+        return score
 
 def preprocess(state):
     input_layer = np.zeros([4, 14], dtype=float)
@@ -94,18 +115,36 @@ def generate_output_layer(label):
     sys.exit(0)
 
 def game_over(b):
-    print('----------------------------------')
-    print('game over')
-    print('Running time: ', time.clock())
     print(2**max(b.board))
     while True:
         b.window.update_view(b.board)
 
+def welch(list1, list2):
+    params = {"results": str(list1) + " " + str(list2), "raw": "1"}
+    resp = requests.post('http://folk.ntnu.no/valerijf/6/', data=params)
+    return resp.text
+
+def parse_input(envir=globals()):
+    functions = eval('[' + sys.argv[2] + ']', envir)
+    layer_sizes = eval('[' + sys.argv[3] + ']', envir)
+    learning_rate = eval(sys.argv[4], envir)
+    return functions, layer_sizes, learning_rate
+
 if __name__ == "__main__":
+    # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
     if (sys.argv[1] == 'ai'):
-        # playANN( sys.argv[2], sys.argv[3], sys.argv[4])
-        playANN([T.tanh, T.nnet.softmax], [40], 0.02)
+        func, layers, lr = parse_input()
+        playANN(func, layers, lr, times_to_play=10)
+        # playANN([T.tanh, T.nnet.sigmoid, T.nnet.softmax], [80, 70], 0.006)
+        # playANN([T.nnet.relu, T.nnet.softmax], [100], 0.004)
     elif (sys.argv[1] == 'random'):
-        playRandom()
+        playRandom(times_to_play=10)
+    elif (sys.argv[1] == 'both'):
+        func, layers, lr = parse_input()
+        ann_list = playANN(func, layers, lr, times_to_play=50)
+        random_list = playRandom(times_to_play=50)
+        print(random_list)
+        print(ann_list)
+        print(welch(random_list, ann_list))
     else:
-        print("Argument one should be 'ai' or 'random'")
+        print("Argument one should be 'ai', 'random' or 'both'.")
