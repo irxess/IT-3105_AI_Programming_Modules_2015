@@ -12,13 +12,7 @@ if (sys.version_info > (3, 0)):
 directions = ('up', 'down', 'left', 'right')
 
 def calculate_heuristics(board, mergeCount, maxMerging, highestMerg):
-    # create a 17-length array, containing all results of other heuristic functions
-    # should be a numpy array
-    # x = np.array()
-    # lbls = np.zeros((len(x),n))
-    # lbls[np.arange(len(x)),x] = 1
     h_index = 0
-
     heuristics = np.empty(19, dtype=float)
 
     heuristics[h_index] = edgeScore(board)
@@ -110,22 +104,22 @@ def smoothness(board):
     for col in range(4):
         for row in range(3):
             i = row + 4*col
-            diff -= abs(board[i]-board[i+1]) / 15. 
+            diff -= abs(board[i]-board[i+1]) / 15.
     for row in range(4):
         for col in range(3):
             j = col + 4*row
-            diff -= abs(board[j]-board[j+1]) / 15. 
+            diff -= abs(board[j]-board[j+1]) / 15.
     return diff
 
 def monotonicity(board):
     score=0
     for j in range(4):
         i = 4*j
-        if board[i] < board[i+1] < board[i+2] < board[i+3]: 
+        if board[i] < board[i+1] < board[i+2] < board[i+3]:
             score += 1
-        elif board[i] > board[i+1] > board[i+2] > board[i+3]: 
+        elif board[i] > board[i+1] > board[i+2] > board[i+3]:
             score +=1
-        
+
         if board[j] < board[j+4] < board[j+2*4] < board[j+3*4]:
             score +=1
         elif board[j] > board[j+4] > board[j+2*4] > board[j+3*4]:

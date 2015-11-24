@@ -12,7 +12,7 @@ from heuristic2 import calculate_heuristics2
 from heuristic3 import calculate_heuristics3
 import numpy as np
 import requests
-import pdb
+import time
 
 def playRandom(times_to_play=1):
     b = bc.BoardController()
@@ -145,7 +145,6 @@ def preprocess(state):
 
 def preprocess2(state):
     input_layer = calculate_heuristics2(state)
-    print(input_layer)
     return input_layer
 
 def preprocess3(state):
@@ -191,6 +190,7 @@ if __name__ == "__main__":
     # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
     if (sys.argv[1] == 'ai'):
         func, layers, lr = parse_input()
+        # results = playANN(func, layers, lr, epochs=10, times_to_play=50, prep=2)
         results = playANN(func, layers, lr, epochs=10, times_to_play=50)
         print('Average: ', sum(results) / float(len(results)))
         # playANN([T.tanh, T.nnet.sigmoid, T.nnet.softmax], [80, 70], 0.006)
