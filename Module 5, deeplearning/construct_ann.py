@@ -137,7 +137,7 @@ def dropout(X, p=0.0):
     if p > 0:
         retain_prob = 1 - p
         noise = RandomStreams().binomial(X.shape, p=retain_prob, dtype=theano.config.floatX)
-        X = X * (noise/retain_prob) 
+        X = X * (noise/retain_prob)
     return X
 
 # converts labels to a 2D numpy array of 0's & 1's
@@ -215,7 +215,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_labels, testing_signals, testing_labels = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
-    
+
     # Write results and statistics to a file
     # orig_stdout = sys.stdout
     # f = open('testResults2.txt', 'a')
@@ -234,7 +234,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
-    print(sum(answers==predictions), 'out of', total, 'correct.')
+    # print(sum(answers==predictions), 'out of', total, 'correct.')
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print(hidden_nodes)
 
@@ -242,10 +242,17 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     # f.close()
     return ann
 
+def parse_input(envir=globals()):
+    functions = eval('[' + sys.argv[1] + ']', envir)
+    layer_sizes = eval('[' + sys.argv[2] + ']', envir)
+    learning_rate = eval(sys.argv[3], envir)
+    return (functions, layer_sizes, learning_rate)
+
 # only run this if we're not being imported
 if __name__ == "__main__":
-    # train 20 times, 2 hidden layers with 625 nodes,
-    trained_ann = train_on_batches(epochs=20, hidden_nodes=[625,625], \
-                                  funcs=[T.nnet.relu, T.nnet.relu, softmax], lr=0.001)
-
+    # train 20 times, 2 hidden layers with 625 nodes
+    funct, layrs, lrt = parse_input()
+    trained_ann = train_on_batches(epochs=20, hidden_nodes=layrs, funcs=funct, lr=lrt)
+    # trained_ann = train_on_batches(epochs=20, hidden_nodes=[625, 625], \
+    #                 funcs=[T.nnet.relu, T.nnet.relu, softmax], lr=0.001)
     minor_demo(trained_ann)
