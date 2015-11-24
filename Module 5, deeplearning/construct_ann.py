@@ -13,17 +13,10 @@ from mnist_basics import *
 import sys, time
 from math import ceil, floor, sqrt
 
-''' Running command: THEANO_FLAGS=device=gpu,floatX=float32 python3 construct_ann.py '''
-
 # Numpy printing options
 np.set_printoptions(threshold=1000, edgeitems=38, linewidth=159)
 
-# measure process time
-t0 = time.clock()
-stop = minutes = seconds = 0
-
 theano.config.exception_verbosity='high' # prints out the error message and what caused the error.
-# raise Exception ('X:', X)
 
 class Construct_ANN(object):
 
@@ -38,7 +31,6 @@ class Construct_ANN(object):
 
     def build_ann(self, hidden_nodes, lr, input_units, output_units, max_of_outputs):
         ann_weights, biases = get_net_weights(hidden_nodes, input_units, output_units)
-        # functions = get_functions(len(hidden_nodes)+1)
         signals = T.fmatrix() # input signals
         labels = T.fmatrix() # input labels
 
@@ -97,7 +89,6 @@ def get_func_names(funcs):
     return names
 
 # Stochastic Gradient Descent
-# lr= 0.01 for zero mean gradient, larger migth give a worse final model
 def sgd(cost, params, lr, momentum=0.8):
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
     updates = []
@@ -224,8 +215,8 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_labels, testing_signals, testing_labels = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
-    # Write results ans statistics to a file
-
+    
+    # Write results and statistics to a file
     # orig_stdout = sys.stdout
     # f = open('testResults2.txt', 'a')
     # sys.stdout = f
@@ -246,13 +237,6 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     print(sum(answers==predictions), 'out of', total, 'correct.')
     print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     print(hidden_nodes)
-
-
-    # Calculate processing time:
-    stop = float(time.clock())
-    minutes = (stop - t0)/60
-    seconds = (stop - t0)%60
-    # print ('Running time: ', ceil(minutes), '(min)', ceil(seconds), '(s)')
 
     # sys.stdout = orig_stdout
     # f.close()
