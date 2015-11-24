@@ -199,7 +199,7 @@ if __name__ == "__main__":
         playRandom(times_to_play=10)
     elif (sys.argv[1] == 'both'):
         func, layers, lr = parse_input()
-        ann_list = playANN(func, layers, lr, 10, times_to_play=50)
+        ann_list = playANN(func, layers, lr, 30, times_to_play=50)
         random_list = playRandom(times_to_play=50)
         print(random_list)
         print(ann_list)
