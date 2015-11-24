@@ -32,7 +32,7 @@ def moveRandom(b):
     bestDirection = 'none'
     valid_moves = []
     for direction in ['up', 'down', 'left', 'right']:
-        nextBoard, nofMerges, maxMerging, highestMerg = bc.slide( direction, copy(b.board) )
+        nextBoard, nofMerges, maxMerging, highestMerg, moves = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
             bestHeuristic = 1
             valid_moves.append(direction)
@@ -188,6 +188,8 @@ def parse_input(envir=globals()):
 
 if __name__ == "__main__":
     # python3 play2048.py ai "T.tanh, T.tanh, T.nnet.softmax" "100,40" "0.03"
+    # python3 play2048.py ai "T.nnet.relu, T.nnet.sigmoid, T.nnet.softmax" "100,40" "0.01"
+    # python3 play2048.py both "T.nnet.relu, T.nnet.sigmoid, T.nnet.softmax" "100, 40" "0.01"
     if (sys.argv[1] == 'ai'):
         func, layers, lr = parse_input()
         # results = playANN(func, layers, lr, epochs=10, times_to_play=50, prep=2)
