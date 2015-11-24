@@ -4,6 +4,7 @@ Created by Neshat Naderi on 05/11/15.
 
 References: http://cs231n.github.io/neural-networks-2
 """
+import sys
 import theano
 from theano import tensor as T
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
@@ -12,17 +13,10 @@ from mnist_basics import *
 import sys, time
 from math import ceil, floor, sqrt
 
-''' Running command: THEANO_FLAGS=device=gpu,floatX=float32 python3 construct_ann.py '''
-
 # Numpy printing options
 np.set_printoptions(threshold=1000, edgeitems=38, linewidth=159)
 
-# measure process time
-t0 = time.clock()
-stop = minutes = seconds = 0
-
 theano.config.exception_verbosity='high' # prints out the error message and what caused the error.
-# raise Exception ('X:', X)
 
 class Construct_ANN(object):
 
@@ -37,7 +31,6 @@ class Construct_ANN(object):
 
     def build_ann(self, hidden_nodes, lr, input_units, output_units, max_of_outputs):
         ann_weights, biases = get_net_weights(hidden_nodes, input_units, output_units)
-        # functions = get_functions(len(hidden_nodes)+1)
         signals = T.fmatrix() # input signals
         labels = T.fmatrix() # input labels
 
@@ -47,20 +40,16 @@ class Construct_ANN(object):
             params.append(biases[i])
 
         p_outputs = model(signals, ann_weights, biases, self.functions)# probability outputs given input signals
-        noisy = add_noise(signals, ann_weights, biases, self.functions)
-        # print('p_out dim:',(p_outputs.broadcastable))
+        # p_outputs = model2(signals, ann_weights, biases, self.functions) #w/dropout
         if max_of_outputs:
             max_predict = T.argmax(p_outputs, axis=1) # chooses the maximum prediction over the probabilities
         else:
             max_predict = p_outputs[0]
 
-        # maximizes the value there is there and minimizes the other values
         # classification metric to optimize
-        cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # without dropout
-        # cost = T.mean(T.nnet.categorical_crossentropy(noisy, labels)) # with dropout, but doesn't work :/
-        # print('cost dim', cost.broadcastable)
-
-        # cost = T.sum((signals - p_outputs)**2)
+        # cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # without dropout
+        cost = T.mean(T.nnet.categorical_crossentropy(p_outputs, labels)) # with dropout, but doesn't work :/
+        # cost = T.sum((signals - p_outputs)**2)#different cost function
 
         # updates = sgd(cost, params, lr) # sgd:model1 without dropout
         updates = acc_sgd(cost, params, lr) #accelerated w/ momentum
@@ -99,16 +88,13 @@ def get_func_names(funcs):
         else: names.append(f.name)
     return names
 
-# sgd : Stochastic Gradient Descent
-# lr= 0.01 for zero mean gradient, larger migth give a worse final model
+# Stochastic Gradient Descent
 def sgd(cost, params, lr, momentum=0.8):
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
     updates = []
     # Back propagation act
     for p, g in zip(params, grads):
-        # param_update = theano.shared(p.get_value()*0., broadcastable=p.broadcastable)
         updates.append([p, p - g * lr])
-        # updates.append((param_update, momentum*param_update + (1. - momentum)*g)) #gradient scaling
     return updates
 
 def model(X, weights, biases, functions):
@@ -121,7 +107,6 @@ def model(X, weights, biases, functions):
         h = functions[i](T.dot(h, weights[i])+biases[i])
     return h
 
-# ref: http://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf
 def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
     # this function accelerates convergence by momentum
     grads = T.grad(cost=cost, wrt=params) # computes gradient of loss w/respect to params
@@ -134,22 +119,16 @@ def acc_sgd(cost, params, lr=0.001, momentum=0.9, epsilon=1e-6):
         g = g / gradient_scaling
         updates.append((p, p - g * lr))
         updates.append((accumulator, acc_new))
-        # updates.append((param_update, momentum*param_update + (1. - momentum)*g)) #gradient scaling
     return updates
 
 # with dropout regularization, not regulizes biases
-def add_noise(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
-    # w/ acc_sgd & dropout
-    # h = dropout(X, p_drop_in)
+def model2(X, weights, biases, functions, p_drop_in=0.2, p_drop_out=0.5):
     h = functions[0]( T.dot(dropout(X, p_drop_in), weights[0])+biases[0] )
-    # outputs = []
     for i in range(1,len(weights)):
         if functions[i] == T.nnet.sigmoid:
             weights[i] *= 4
         h = dropout(h, p_drop_out)
         h = functions[i](T.dot(h, weights[i])+biases[i])
-        # outputs.append(h)
-    # prediction = functions[-1]( T.dot(h, weights[-1])+biases[-1] )
     return h
 
 def dropout(X, p=0.0):
@@ -158,7 +137,7 @@ def dropout(X, p=0.0):
     if p > 0:
         retain_prob = 1 - p
         noise = RandomStreams().binomial(X.shape, p=retain_prob, dtype=theano.config.floatX)
-        X = X * (noise/retain_prob) # X w/noise
+        X = X * (noise/retain_prob) 
     return X
 
 # converts labels to a 2D numpy array of 0's & 1's
@@ -181,16 +160,6 @@ def floatX(X):
 
 #ReLU units will have a positive mean.
 def init_weights(shape, n):
-    ''' paper on this topic, Delving Deep into Rectifiers:
-    Surpassing Human-Level Performance on ImageNet Classification by He et al.,
-    It derives an initialization specifically for ReLU neurons,
-    reaching the conclusion that the variance of neurons
-    in the network should be 2.0/n.'''
-    # return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape)))
-    # shared variable of random floats sampled from a univariate “normal” (Gaussian) distribution of mean 0 and variance 1
-    # return theano.shared(floatX(np.random.randn(*shape) * 0.01))
-    # Initialize the weights by drawing them from a gaussian distribution with standard
-    # deviation of sqrt(2/n), where n is the number of inputs to the neuron.
     return theano.shared(floatX(np.random.uniform( -.1, .1, size=shape) * (sqrt(2.0/n)) ))
 
 def init_bias(shape):
@@ -246,37 +215,28 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
     ann = Construct_ANN(hidden_nodes, funcs, lr)
     # traning_signals, training_labels, testing_signals, testing_labels = load_cases()
     tr_sig, tr_lbl, te_sig, te_lbl = load_cases()
-    # Write results ans statistics to a file
-
+    
+    # Write results and statistics to a file
     # orig_stdout = sys.stdout
     # f = open('testResults2.txt', 'a')
     # sys.stdout = f
     # print('***********************************************************************')
-    # print('With biases,', 'weights*sqrt(2/n),', 'noise/dropout, momentum' )
     # print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
     # print('hidden nodes = ',ann.hidden_nodes)
     # print ('epoch', '|','   occuracy', '\n---------------------')
 
     for i in range(epochs):
         for start, end in zip(range(0, len(tr_sig), 128), range(128, len(tr_sig), 128)):
-            # print(tr_sig[start:end])
-            # print(len(tr_sig[start]))
-            # print(start, end, type(tr_sig), type(tr_lbl))
-            # print(tr_lbl[start:end])
             cost = ann.train(tr_sig[start:end], tr_lbl[start:end])
             # sys.exit(0)
         occuracy = np.mean(np.argmax(te_lbl, axis=1) == ann.predict(te_sig))
-        print(occuracy)
+        # print(occuracy)
     answers = np.argmax(te_lbl, axis=1)
     predictions = ann.predict(te_sig)
     total = int(te_sig.size/784)
     print(sum(answers==predictions), 'out of', total, 'correct.')
-
-    # Calculate processing time:
-    stop = float(time.clock())
-    minutes = (stop - t0)/60
-    seconds = (stop - t0)%60
-    # print ('Running time: ', ceil(minutes), '(min)', ceil(seconds), '(s)')
+    print('functions = ', get_func_names(ann.functions), '\nlearning rate = ', ann.learning_rate)
+    print(hidden_nodes)
 
     # sys.stdout = orig_stdout
     # f.close()
@@ -285,7 +245,7 @@ def train_on_batches(epochs, hidden_nodes, funcs, lr, batch_size=128):
 # only run this if we're not being imported
 if __name__ == "__main__":
     # train 20 times, 2 hidden layers with 625 nodes,
-    trained_ann = train_on_batches(epochs=20, hidden_nodes=[625, 625], \
-                    funcs=[T.nnet.relu, T.nnet.relu, softmax], lr=0.001)
+    trained_ann = train_on_batches(epochs=20, hidden_nodes=[625,625], \
+                                  funcs=[T.nnet.relu, T.nnet.relu, softmax], lr=0.001)
 
     minor_demo(trained_ann)

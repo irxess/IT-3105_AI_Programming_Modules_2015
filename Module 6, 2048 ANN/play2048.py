@@ -33,6 +33,7 @@ def moveRandom(b):
     valid_moves = []
     for direction in ['up', 'down', 'left', 'right']:
         nextBoard, nofMerges, maxMerging, highestMerg, moves = bc.slide( direction, copy(b.board) )
+        # count = bc.slide( direction, copy(b.board) )
         if nextBoard != b.board:
             bestHeuristic = 1
             valid_moves.append(direction)
@@ -201,7 +202,7 @@ if __name__ == "__main__":
         playRandom(times_to_play=10)
     elif (sys.argv[1] == 'both'):
         func, layers, lr = parse_input()
-        ann_list = playANN(func, layers, lr, 10, times_to_play=50)
+        ann_list = playANN(func, layers, lr, 30, times_to_play=50)
         random_list = playRandom(times_to_play=50)
         print(random_list)
         print(ann_list)
